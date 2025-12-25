@@ -1,0 +1,13 @@
+<div class="container">
+    <h1>Gestion des Stocks</h1>
+
+    @if (produits$ | async; as listeProduits) {
+        <view-produits-tables 
+            [produits]="listeProduits">
+        </view-produits-tables>
+    }@else {
+        <div class="loader">
+            Chargement du stock en cours...
+        </div>
+    }
+</div>

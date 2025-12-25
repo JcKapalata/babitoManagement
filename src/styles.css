@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  padding: 0; 
+  display: block;
+  overflow-x: hidden;
+}
+
+body { 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Palette BaByTo pour enfants */
+:root {
+  --primary-color: #94D8B5;  /* Vert moyen */
+  --accent-color: #66A9BD;   /* Bleu moyen */
+  --warn-color: #E6737E;     /* Corail moyen */
+  --dorail-doux: #fef2f2;
+  --warning-orange: #F3A661;
+}
