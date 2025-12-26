@@ -13,14 +13,18 @@ import { Produit } from '../../Models/produit';
 export class ViewProduitsTables {
   @Input() produits: Produit[] = [];
 
+  // Liste des colonnes simplifiée : plus d'imbrication complexe
   displayedColumns: string[] = [
-    'id', 'nom', 'taille', 'couleur', 'quantite', 'prix', 
-    'devise', 'codeProduit', 'codeFournisseur', 'region',
-    'classement', 'categorie', 'type', 'dateAjout', 'dateModification'
+    'id', 
+    'nom', 
+    'devise', 
+    'codeProduit', 
+    'codeFournisseur', 
+    'region',
+    'classement', 
+    'categorie', 
+    'type', 
+    'dateAjout', 
+    'dateModification'
   ];
-
-  // Helper pour itérer sur les clés de l'objet taille (ex: '6-9 mois', 'M', 'L')
-  getTailles(p: Produit): string[] {
-    return Object.keys(p.taille);
-  }
 }

@@ -11,47 +11,6 @@
       <td mat-cell *matCellDef="let p"> {{p.nom}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="taille">
-      <th mat-header-cell *matHeaderCellDef> Taille </th>
-      <td mat-cell *matCellDef="let p" class="cell-nested">
-        <div *ngFor="let t of getTailles(p)" class="taille-block">
-          {{t}}
-        </div>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="couleur">
-      <th mat-header-cell *matHeaderCellDef> Couleur </th>
-      <td mat-cell *matCellDef="let p" class="cell-nested">
-        <div *ngFor="let t of getTailles(p)" class="taille-block">
-          <div *ngFor="let c of p.taille[t].couleurs" class="sub-row">
-            <img [src]="c.image" class="thumb-img" *ngIf="c.image">
-            {{c.nom}}
-          </div>
-        </div>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="quantite">
-      <th mat-header-cell *matHeaderCellDef> Qté </th>
-      <td mat-cell *matCellDef="let p" class="cell-nested">
-        <div *ngFor="let t of getTailles(p)" class="taille-block">
-          <div *ngFor="let c of p.taille[t].couleurs" class="sub-row text-center">
-            {{c.stock}}
-          </div>
-        </div>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="prix">
-      <th mat-header-cell *matHeaderCellDef> Prix </th>
-      <td mat-cell *matCellDef="let p" class="cell-nested">
-        <div *ngFor="let t of getTailles(p)" class="taille-block text-right">
-          {{ p.taille[t].prix | number:'1.2-2' }}
-        </div>
-      </td>
-    </ng-container>
-
     <ng-container matColumnDef="devise">
       <th mat-header-cell *matHeaderCellDef> Devise </th>
       <td mat-cell *matCellDef="let p"> {{p.devise}} </td>
@@ -89,12 +48,12 @@
 
     <ng-container matColumnDef="dateAjout">
       <th mat-header-cell *matHeaderCellDef> Ajout </th>
-      <td mat-cell *matCellDef="let p"> {{p.dateAjout | date:'dd/MM/yy'}} </td>
+      <td mat-cell *matCellDef="let p"> {{p.dateAjout | date:'dd/MM/yyyy'}} </td>
     </ng-container>
 
     <ng-container matColumnDef="dateModification">
       <th mat-header-cell *matHeaderCellDef> Modif </th>
-      <td mat-cell *matCellDef="let p"> {{p.dateModification | date:'dd/MM/yy'}} </td>
+      <td mat-cell *matCellDef="let p"> {{p.dateModification | date:'dd/MM/yyyy'}} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
