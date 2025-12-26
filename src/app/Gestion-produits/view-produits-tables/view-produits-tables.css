@@ -1,43 +1,51 @@
 .table-container {
-  width: 100%;
-  overflow-x: auto; /* Permet le défilement horizontal si trop de colonnes */
-  max-height: 80vh; /* Scroll vertical si trop de produits */
+  border: 1px solid #000;
 }
 
+/* Forcer les bordures sur le tableau */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.mat-mdc-header-cell {
-  background-color: #f5f5f5;
-  font-weight: bold;
-  white-space: nowrap;
+th, td {
+  border: 1px solid #000 !important;
+  padding: 0 !important; /* On gère le padding dans les div internes */
 }
 
-.mat-mdc-cell, .mat-mdc-header-cell {
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  padding: 0 8px !important;
-}
-
-/* Gestion du découpage Couleur/Quantité */
-.cell-split {
-  padding: 0 !important;
-}
-
-.sub-row {
+/* Bloc correspondant à une TAILLE entière */
+.taille-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 60px; /* Ajuster selon besoin */
+  border-bottom: 1px solid #000;
   padding: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  min-height: 30px;
+}
+
+.taille-block:last-child {
+  border-bottom: none;
+}
+
+/* Sous-ligne pour chaque COULEUR à l'intérieur d'une taille */
+.sub-row {
   display: flex;
   align-items: center;
+  flex: 1;
+  padding: 4px 0;
+  border-bottom: 1px solid #000;
 }
 
 .sub-row:last-child {
   border-bottom: none;
 }
 
-.text-right {
-  justify-content: flex-end;
-  text-align: right;
+.thumb-img {
+  width: 25px;
+  height: 25px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
 }
+
+.text-center { text-align: center; justify-content: center; }
+.text-right { text-align: right; justify-content: flex-end; }

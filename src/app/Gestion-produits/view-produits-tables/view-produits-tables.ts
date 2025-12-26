@@ -13,28 +13,14 @@ import { Produit } from '../../Models/produit';
 export class ViewProduitsTables {
   @Input() produits: Produit[] = [];
 
-  // Liste complète des colonnes mise à jour
   displayedColumns: string[] = [
-    'id', 
-    'nom', 
-    'taille', 
-    'couleur', 
-    'quantite', 
-    'prix', 
-    'devise', 
-    'codeProduit', 
-    'codeFournisseur', 
-    'region',
-    'classement',
-    'categorie',
-    'type',
-    'dateAjout',
-    'dateModification'
+    'id', 'nom', 'taille', 'couleur', 'quantite', 'prix', 
+    'devise', 'codeProduit', 'codeFournisseur', 'region',
+    'classement', 'categorie', 'type', 'dateAjout', 'dateModification'
   ];
 
-  // Helper pour extraire le prix (prend la première valeur disponible)
-  getPrice(produit: Produit): number {
-    const keys = Object.keys(produit.prix);
-    return keys.length > 0 ? produit.prix[keys[0]] : 0;
+  // Helper pour itérer sur les clés de l'objet taille (ex: '6-9 mois', 'M', 'L')
+  getTailles(p: Produit): string[] {
+    return Object.keys(p.taille);
   }
 }
