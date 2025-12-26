@@ -4,13 +4,17 @@
     height: 100vh; /* Toute la hauteur de l'écran */
     padding: 20px;
     box-sizing: border-box;
-    background-color: #f8f9fa;
+    background: var(--primary-color);
 }
 
 .brand {
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     text-align: center;
     border-bottom: 1px solid #eee;
+
+    h2{
+      color: white;
+    }
 }
 
 .menu-list {
@@ -20,21 +24,25 @@
     margin-top: 10px;
 }
 
+
+
 .nav-item {
     width: 100%;
     display: flex !important;
     align-items: center;
     justify-content: flex-start !important;
     height: 40px !important;
+    background: var(--accent-color) !important;
+    color: white !important;
+    transition: 0.3s;
 }
-
 .nav-item mat-icon {
     margin-right: 15px;
 }
-
-.active {
-    background-color: #3f51b5 !important;
+.nav-item:hover {
+    background: var(--primary-color) !important;
     color: white !important;
+    border: 1.5px solid white;
 }
 
 .footer {
@@ -48,4 +56,12 @@
     display: flex !important;
     align-items: center;
     justify-content: center;
+    transition: 0.3s;
+    background: var(--accent-color) !important;
+    color: white !important;
+}
+.full-width:hover{
+  background: var(--primary-color) !important;
+  color: white !important;
+  border: 1.5px solid white;
 }
