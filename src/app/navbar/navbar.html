@@ -8,9 +8,29 @@
       <mat-icon>dashboard</mat-icon> Dashboard
     </button>
     
-    <button mat-button class="nav-item" >
+    <button mat-button class="nav-item" (click)="toggleProduits()">
       <mat-icon>inventory_2</mat-icon> Gestions Produits
     </button>
+
+    @if (isShowedProduits) {
+      <div class="sub-menu">
+        <button mat-button class="sub-nav-item">
+          <mat-icon>check_circle</mat-icon> Produits Disponibles
+        </button>
+
+        <button mat-button class="sub-nav-item">
+          <mat-icon>block</mat-icon> Produits épuisés
+        </button>
+
+        <button mat-button class="sub-nav-item">
+          <mat-icon>report_problem</mat-icon> Produits faibles
+        </button>
+
+        <button mat-button class="sub-nav-item">
+          <mat-icon>add_circle_outline</mat-icon> Ajouter Produit
+        </button>
+      </div>
+    }
 
     <button mat-button class="nav-item">
       <mat-icon>local_shipping</mat-icon> Gestion Livraisons

@@ -20,12 +20,12 @@
 .menu-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     margin-top: 10px;
 }
 
 
-
+/* pour le nav-item */
 .nav-item {
     width: 100%;
     display: flex !important;
@@ -35,6 +35,7 @@
     background: var(--accent-color) !important;
     color: white !important;
     transition: 0.3s;
+    border-radius: 0 !important;
 }
 .nav-item mat-icon {
     margin-right: 15px;
@@ -44,7 +45,40 @@
     color: white !important;
     border: 1.5px solid white;
 }
+.nav-item mat-icon:first-child {
+    margin-right: 12px;
+}
+.nav-label {
+    flex: 1; 
+    text-align: left;
+}
 
+/* pour le sub-nav-item */
+.sub-nav-item {
+    width: calc(100% - 40px);
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start !important;
+    height: 35px !important;
+    background: var(--accent-color) !important;
+    color: white !important;
+    transition: 0.3s;
+    border-radius: 0 !important;
+    border-bottom: 1.5px solid var(--primary-color);
+    margin-left: 40px;
+}
+.sub-nav-item mat-icon {
+    margin-right: 15px;
+}
+.sub-nav-item:hover {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border: 1.5px solid white;
+}
+
+
+
+/* pour le footer */
 .footer {
     margin-top: auto; /* Pousse le footer tout en bas */
     padding-top: 20px;
