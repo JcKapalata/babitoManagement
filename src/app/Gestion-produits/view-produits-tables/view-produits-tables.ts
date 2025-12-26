@@ -17,7 +17,6 @@ export class ViewProduitsTables {
   displayedColumns: string[] = [
     'id', 
     'nom', 
-    'devise', 
     'codeProduit', 
     'codeFournisseur', 
     'region',
