@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -11,6 +12,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
+  private readonly router = inject(Router);
   isShowedProduits = false;
 
   ngOnInit(): void {
@@ -19,5 +21,9 @@ export class Navbar implements OnInit {
 
   toggleProduits() {
     this.isShowedProduits = !this.isShowedProduits;
+  }
+
+  goToProduitsDesponibles() {
+    this.router.navigate(['produits/produits-disponibles']);
   }
 }

@@ -16,7 +16,6 @@ app-navbar {
 .content-area {
     width: 80%;
     height: 100%;
-    padding: 25px;
     overflow-y: auto; /* Seul le tableau défile, pas la barre latérale */
     background-color: #ffffff;
 }

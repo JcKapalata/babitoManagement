@@ -1,18 +1,27 @@
 /* Conteneur principal */
 .container {
-  padding: 24px;
   background-color: #fafafa;
   min-height: 100vh;
+  position: relative;
+}
+
+.title {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 10vh;
+  margin-bottom: 10px;
+  background: var(--primary-color) !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 /* Titre stylisé */
-h1 {
-  color: #2c3e50;
-  font-family: 'Roboto', sans-serif;
-  font-size: 2rem;
-  font-weight: 500;
-  margin-bottom: 24px;
-  border-left: 5px solid #3f51b5; /* Bleu Angular Material */
+h2 {
+  color: white;
+  margin: 0 30px;
+  border-left: 5px solid white; /* Bleu Angular Material */
   padding-left: 15px;
 }
 

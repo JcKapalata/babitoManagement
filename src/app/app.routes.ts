@@ -3,5 +3,5 @@ import { produits } from './Gestion-produits/produits';
 
 export const routes: Routes = [
     ...produits,
-    { path: '', redirectTo: 'produits/stock-produits', pathMatch: 'full' }
+    { path: '', redirectTo: 'produits/produits-disponibles', pathMatch: 'full' }
 ];
