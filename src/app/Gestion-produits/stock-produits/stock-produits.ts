@@ -5,10 +5,11 @@ import { ProduitsService } from '../produits-service';
 import { map, Observable } from 'rxjs';
 import { Produit } from '../../Models/produit';
 import { ViewProduitsTables } from "../view-produits-tables/view-produits-tables";
+import { Loading } from "../../loading/loading";
 
 @Component({
   selector: 'app-stock-produits',
-  imports: [CommonModule, ScrollingModule, ViewProduitsTables], 
+  imports: [CommonModule, ScrollingModule, ViewProduitsTables, Loading], 
   templateUrl: './stock-produits.html',
   styleUrl: './stock-produits.css',
 })

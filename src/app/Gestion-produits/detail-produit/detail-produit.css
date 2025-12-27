@@ -94,7 +94,7 @@ h3{
 }
 
 .price {
-  color: #27ae60;
+  color: var(--primary-color);
 }
 
 .color-list {
