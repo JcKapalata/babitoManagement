@@ -25,6 +25,10 @@ h2 {
   padding-left: 15px;
 }
 
+.main{
+  margin: 10px 20px;
+}
+
 /* Zone du Loader */
 .loader {
   display: flex;
