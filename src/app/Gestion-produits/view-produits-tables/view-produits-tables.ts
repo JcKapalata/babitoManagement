@@ -31,7 +31,6 @@ export class ViewProduitsTables {
 
   onRowClick(row: Produit) {
     if (row && row.id) {
-      // Redirige vers /detail/123 (selon votre configuration de route)
       this.router.navigate(['produits/detail-produit/', row.id]);
     }
   }

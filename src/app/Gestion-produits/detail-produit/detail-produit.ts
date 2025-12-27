@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProduitsService } from '../produits-service';
 import { produits } from './../produits';
 import { Component, inject, OnInit } from '@angular/core';
@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class DetailProduit implements OnInit {
   private produitsServices = inject(ProduitsService);
+  private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   produit: Produit | undefined;
@@ -23,11 +24,16 @@ export class DetailProduit implements OnInit {
       this.produitsServices.getProduitById(+ProduitId).subscribe({
         next: (produit) => {
           this.produit = produit;
+          console.table(this.produit);
         },
         error: (error) => {
           console.error('Erreur lors du chargement du produit:', error);
         }
       });
     }
+  }
+
+  goToListProduits() {
+    this.router.navigate(['produits/produits-disponibles'])
   }
 }
