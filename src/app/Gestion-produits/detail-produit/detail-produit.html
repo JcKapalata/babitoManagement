@@ -25,6 +25,7 @@
           <div class="technical-specs">
             <div class="spec-item"><span>Région:</span> {{ produit.region }}</div>
             <div class="spec-item"><span>Classement:</span> {{ produit.classement }}</div>
+            <div class="spec-item"><span>Date d'enregistrement :</span> {{ produit.dateAjout | date:'dd/MM/yyyy' }}</div>
             <div class="spec-item"><span>Dernière modif:</span> {{ produit.dateModification | date:'dd/MM/yyyy' }}</div>
           </div>
         </section>
