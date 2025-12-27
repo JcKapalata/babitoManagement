@@ -4,10 +4,11 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
+import { Loading } from "../../loading/loading";
 
 @Component({
   selector: 'app-detail-produit',
-  imports: [CommonModule],
+  imports: [CommonModule, Loading],
   templateUrl: './detail-produit.html',
   styleUrl: './detail-produit.css',
 })
