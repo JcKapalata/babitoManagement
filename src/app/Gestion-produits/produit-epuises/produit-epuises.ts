@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ProduitsService } from '../produits-service';
 import { Produit } from '../../Models/produit';
+import { Loading } from "../../loading/loading";
 
 export interface VarianteEpuisee {
   produitId: number;
@@ -15,7 +16,7 @@ export interface VarianteEpuisee {
 @Component({
   selector: 'app-produit-epuises',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Loading],
   templateUrl: './produit-epuises.html',
   styleUrl: './produit-epuises.css',
 })
@@ -25,14 +26,24 @@ export class ProduitEpuises implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   
   ruptures: VarianteEpuisee[] = [];
+  isLoading = true; // On commence à true
 
   ngOnInit(): void {
     this.produitsService.getProduits(0, 500).subscribe({
       next: (res) => {
         if (res && res.items) {
           this.ruptures = this.extraireRuptures(res.items);
-        }
+        } 
+        
+        // 1. On change l'état d'abord
+        this.isLoading = false;
+        
+        // 2. On informe Angular du changement APRES
         this.cdr.detectChanges(); 
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
