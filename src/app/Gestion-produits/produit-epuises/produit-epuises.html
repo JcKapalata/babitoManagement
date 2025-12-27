@@ -1,47 +1,50 @@
 <div class="container">
-  <header class="header">
+  <div class="header">
     <h2>📉 Variantes en Rupture de Stock</h2>
-  </header>
+  </div>
 
-  @if (ruptures.length > 0) {
-    <div class="table-wrapper">
-      <table class="rupture-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Produit</th>
-            <th>Taille</th>
-            <th>Couleur</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of ruptures; track $index) {
+  <div class="main">
+    @if (ruptures.length > 0) {
+      <div class="table-wrapper">
+        <table class="rupture-table">
+          <thead>
             <tr>
-              <td>
-                <span>{{ item.produitId}}</span>  
-              </td>
-              <td>
-                <div class="product-info">
-                  <img [src]="item.image" class="thumb">
-                  <strong>{{ item.nomProduit }}</strong>
-                </div>
-              </td>
-              <td><span class="badge-taille">{{ item.taille }}</span></td>
-              <td>{{ item.couleur }}</td>
-              <td>
-                <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
-                  Gérer
-                </button>
-              </td>
+              <th>Id</th>
+              <th>Produit</th>
+              <th>Taille</th>
+              <th>Couleur</th>
+              <th>Action</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  } @else {
-    <div class="empty-message">
-      <p>✅ Félicitations, toutes les tailles et couleurs sont actuellement en stock.</p>
-    </div>
-  }
+          </thead>
+          <tbody>
+            @for (item of ruptures; track $index) {
+              <tr>
+                <td>
+                  <span>{{ item.produitId}}</span>  
+                </td>
+                <td>
+                  <div class="product-info">
+                    <img [src]="item.image" class="thumb">
+                    <strong>{{ item.nomProduit }}</strong>
+                  </div>
+                </td>
+                <td><span class="badge-taille">{{ item.taille }}</span></td>
+                <td>{{ item.couleur }}</td>
+                <td>
+                  <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
+                    Gérer
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-message">
+        <p>✅ Félicitations, toutes les tailles et couleurs sont actuellement en stock.</p>
+      </div>
+    }
+  </div>
+
 </div>
