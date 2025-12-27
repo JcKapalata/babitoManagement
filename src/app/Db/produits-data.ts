@@ -64,7 +64,7 @@ export const PRODUITS: Produit[] = [
       'Taille unique': {
         prix: 2000,
         couleurs: [
-          { nom: 'rose', image: 'imagesProduits/bbi-acc-003/rose.jpeg', stock: 50 },
+          { nom: 'rose', image: 'imagesProduits/bbi-acc-003/rose.jpeg', stock: 0 },
           { nom: 'multicolore', image: 'imagesProduits/bbi-acc-003/multicolore.png', stock: 40 },
           { nom: 'bleu', image: 'imagesProduits/bbi-acc-003/bleu.jpeg', stock: 30 },
           { nom: 'blanc', image: 'imagesProduits/bbi-acc-003/blanc.jpeg', stock: 100 }
@@ -96,7 +96,7 @@ export const PRODUITS: Produit[] = [
       '40 cm': {
         prix: 19.99,
         couleurs: [
-          { nom: 'rose', image: 'imagesProduits/bbi-jou-004/rose.jpeg', stock: 8 }
+          { nom: 'rose', image: 'imagesProduits/bbi-jou-004/rose.jpeg', stock: 0 }
         ]
       }
     }

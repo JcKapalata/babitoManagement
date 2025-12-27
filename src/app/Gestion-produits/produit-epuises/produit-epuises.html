@@ -8,6 +8,7 @@
       <table class="rupture-table">
         <thead>
           <tr>
+            <th>Id</th>
             <th>Produit</th>
             <th>Taille</th>
             <th>Couleur</th>
@@ -18,6 +19,9 @@
           @for (item of ruptures; track $index) {
             <tr>
               <td>
+                <span>{{ item.produitId}}</span>  
+              </td>
+              <td>
                 <div class="product-info">
                   <img [src]="item.image" class="thumb">
                   <strong>{{ item.nomProduit }}</strong>
@@ -26,7 +30,7 @@
               <td><span class="badge-taille">{{ item.taille }}</span></td>
               <td>{{ item.couleur }}</td>
               <td>
-                <button class="btn-manage" [routerLink]="['/detail', item.produitId]">
+                <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
                   Gérer
                 </button>
               </td>

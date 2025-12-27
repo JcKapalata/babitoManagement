@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ProduitsService } from '../produits-service';
 import { Produit } from '../../Models/produit';
 
@@ -21,6 +21,7 @@ export interface VarianteEpuisee {
 })
 export class ProduitEpuises implements OnInit {
   private produitsService = inject(ProduitsService);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   
   ruptures: VarianteEpuisee[] = [];
@@ -57,4 +58,10 @@ export class ProduitEpuises implements OnInit {
     });
     return liste;
   }
+  
+  // goToDetailProduit
+  goToDetailProduit(id: number){
+    this.router.navigate(['produits/detail-produit/', id])
+  }
+
 }

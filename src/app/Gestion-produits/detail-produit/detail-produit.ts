@@ -1,9 +1,9 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProduitsService } from '../produits-service';
-import { produits } from './../produits';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-detail-produit',
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class DetailProduit implements OnInit {
   private produitsServices = inject(ProduitsService);
-  private router = inject(Router);
+  private location = inject(Location);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
 
@@ -39,6 +39,6 @@ export class DetailProduit implements OnInit {
   }
 
   goToListProduits() {
-    this.router.navigate(['produits/produits-disponibles'])
+    this.location.back()
   }
 }
