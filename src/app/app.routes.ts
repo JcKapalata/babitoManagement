@@ -3,5 +3,6 @@ import { produits } from './Gestion-produits/produits';
 
 export const routes: Routes = [
     ...produits,
-    { path: '', redirectTo: 'produits/produits-disponibles', pathMatch: 'full' }
+    { path: 'tableau-de-bord', loadComponent: () => import('./tableau-de-bord/tableau-de-bord').then(m => m.TableauDeBord) },
+    { path: '', redirectTo: 'tableau-de-bord', pathMatch: 'full' }
 ];

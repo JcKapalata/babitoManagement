@@ -26,4 +26,8 @@ export class Navbar implements OnInit {
   goToProduitsDesponibles() {
     this.router.navigate(['produits/produits-disponibles']);
   }
+
+  goToTableauBord(){
+    this.router.navigate(['tableau-de-bord']);
+  }
 }

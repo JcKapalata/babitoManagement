@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="title">
+    <h2>Tableau de Bord</h2>
+  </div>
+
+  <div class="main">
+    <div class="subtitle">
+      <p>Aperçu en temps réel de votre inventaire</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="icon">📦</div>
+        <div class="info">
+          <span class="label">Total Produits</span>
+          <span class="value">{{ stats.totalProduits | number }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="icon">🌍</div>
+        <div class="info">
+          <span class="label">Régions</span>
+          <span class="value">12</span>
+        </div>
+      </div>
+
+      <div class="stat-card orange">
+        <div class="icon">⚠️</div>
+        <div class="info">
+          <span class="label">Rupture de Stock</span>
+          <span class="value">24</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="activity-feed">
+        <h3>Dernières Activités</h3>
+        <ul>
+          <li>Mise à jour effectuée le {{ stats.derniereMaj | date:'short' }}</li>
+          <li>Nouveaux produits ajoutés dans la région 'Est'</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
