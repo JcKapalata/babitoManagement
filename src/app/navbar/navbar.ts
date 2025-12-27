@@ -23,10 +23,17 @@ export class Navbar implements OnInit {
     this.isShowedProduits = !this.isShowedProduits;
   }
 
+  // go to Produit information
   goToProduitsDesponibles() {
     this.router.navigate(['produits/produits-disponibles']);
   }
 
+  goToProduitsEpuises(){
+    this.router.navigate(['produits/produits-epuises'])
+  }
+
+
+  // go to dashBord
   goToTableauBord(){
     this.router.navigate(['tableau-de-bord']);
   }

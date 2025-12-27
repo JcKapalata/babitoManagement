@@ -1,0 +1,60 @@
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ProduitsService } from '../produits-service';
+import { Produit } from '../../Models/produit';
+
+export interface VarianteEpuisee {
+  produitId: number;
+  nomProduit: string;
+  taille: string;
+  couleur: string;
+  image: string;
+}
+
+@Component({
+  selector: 'app-produit-epuises',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './produit-epuises.html',
+  styleUrl: './produit-epuises.css',
+})
+export class ProduitEpuises implements OnInit {
+  private produitsService = inject(ProduitsService);
+  private cdr = inject(ChangeDetectorRef);
+  
+  ruptures: VarianteEpuisee[] = [];
+
+  ngOnInit(): void {
+    this.produitsService.getProduits(0, 500).subscribe({
+      next: (res) => {
+        if (res && res.items) {
+          this.ruptures = this.extraireRuptures(res.items);
+        }
+        this.cdr.detectChanges(); 
+      }
+    });
+  }
+
+  private extraireRuptures(produits: Produit[]): VarianteEpuisee[] {
+    const liste: VarianteEpuisee[] = [];
+    produits.forEach(p => {
+      if (p.taille) {
+        Object.entries(p.taille).forEach(([nomTaille, dataTaille]) => {
+          dataTaille.couleurs.forEach(c => {
+            if (c.stock === 0) {
+              liste.push({
+                produitId: p.id,
+                nomProduit: p.nom,
+                taille: nomTaille,
+                couleur: c.nom,
+                image: c.image
+              });
+            }
+          });
+        });
+      }
+    });
+    return liste;
+  }
+}
