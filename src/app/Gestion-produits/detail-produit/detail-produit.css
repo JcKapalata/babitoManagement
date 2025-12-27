@@ -132,8 +132,7 @@ h3{
 }
 
 .out-of-stock {
-  opacity: 0.5;
-  background: #ffebee;
+  background: var(--dorail-doux);
 }
 
 /* Buttons */

@@ -58,7 +58,7 @@ th, td {
 }
 
 .badge-taille {
-  background: #ffebee;
+  background: var(--dorail-doux);
   color: var(--warn-color);
   padding: 3px 8px;
   border-radius: 4px;
