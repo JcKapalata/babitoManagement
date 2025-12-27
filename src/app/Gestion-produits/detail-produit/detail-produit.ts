@@ -1,7 +1,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProduitsService } from '../produits-service';
 import { produits } from './../produits';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
 
@@ -15,6 +15,7 @@ export class DetailProduit implements OnInit {
   private produitsServices = inject(ProduitsService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
 
   produit: Produit | undefined;
 
@@ -24,10 +25,14 @@ export class DetailProduit implements OnInit {
       this.produitsServices.getProduitById(+ProduitId).subscribe({
         next: (produit) => {
           this.produit = produit;
-          console.table(this.produit);
+          
+          // SOLUTION : Force le rendu immédiat du HTML
+          this.cdr.detectChanges(); 
+          
+          console.log('Produit chargé et affichage forcé');
         },
         error: (error) => {
-          console.error('Erreur lors du chargement du produit:', error);
+          console.error('Erreur:', error);
         }
       });
     }
