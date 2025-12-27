@@ -19,6 +19,7 @@ export class ProduitsService {
   // Signal de rafraîchissement
   private refreshSignal$ = new BehaviorSubject<void>(undefined);
 
+  // Récupérer la liste des produits avec pagination
   getProduits(page: number = 0, size: number = 20): Observable<PaginatedProduits> {
     // Pour le debug, on va d'abord tester sans paramètres pour prouver que les données arrivent
     return this.refreshSignal$.pipe(
@@ -47,6 +48,18 @@ export class ProduitsService {
           catchError(err => this.handleError(err))
         );
       })
+    );
+  }
+
+  // Récupérer un produit par son ID
+  getProduitById(id: number): Observable<Produit> {
+    return this.http.get<Produit>(`${this.API_URL}/${id}`).pipe(
+      retry(1),
+      map(produit => {
+        // Conversion des dates
+        return this.parseDates([produit])[0];
+      }),
+      catchError(err => this.handleError(err))
     );
   }
 

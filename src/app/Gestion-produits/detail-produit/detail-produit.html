@@ -1,0 +1,59 @@
+<div class="container">
+@if (produit) {
+    <div class="product-header">
+        <div class="title-section">
+        <h1>{{ produit.nom }}</h1>
+        <span class="badge">{{ produit.categorie }}</span>
+        <span class="type-tag">{{ produit.type }}</span>
+        </div>
+        <div class="meta-info">
+        <p>Code: <strong>{{ produit.codeProduit }}</strong></p>
+        <p>Fournisseur: <strong>{{ produit.codeFournisseur }}</strong></p>
+        </div>
+    </div>
+
+  <div class="content-grid">
+    <section class="details-card">
+      <h3>Description</h3>
+      <p class="description">{{ produit.description }}</p>
+      
+      <div class="technical-specs">
+        <div class="spec-item"><span>Région:</span> {{ produit.region }}</div>
+        <div class="spec-item"><span>Classement:</span> {{ produit.classement }}</div>
+        <div class="spec-item"><span>Dernière modif:</span> {{ produit.dateModification | date:'dd/MM/yyyy' }}</div>
+      </div>
+    </section>
+
+    <section class="variants-section">
+      <h3>Tailles & Disponibilités</h3>
+      
+      @for (t of produit.taille | keyvalue; track t.key) {
+        <div class="size-card">
+          <div class="size-header">
+            <span class="size-name">Taille: {{ t.key }}</span>
+            <span class="price">{{ t.value.prix }} {{ produit.devise }}</span>
+          </div>
+
+          <div class="color-list">
+            @for (couleur of t.value.couleurs; track couleur.nom) {
+              <div class="color-item" [class.out-of-stock]="couleur.stock <= 0">
+                <img [src]="couleur.image" [alt]="couleur.nom" class="color-thumb">
+                <div class="color-info">
+                  <span class="color-name">{{ couleur.nom }}</span>
+                  <span class="stock-count">Stock: {{ couleur.stock }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+
+  <footer class="actions">
+    <button class="btn-back" routerLink="/stock">Retour au Stock</button>
+  </footer>
+} @else {
+  <div class="loading">Chargement du produit...</div>
+}
+</div>

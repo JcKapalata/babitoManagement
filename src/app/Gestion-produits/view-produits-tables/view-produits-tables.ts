@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { Produit } from '../../Models/produit';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'view-produits-tables',
@@ -12,6 +13,7 @@ import { Produit } from '../../Models/produit';
 })
 export class ViewProduitsTables {
   @Input() produits: Produit[] = [];
+  private router = inject(Router);
 
   // Liste des colonnes simplifiée : plus d'imbrication complexe
   displayedColumns: string[] = [
@@ -26,4 +28,11 @@ export class ViewProduitsTables {
     'dateAjout', 
     'dateModification'
   ];
+
+  onRowClick(row: Produit) {
+    if (row && row.id) {
+      // Redirige vers /detail/123 (selon votre configuration de route)
+      this.router.navigate(['produits/detail-produit/', row.id]);
+    }
+  }
 }
