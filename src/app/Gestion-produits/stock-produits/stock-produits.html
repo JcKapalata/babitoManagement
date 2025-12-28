@@ -4,44 +4,45 @@
     </div>
     
     <div class="main">
-         @if (dataSource) {
+        @if (dataSource) {
             <div class="table-container">
-            <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
-                <table class="custom-table">
-                <thead>
-                    <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Code</th>
-                    <th>Fournisseur</th>
-                    <th>Région</th>
-                    <th>Classement</th>
-                    <th>Catégorie</th>
-                    <th>Type</th>
-                    <th>Ajout</th>
-                    <th>Modif</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *cdkVirtualFor="let p of dataSource" (click)="onRowClick(p)" class="table-row">
-                    
-                    <td>{{ p ? p.id : '...' }}</td>
-                    <td class="bold">{{ p ? p.nom : 'Chargement...' }}</td>
-                    <td>{{ p ? p.codeProduit : '...' }}</td>
-                    <td>{{ p ? p.codeFournisseur : '...' }}</td>
-                    <td>{{ p ? p.region : '...' }}</td>
-                    <td>{{ p ? p.classement : '...' }}</td>
-                    <td>{{ p ? p.categorie : '...' }}</td>
-                    <td>{{ p ? p.type : '...' }}</td>
-                    <td>{{ p ? (p.dateAjout | date:'dd/MM/yyyy') : '...' }}</td>
-                    <td>{{ p ? (p.dateModification | date:'dd/MM/yyyy') : '...' }}</td>
-                    
-                    </tr>
-                </tbody>
+                <table class="custom-table header-fixed">
+                    <thead>
+                        <tr>
+                            <th class="col-id">ID</th>
+                            <th class="col-nom">Nom</th>
+                            <th class="col-code">Code</th>
+                            <th class="col-fourn">Fournisseur</th>
+                            <th class="col-region">Région</th>
+                            <th class="col-class">Classement</th>
+                            <th class="col-cat">Catégorie</th>
+                            <th class="col-type">Type</th>
+                            <th class="col-date">Ajout</th>
+                            <th class="col-date">Modif</th>
+                        </tr>
+                    </thead>
                 </table>
-            </cdk-virtual-scroll-viewport>
+
+                <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+                    <table class="custom-table">
+                        <tbody>
+                            <tr *cdkVirtualFor="let p of dataSource" (click)="onRowClick(p)" class="table-row">
+                                <td class="col-id">{{ p ? p.id : '...' }}</td>
+                                <td class="col-nom bold">{{ p ? p.nom : 'Chargement...' }}</td>
+                                <td class="col-code">{{ p ? p.codeProduit : '...' }}</td>
+                                <td class="col-fourn">{{ p ? p.codeFournisseur : '...' }}</td>
+                                <td class="col-region">{{ p ? p.region : '...' }}</td>
+                                <td class="col-class">{{ p ? p.classement : '...' }}</td>
+                                <td class="col-cat">{{ p ? p.categorie : '...' }}</td>
+                                <td class="col-type">{{ p ? p.type : '...' }}</td>
+                                <td class="col-date">{{ p ? (p.dateAjout | date:'dd/MM/yyyy') : '...' }}</td>
+                                <td class="col-date">{{ p ? (p.dateModification | date:'dd/MM/yyyy') : '...' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </cdk-virtual-scroll-viewport>
             </div>
-        }@else {
+        } @else {
             <app-loading></app-loading>
         }
     </div>

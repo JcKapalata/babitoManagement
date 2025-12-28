@@ -2,34 +2,31 @@
 .container {
   background-color: #fafafa;
   min-height: 100vh;
-  position: relative;
 }
 
 .title {
-  overflow: hidden;
   position: sticky;
   top: 0;
   height: 10vh;
-  margin-bottom: 10px;
   background: var(--primary-color) !important;
   width: 100%;
   display: flex;
   align-items: center;
+  z-index: 100; /* Passe au dessus du reste */
 }
 
-/* Titre stylisé */
 h2 {
   color: white;
   margin: 0 30px;
-  border-left: 5px solid white; /* Bleu Angular Material */
+  border-left: 5px solid white;
   padding-left: 15px;
 }
 
-.main{
+.main {
   margin: 10px 20px;
 }
 
-
+/* Conteneur de la table */
 .table-container {
   width: 100%;
   border: 1px solid #ddd;
@@ -37,41 +34,27 @@ h2 {
   overflow: hidden;
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-.viewport {
-  height: 85vh; /* Hauteur du scroll */
-  width: 100%;
-
-  /* Masquer la barre sur Firefox */
-  scrollbar-width: none; 
-  
-  /* Masquer la barre sur Internet Explorer et Edge */
-  -ms-overflow-style: none;
-}
-/* Masquer la barre sur Chrome, Safari et Opera (Webkit) */
-.viewport::-webkit-scrollbar {
-  display: none;
-}
-
+/* Tableaux (Header et Body) */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* Très important pour la performance */
+  table-layout: fixed; /* CRITIQUE pour l'alignement */
 }
 
-/* Style de l'entête collant */
-thead {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+/* Style spécifique pour le header fixe */
+.header-fixed {
   background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  z-index: 10;
 }
 
 th {
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 2px solid #dee2e6;
   color: #495057;
   font-size: 13px;
   text-transform: uppercase;
@@ -79,17 +62,29 @@ th {
   white-space: nowrap;
 }
 
+/* Viewport du Scroll */
+.viewport {
+  height: 75vh; /* Ajusté pour laisser de la place au titre et au header */
+  width: 100%;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
 /* Style des lignes */
 .table-row {
-  height: 50px; /* Doit être égal à itemSize */
+  height: 50px; /* Doit être strictement égal au itemSize du HTML */
   border-bottom: 1px solid #eee;
   transition: background 0.2s;
   cursor: pointer;
 }
 
-.table-row:hover td{
+.table-row:hover td {
   background-color: var(--primary-color);
-  color: white;
+  color: white !important;
 }
 
 td {
@@ -97,11 +92,23 @@ td {
   font-size: 14px;
   color: #333;
   overflow: hidden;
-  text-overflow: ellipsis; /* Coupe le texte trop long */
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .bold {
   font-weight: 500;
-  color: #000;
+  color: inherit; /* Utilise la couleur du parent (blanc au hover) */
 }
+
+/* --- DÉFINITION DES LARGEURS DES COLONNES --- */
+/* Tu peux ajuster ces valeurs selon tes besoins réels */
+.col-id      { width: 80px; }
+.col-nom     { width: 250px; }
+.col-code    { width: 150px; }
+.col-fourn   { width: 180px; }
+.col-region  { width: 130px; }
+.col-class   { width: 180px; }
+.col-cat     { width: 150px; }
+.col-type    { width: 120px; }
+.col-date    { width: 110px; }
