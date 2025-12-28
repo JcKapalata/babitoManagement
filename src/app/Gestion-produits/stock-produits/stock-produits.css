@@ -64,7 +64,7 @@ th {
 
 /* Viewport du Scroll */
 .viewport {
-  height: 75vh; /* Ajusté pour laisser de la place au titre et au header */
+  height: 75vh !important; /* Ajusté pour laisser de la place au titre et au header */
   width: 100%;
   scrollbar-width: none; 
   -ms-overflow-style: none;

@@ -26,7 +26,10 @@
                 <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
                     <table class="custom-table">
                         <tbody>
-                            <tr *cdkVirtualFor="let p of dataSource" (click)="onRowClick(p)" class="table-row">
+                            <tr *cdkVirtualFor="let p of (displayProducts$ | async); trackBy: trackByFn" 
+                                (click)="p ? onRowClick(p) : null" 
+                                class="table-row"
+                                >
                                 <td class="col-id">{{ p ? p.id : '...' }}</td>
                                 <td class="col-nom bold">{{ p ? p.nom : 'Chargement...' }}</td>
                                 <td class="col-code">{{ p ? p.codeProduit : '...' }}</td>

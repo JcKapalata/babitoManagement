@@ -20,10 +20,10 @@ export class ProductDataSource extends DataSource<any> {
     console.log(`[DataSource] 🚀 Initialisée (Mode Rupture: ${this.isRuptureMode})`);
   }
 
-  connect(collectionViewer: CollectionViewer): Observable<(any | undefined)[]> {
+  connect(collectionViewer?: CollectionViewer): Observable<(any | undefined)[]> {
     console.log('[DataSource] 🔗 Connectée au Viewport');
     this._subscription.add(
-      collectionViewer.viewChange.subscribe(range => {
+      collectionViewer?.viewChange.subscribe(range => {
         const startPage = Math.floor(range.start / this._pageSize);
         const endPage = Math.floor(range.end / this._pageSize);
         console.log(`[Scroll] 📜 Index ${range.start}-${range.end} | Pages: ${startPage} à ${endPage}`);
