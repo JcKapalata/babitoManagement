@@ -19,7 +19,7 @@ export class StockProduits implements OnInit {
   dataSource!: ProductDataSource;
 
   ngOnInit() {
-    this.dataSource = new ProductDataSource(this.produitsService);
+    this.dataSource = new ProductDataSource(this.produitsService, false);
   }
 
   onRowClick(row: Produit | undefined) {

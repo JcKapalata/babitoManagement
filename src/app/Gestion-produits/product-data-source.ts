@@ -3,30 +3,30 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ProduitsService } from './produits-service';
 
 export class ProductDataSource extends DataSource<any> {
-  private _pageSize = 50; // On réduit un peu pour plus de réactivité
-  private _totalItems = 100; // On commence petit
-
+  private _pageSize = 50;
+  private _totalItems = 100;
   private _cachedData = Array.from<any>({ length: this._totalItems });
   private _fetchedPages = new Set<number>();
   private _dataStream = new BehaviorSubject<(any | undefined)[]>(this._cachedData);
   private _subscription = new Subscription();
 
+  public initialized = false;
 
-
-  constructor(private productService: ProduitsService) {
+  constructor(
+    private productService: ProduitsService,
+    private isRuptureMode: boolean = false // 👈 Nouveau: Détermine si on filtre les ruptures
+  ) {
     super();
-    console.log('✅ DataSource Initialisée');
+    console.log(`[DataSource] 🚀 Initialisée (Mode Rupture: ${this.isRuptureMode})`);
   }
 
   connect(collectionViewer: CollectionViewer): Observable<(any | undefined)[]> {
-    console.log('🔗 DataSource connectée au Viewport');
-    
+    console.log('[DataSource] 🔗 Connectée au Viewport');
     this._subscription.add(
       collectionViewer.viewChange.subscribe(range => {
-        console.log(`scroll detecté : index ${range.start} à ${range.end}`);
-        
         const startPage = Math.floor(range.start / this._pageSize);
         const endPage = Math.floor(range.end / this._pageSize);
+        console.log(`[Scroll] 📜 Index ${range.start}-${range.end} | Pages: ${startPage} à ${endPage}`);
 
         for (let i = startPage; i <= endPage; i++) {
           this._fetchPage(i);
@@ -40,36 +40,73 @@ export class ProductDataSource extends DataSource<any> {
     if (this._fetchedPages.has(page)) return;
     this._fetchedPages.add(page);
 
-    console.log(`📡 Appel API pour la page : ${page}`);
+    console.log(`[API] 📡 Appel page ${page} (Mode Rupture: ${this.isRuptureMode})`);
 
     this.productService.getProduits(page, this._pageSize).subscribe({
       next: (response: any) => {
-        console.log(`📥 Réponse reçue pour page ${page}:`, response);
-        
-        const productsArray = response.items;
+        let itemsToInsert = response.items || [];
         const totalCount = response.total;
 
-        if (productsArray && productsArray.length > 0) {
-          const start = page * this._pageSize;
-
-          this._totalItems = totalCount;
-          if (this._cachedData.length !== this._totalItems) {
-             this._cachedData = Array.from({length: this._totalItems}).map((_, i) => this._cachedData[i]);
-          }
-
-          this._cachedData.splice(start, productsArray.length, ...productsArray);
-          
-          console.log(`Update : ${productsArray.length} produits insérés à l'index ${start}`);
-          this._dataStream.next([...this._cachedData]); // On envoie une copie pour forcer OnPush
-        } else {
-          console.warn(`⚠️ Page ${page} vide ou items manquants dans la réponse`);
+        // --- LOGIQUE RUPTURE ---
+        if (this.isRuptureMode) {
+          const countAvant = itemsToInsert.length;
+          itemsToInsert = this._extraireRuptures(itemsToInsert);
+          console.log(`[Logique] 🔍 Page ${page}: ${countAvant} produits transformés en ${itemsToInsert.length} lignes de rupture`);
         }
+
+        const start = page * this._pageSize;
+
+        // Mise à jour de la taille totale du scroll
+        if (this._totalItems !== totalCount) {
+          console.log(`[Cache] 📏 Redimensionnement du scroll : ${totalCount} items`);
+          this._totalItems = totalCount;
+          // On ajuste la taille du tableau sans perdre les données existantes
+          const newData = Array.from({ length: this._totalItems });
+          this._cachedData.forEach((item, index) => { if(index < newData.length) newData[index] = item; });
+          this._cachedData = newData;
+        }
+
+        // Insertion des données à la bonne place
+        this._cachedData.splice(start, itemsToInsert.length, ...itemsToInsert);
+        
+        console.log(`[Update] ✅ Page ${page} insérée à l'index ${start}`);
+        
+        this.initialized = true;
+        this._dataStream.next([...this._cachedData]);
       },
-      error: (err) => console.error(`❌ Erreur API sur page ${page}:`, err)
+      error: (err) => console.error(`[API] ❌ Erreur page ${page}:`, err)
     });
   }
 
+  // Cette fonction transforme un produit complexe en liste de lignes simples pour ton tableau
+  private _extraireRuptures(produits: any[]): any[] {
+    const listeRuptures: any[] = [];
+    
+    produits.forEach(p => {
+      if (p.taille) {
+        Object.entries(p.taille).forEach(([nomTaille, dataTaille]: [string, any]) => {
+          if (dataTaille.couleurs) {
+            dataTaille.couleurs.forEach((c: any) => {
+              if (c.stock === 0) {
+                listeRuptures.push({
+                  produitId: p.id,
+                  nomProduit: p.nom,
+                  taille: nomTaille,
+                  couleur: c.nom,
+                  image: c.image || 'assets/placeholder.png'
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    
+    return listeRuptures;
+  }
+
   disconnect(): void {
+    console.log('[DataSource] 🔌 Déconnexion');
     this._subscription.unsubscribe();
   }
 }

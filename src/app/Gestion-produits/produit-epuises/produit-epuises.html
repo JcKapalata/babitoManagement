@@ -1,55 +1,71 @@
 <div class="container">
   <div class="header">
-    <h2>Stock Epuises</h2>
+    <h2>Stock Épuisés</h2>
   </div>
 
   <div class="main">
-    @if (isLoading) {
-      <app-loading></app-loading>
-    }
-    @else {
-      @if (ruptures.length > 0) {
-        <div class="table-wrapper">
+    @if (dataSource ) {
+      
+      <div class="table-wrapper">
+        <cdk-virtual-scroll-viewport itemSize="70" class="viewport">
           <table class="rupture-table">
             <thead>
               <tr>
-                <th>Id</th>
+                <th style="width: 80px;">Id</th>
                 <th>Produit</th>
-                <th>Taille</th>
-                <th>Couleur</th>
-                <th>Action</th>
+                <th style="width: 100px;">Taille</th>
+                <th style="width: 150px;">Couleur</th>
+                <th style="width: 120px;">Action</th>
               </tr>
             </thead>
             <tbody>
-              @for (item of ruptures; track $index) {
-                <tr>
-                  <td>
-                    <span>{{ item.produitId}}</span>  
-                  </td>
-                  <td>
+              <tr *cdkVirtualFor="let item of dataSource" class="table-row">
+                
+                <td>
+                  <span>{{ item ? item.produitId : '...' }}</span>
+                </td>
+
+                <td>
+                  @if (item) {
                     <div class="product-info">
-                      <img [src]="item.image" class="thumb">
+                      <img [src]="item.image || 'assets/placeholder.png'" class="thumb" loading="lazy">
                       <strong>{{ item.nomProduit }}</strong>
                     </div>
-                  </td>
-                  <td><span class="badge-taille">{{ item.taille }}</span></td>
-                  <td>{{ item.couleur }}</td>
-                  <td>
+                  } @else {
+                    <div class="skeleton-text">Chargement...</div>
+                  }
+                </td>
+
+                <td>
+                  @if (item) {
+                    <span class="badge-taille">{{ item.taille }}</span>
+                  } @else {
+                    <span>...</span>
+                  }
+                </td>
+
+                <td>
+                  {{ item ? item.couleur : '...' }}
+                </td>
+
+                <td>
+                  @if (item) {
                     <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
                       Gérer
                     </button>
-                  </td>
-                </tr>
-              }
+                  }
+                </td>
+
+              </tr>
             </tbody>
           </table>
-        </div>
-      } @else {
-        <div class="empty-message">
-          <p>✅ Félicitations, toutes les tailles et couleurs sont actuellement en stock.</p>
-        </div>
-      }
+        </cdk-virtual-scroll-viewport>
+      </div>
+
+    } @else {
+      <div class="loading-container">
+        <app-loading></app-loading>
+      </div>
     }
   </div>
-
 </div>
