@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MyProductDataSource } from '../product-data-source';
+import { ProductDataSource } from '../product-data-source';
 import { ProduitsService } from '../produits-service';
 
 @Component({
@@ -11,10 +11,10 @@ import { ProduitsService } from '../produits-service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProduitFaibles {
-  dataSource: MyProductDataSource;
+  dataSource: ProductDataSource;
 
   constructor(private productService: ProduitsService) {
     // On passe le service à la DataSource
-    this.dataSource = new MyProductDataSource(this.productService);
+    this.dataSource = new ProductDataSource(this.productService);
   }
 }

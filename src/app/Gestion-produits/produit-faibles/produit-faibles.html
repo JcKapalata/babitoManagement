@@ -1,4 +1,4 @@
-<cdk-virtual-scroll-viewport itemSize="100" class="viewport">
+<cdk-virtual-scroll-viewport itemSize="200" class="viewport">
   <div *cdkVirtualFor="let product of dataSource" class="product-card">
     
     @if (!product) {
@@ -9,7 +9,9 @@
 
     @if (product) {
       <div>
-        <h3>{{ product.nom }}</h3> <p>{{ product.prix }} {{ product.devise }}</p> </div>
+        <h3>{{ product.id }} {{ product.nom }}</h3> 
+        <p>{{ product.prix }} {{ product.devise }}</p> 
+      </div>
     }
 
   </div>

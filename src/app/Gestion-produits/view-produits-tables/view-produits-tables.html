@@ -1,57 +1,36 @@
-<div class="table-container mat-elevation-z8">
-  <table mat-table [dataSource]="produits">
-
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef> ID </th>
-      <td mat-cell *matCellDef="let p"> {{p.id}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="nom">
-      <th mat-header-cell *matHeaderCellDef> Nom </th>
-      <td mat-cell *matCellDef="let p"> {{p.nom}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="codeProduit">
-      <th mat-header-cell *matHeaderCellDef> Code </th>
-      <td mat-cell *matCellDef="let p"> {{p.codeProduit}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="codeFournisseur">
-      <th mat-header-cell *matHeaderCellDef> Fournisseur </th>
-      <td mat-cell *matCellDef="let p"> {{p.codeFournisseur}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="region">
-      <th mat-header-cell *matHeaderCellDef> Région </th>
-      <td mat-cell *matCellDef="let p"> {{p.region}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="classement">
-      <th mat-header-cell *matHeaderCellDef> Classement </th>
-      <td mat-cell *matCellDef="let p"> {{p.classement}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="categorie">
-      <th mat-header-cell *matHeaderCellDef> Catégorie </th>
-      <td mat-cell *matCellDef="let p"> {{p.categorie}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef> Type </th>
-      <td mat-cell *matCellDef="let p"> {{p.type}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="dateAjout">
-      <th mat-header-cell *matHeaderCellDef> Ajout </th>
-      <td mat-cell *matCellDef="let p"> {{p.dateAjout | date:'dd/MM/yyyy'}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="dateModification">
-      <th mat-header-cell *matHeaderCellDef> Modif </th>
-      <td mat-cell *matCellDef="let p"> {{p.dateModification | date:'dd/MM/yyyy'}} </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></tr>
-  </table>
+<div class="table-container">
+  <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Code</th>
+          <th>Fournisseur</th>
+          <th>Région</th>
+          <th>Classement</th>
+          <th>Catégorie</th>
+          <th>Type</th>
+          <th>Ajout</th>
+          <th>Modif</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *cdkVirtualFor="let p of dataSource" (click)="onRowClick(p)" class="table-row">
+          
+          <td>{{ p ? p.id : '...' }}</td>
+          <td class="bold">{{ p ? p.nom : 'Chargement...' }}</td>
+          <td>{{ p ? p.codeProduit : '...' }}</td>
+          <td>{{ p ? p.codeFournisseur : '...' }}</td>
+          <td>{{ p ? p.region : '...' }}</td>
+          <td>{{ p ? p.classement : '...' }}</td>
+          <td>{{ p ? p.categorie : '...' }}</td>
+          <td>{{ p ? p.type : '...' }}</td>
+          <td>{{ p ? (p.dateAjout | date:'dd/MM/yyyy') : '...' }}</td>
+          <td>{{ p ? (p.dateModification | date:'dd/MM/yyyy') : '...' }}</td>
+          
+        </tr>
+      </tbody>
+    </table>
+  </cdk-virtual-scroll-viewport>
 </div>

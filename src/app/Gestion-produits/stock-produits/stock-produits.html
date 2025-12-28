@@ -4,10 +4,8 @@
     </div>
     
     <div class="main">
-         @if (produits$ | async; as listeProduits) {
-            <view-produits-tables 
-                [produits]="listeProduits">
-            </view-produits-tables>
+         @if (dataSource) {
+        <view-produits-tables [dataSource]="dataSource"></view-produits-tables>
         }@else {
             <app-loading></app-loading>
         }

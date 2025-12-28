@@ -2,7 +2,7 @@ import { DataSource, CollectionViewer } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ProduitsService } from './produits-service';
 
-export class MyProductDataSource extends DataSource<any> {
+export class ProductDataSource extends DataSource<any> {
   private _pageSize = 50; // On réduit un peu pour plus de réactivité
   private _totalItems = 100; // On commence petit
 
@@ -67,18 +67,6 @@ export class MyProductDataSource extends DataSource<any> {
       },
       error: (err) => console.error(`❌ Erreur API sur page ${page}:`, err)
     });
-  }
-
-  private _evictFarPages(currentPage: number) {
-    for (const page of this._fetchedPages) {
-      if (Math.abs(page - currentPage) > 5) {
-        const start = page * this._pageSize;
-        // Remplace les objets par undefined pour que le Garbage Collector libère la RAM
-        this._cachedData.fill(undefined, start, start + this._pageSize);
-        this._fetchedPages.delete(page);
-        console.log(`Page ${page} évincée pour libérer la mémoire.`);
-      }
-    }
   }
 
   disconnect(): void {

@@ -8,7 +8,7 @@
 
 /* On s'assure que la carte fait bien 100px comme itemSize */
 .product-card {
-  height: 100px; 
+  height: 200px; 
   box-sizing: border-box;
   border-bottom: 1px solid #eee;
   padding: 10px;
