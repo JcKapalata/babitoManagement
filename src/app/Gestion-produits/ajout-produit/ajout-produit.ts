@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProduitsService } from '../produits-service';
-import { Router } from '@angular/router';
+import { Produit } from '../../Models/produit';
 
 @Component({
   selector: 'app-ajout-produit',
@@ -13,61 +12,124 @@ import { Router } from '@angular/router';
 })
 export class AjoutProduit {
   private fb = inject(FormBuilder);
-  private produitsService = inject(ProduitsService);
-  private router = inject(Router);
 
+  // Initialisation du formulaire avec tous les champs de ton interface
   productForm: FormGroup = this.fb.group({
-    nom: ['', Validators.required],
+    codeFournisseur: ['', Validators.required],
     codeProduit: ['', Validators.required],
+    nom: ['', Validators.required],
+    devise: ['USD', Validators.required],
+    region: ['Goma', Validators.required],
+    classement: ['', Validators.required],
     categorie: ['', Validators.required],
-    description: [''],
-    tailles: this.fb.array([]) // Liste dynamique de tailles
+    type: ['', Validators.required],
+    description: ['', Validators.maxLength(500)],
+    // FormArray temporaire pour la saisie utilisateur
+    taillesArray: this.fb.array([]) 
   });
 
-  // Accès facile aux tailles
-  get tailles() {
-    return this.productForm.get('tailles') as FormArray;
+  // Getter pour accéder facilement au tableau des tailles dans le HTML
+  get taillesArray(): FormArray {
+    return this.productForm.get('taillesArray') as FormArray;
   }
 
-  // Ajouter une nouvelle taille
-  ajouterTaille() {
+  // Ajouter une nouvelle taille (ex: "6-9 mois")
+  ajouterTaille(): void {
     const tailleGroup = this.fb.group({
-      nomTaille: ['', Validators.required],
-      prix: [0, [Validators.required, Validators.min(0.1)]],
-      couleurs: this.fb.array([this.creerCouleur()]) // Au moins une couleur par taille
+      nomTaille: ['', Validators.required], // La clé de l'objet (ex: '6-9 mois')
+      prix: [0, [Validators.required, Validators.min(0.01)]],
+      couleurs: this.fb.array([this.creerCouleur()]) // Commence avec une couleur par défaut
     });
-    this.tailles.push(tailleGroup);
+    this.taillesArray.push(tailleGroup);
   }
 
+  // Créer le groupe de champs pour une couleur
   creerCouleur(): FormGroup {
     return this.fb.group({
       nom: ['', Validators.required],
-      stock: [0, [Validators.required, Validators.min(0)]],
-      image: [null] // Contiendra le fichier ou le chemin
+      image: ['', Validators.required], // Contiendra le Base64 pour la preview
+      stock: [0, [Validators.required, Validators.min(0)]]
     });
   }
 
-  getCouleurs(indexTaille: number) {
-    return this.tailles.at(indexTaille).get('couleurs') as FormArray;
+  // Getter pour accéder aux couleurs d'une taille spécifique
+  getCouleurs(indexTaille: number): FormArray {
+    return this.taillesArray.at(indexTaille).get('couleurs') as FormArray;
   }
 
-  ajouterCouleur(indexTaille: number) {
+  // Ajouter une couleur à une taille (Appelé par le bouton (click) dans le HTML)
+  ajouterCouleur(indexTaille: number): void {
     this.getCouleurs(indexTaille).push(this.creerCouleur());
   }
 
-  supprimerTaille(index: number) {
-    this.tailles.removeAt(index);
+  // Supprimer une taille
+  supprimerTaille(index: number): void {
+    this.taillesArray.removeAt(index);
   }
 
-  supprimerCouleur(indexTaille: number, indexCouleur: number) {
-    this.getCouleurs(indexTaille).removeAt(indexCouleur);
+  // Supprimer une couleur spécifique
+  supprimerCouleur(indexTaille: number, indexCouleur: number): void {
+    const couleurs = this.getCouleurs(indexTaille);
+    if (couleurs.length > 1) {
+      couleurs.removeAt(indexCouleur);
+    }
   }
 
-  onSubmit() {
+  // Gestion de la sélection d'image et conversion en Base64
+  onFileSelected(event: any, indexTaille: number, indexCouleur: number): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const couleurForm = this.getCouleurs(indexTaille).at(indexCouleur);
+        couleurForm.patchValue({ image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Soumission et transformation des données
+  onSubmit(): void {
     if (this.productForm.valid) {
-      console.log('Données à envoyer :', this.productForm.value);
-      // Appel au service pour sauvegarder
-      // this.produitsService.create(this.productForm.value).subscribe(...)
+      const formValue = this.productForm.value;
+
+      // 1. Transformation du tableau de tailles en Objet Indexé (Interface Produit)
+      const tailleMapping: { [key: string]: any } = {};
+      
+      formValue.taillesArray.forEach((t: any) => {
+        tailleMapping[t.nomTaille] = {
+          prix: t.prix,
+          couleurs: t.couleurs.map((c: any) => ({
+            nom: c.nom,
+            image: c.image,
+            stock: c.stock
+          }))
+        };
+      });
+
+      // 2. Construction de l'objet final respectant ton interface
+      const nouveauProduit: Partial<Produit> = {
+        codeFournisseur: formValue.codeFournisseur,
+        codeProduit: formValue.codeProduit,
+        nom: formValue.nom,
+        devise: formValue.devise,
+        region: formValue.region,
+        classement: formValue.classement,
+        categorie: formValue.categorie,
+        type: formValue.type,
+        description: formValue.description,
+        dateAjout: new Date(),
+        dateModification: new Date(),
+        taille: tailleMapping
+      };
+
+      console.log('Objet Produit prêt à être envoyé :', nouveauProduit);
+      
+      // Ici, tu appelles ton service :
+      // this.produitsService.postProduit(nouveauProduit).subscribe(...)
+    } else {
+      // Marquer tous les champs comme touchés pour afficher les erreurs
+      this.productForm.markAllAsTouched();
     }
   }
 }
