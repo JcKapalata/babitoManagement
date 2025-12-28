@@ -1,18 +1,72 @@
-<cdk-virtual-scroll-viewport itemSize="200" class="viewport">
-  <div *cdkVirtualFor="let product of dataSource" class="product-card">
-    
-    @if (!product) {
-      <div class="loading-placeholder">
-        Chargement...
+<div class="container">
+  <div class="header">
+    <div class="header-content">
+      <h2>Stock Faible</h2>
+      
+      <div class="filter-zone">
+        <label>Alerte si stock ≤ </label>
+        <input type="number" 
+               [(ngModel)]="seuilLimite" 
+               (ngModelChange)="chargerProduitsFaibles()" 
+               min="1" 
+               class="input-limit">
       </div>
-    }
-
-    @if (product) {
-      <div>
-        <h3>{{ product.id }} {{ product.nom }}</h3> 
-        <p>{{ product.prix }} {{ product.devise }}</p> 
-      </div>
-    }
-
+    </div>
   </div>
-</cdk-virtual-scroll-viewport>
+
+  <div class="main">
+    @if (faibles$ | async; as variants) {
+      <div class="table-wrapper">
+        
+        <table class="rupture-table header-only">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th class="col-produit">Produit</th>
+              <th class="col-taille">Taille</th>
+              <th class="col-couleur">Couleur</th>
+              <th class="col-stock">Stock Actuel</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+        </table>
+
+        <cdk-virtual-scroll-viewport itemSize="60" class="viewport">
+          <table class="rupture-table">
+            <tbody>
+              @for (item of variants; track trackByFn($index, item)) {
+                <tr class="table-row">
+                  <td class="col-id">{{ item.produitId }}</td>
+                  <td class="col-produit">
+                    <div class="product-info">
+                      <img [src]="item.image || 'assets/placeholder.png'" class="thumb">
+                      <strong>{{ item.nom }}</strong>
+                    </div>
+                  </td>
+                  <td class="col-taille">
+                    <span class="badge-taille">{{ item.taille }}</span>
+                  </td>
+                  <td class="col-couleur">{{ item.couleur }}</td>
+                  <td class="col-stock">
+                    <span class="stock-warning">{{ item.stock }} restant(s)</span>
+                  </td>
+                  <td class="col-action">
+                    <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
+                      Réappro.
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr class="empty-row">
+                  <td colspan="6" class="p-4 text-center">Aucun produit sous la limite de {{seuilLimite}}.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    } @else {
+      <app-loading></app-loading>
+    }
+  </div>
+</div>
