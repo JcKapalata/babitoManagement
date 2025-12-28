@@ -4,7 +4,7 @@
   </div>
 
   <div class="main">
-    @if (dataSource) {
+    @if (epuises$ | async; as produits) {
       <div class="table-wrapper">
         
         <table class="rupture-table header-only">
@@ -22,42 +22,38 @@
         <cdk-virtual-scroll-viewport itemSize="60" class="viewport">
           <table class="rupture-table">
             <tbody>
-              <tr *cdkVirtualFor="let item of dataSource; trackBy: trackByFn" class="table-row">
-                <td class="col-id">
-                  <span>{{ item ? item.produitId : '...' }}</span>
-                </td>
+              @for (item of produits; track trackByFn($index, item)) {
+                <tr class="table-row">
+                  <td class="col-id">
+                    <span>{{ item.id }}</span>
+                  </td>
 
-                <td class="col-produit">
-                  @if (item) {
+                  <td class="col-produit">
                     <div class="product-info">
-                      <img [src]="item.image" class="thumb" loading="lazy">
-                      <strong>{{ item.nomProduit }}</strong>
+                      <img [src]="item.image || 'assets/placeholder.png'" class="thumb" loading="lazy">
+                      <strong>{{ item.nom }}</strong>
                     </div>
-                  } @else {
-                    <div class="skeleton-text">Chargement...</div>
-                  }
-                </td>
+                  </td>
 
-                <td class="col-taille">
-                  @if (item) {
-                    <span class="badge-taille">{{ item.taille }}</span>
-                  } @else {
-                    <span>...</span>
-                  }
-                </td>
+                  <td class="col-taille">
+                    <span class="badge-taille">Épuisé</span>
+                  </td>
 
-                <td class="col-couleur">
-                  {{ item ? item.couleur : '...' }}
-                </td>
+                  <td class="col-couleur">
+                    <span class="text-muted">Toutes couleurs</span>
+                  </td>
 
-                <td class="col-action">
-                  @if (item) {
-                    <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
+                  <td class="col-action">
+                    <button class="btn-manage" (click)="goToDetailProduit(item.id)">
                       Gérer
                     </button>
-                  }
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              } @empty {
+                <tr class="empty-row">
+                  <td colspan="5">Aucun produit en rupture de stock.</td>
+                </tr>
+              }
             </tbody>
           </table>
         </cdk-virtual-scroll-viewport>
