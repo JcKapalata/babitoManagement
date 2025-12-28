@@ -48,7 +48,6 @@ export class ProduitEpuises implements OnInit, OnDestroy {
                       image: c.image, 
                       taille: tailleNom,
                       couleur: c.nom,
-                      stock: c.stock
                     });
                   }
                 });
