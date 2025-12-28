@@ -22,6 +22,7 @@
           <thead>
             <tr>
               <th class="col-id">ID</th>
+              <th class="col-id">Code Produit</th>
               <th class="col-produit">Produit</th>
               <th class="col-taille">Taille</th>
               <th class="col-couleur">Couleur</th>
@@ -37,6 +38,7 @@
               @for (item of variants; track trackByFn($index, item)) {
                 <tr class="table-row">
                   <td class="col-id">{{ item.produitId }}</td>
+                  <td class="col-id">{{ item.codeProduit }}</td>
                   <td class="col-produit">
                     <div class="product-info">
                       <img [src]="item.image || 'assets/placeholder.png'" class="thumb">

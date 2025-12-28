@@ -55,7 +55,7 @@
 }
 
 .input-limit:focus {
-  border-color: var(--warn-color, #e67e22);
+  border-color: var(--warning-orange);
   box-shadow: 0 0 8px rgba(230, 126, 34, 0.5);
 }
 
@@ -80,7 +80,7 @@
 }
 
 /* --- LARGEURS DES COLONNES --- */
-.col-id      { width: 80px; }
+.col-id      { width: 100px; }
 .col-taille  { width: 100px; }
 .col-couleur { width: 120px; }
 .col-stock   { width: 150px; } /* Colonne spécifique au stock faible */

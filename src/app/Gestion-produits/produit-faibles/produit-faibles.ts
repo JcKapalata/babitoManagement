@@ -47,6 +47,7 @@ export class ProduitFaibles implements OnInit, OnDestroy {
                   allVariants.push({
                     idUnique: `${p.id}-${tailleNom}-${c.nom}`,
                     produitId: p.id,
+                    codeProduit: p.codeProduit,
                     nom: p.nom,
                     image: c.image,
                     taille: tailleNom,

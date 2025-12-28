@@ -44,6 +44,7 @@ export class ProduitEpuises implements OnInit, OnDestroy {
                     allVariants.push({
                       idUnique: `${p.id}-${tailleNom}-${c.nom}`, // Pour le trackBy
                       produitId: p.id,
+                      codeProduit: p.codeProduit,
                       nom: p.nom,
                       image: c.image, 
                       taille: tailleNom,
