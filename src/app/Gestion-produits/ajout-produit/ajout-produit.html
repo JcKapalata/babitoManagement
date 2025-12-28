@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="header">
+    <h2>Nouveau Produit</h2>
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="main">
+    <div class="card">
+      <h3>Informations Générales</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nom du Produit</label>
+          <input formControlName="nom" placeholder="Ex: Body bébé coton">
+        </div>
+        <div class="field">
+          <label>Code Produit</label>
+          <input formControlName="codeProduit" placeholder="Ex: BBI-VET-001">
+        </div>
+        <div class="field">
+          <label>Catégorie</label>
+          <input formControlName="categorie" placeholder="Ex: Vêtements">
+        </div>
+      </div>
+    </div>
+
+    <div formArrayName="tailles" class="variants-section">
+      <div class="section-header">
+        <h3>Tailles & Stocks</h3>
+        <button type="button" class="btn-add" (click)="ajouterTaille()">+ Ajouter une Taille</button>
+      </div>
+
+      <div *ngFor="let t of tailles.controls; let i = index" [formGroupName]="i" class="taille-card">
+        <div class="taille-header">
+          <input formControlName="nomTaille" placeholder="Taille (ex: 6-9 mois)">
+          <input type="number" formControlName="prix" placeholder="Prix">
+          <button type="button" class="btn-del" (click)="supprimerTaille(i)">Supprimer Taille</button>
+        </div>
+
+        <div formArrayName="couleurs" class="couleurs-grid">
+          <div *ngFor="let c of getCouleurs(i).controls; let j = index" [formGroupName]="j" class="couleur-item">
+            <label>Couleur</label>
+            <input formControlName="nom" placeholder="Couleur">
+            <label>Stock initial</label>
+            <input type="number" formControlName="stock">
+            <button type="button" class="btn-icon-del" (click)="supprimerCouleur(i, j)">×</button>
+          </div>
+          <button type="button" class="btn-add-mini" (click)="ajouterCouleur(i)">+ Couleur</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn-save" [disabled]="productForm.invalid">Enregistrer le Produit</button>
+    </div>
+  </form>
+</div>

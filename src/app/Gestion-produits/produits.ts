@@ -6,9 +6,14 @@ export const produits: Routes = [
         loadComponent: () => import('./detail-produit/detail-produit').then(m => m.DetailProduit) 
     },
     {
+        path: 'produits/ajout-produit', 
+        loadComponent: () => import('./ajout-produit/ajout-produit').then(m => m.AjoutProduit)
+    },
+    {
         path: 'produits/produits-epuises',
         loadComponent: () => import('./produit-epuises/produit-epuises').then(m => m.ProduitEpuises)
-    },{
+    },
+    {
         path: 'produits/produits-faibles',
         loadComponent: () => import('./produit-faibles/produit-faibles').then(m => m.ProduitFaibles)
     },
