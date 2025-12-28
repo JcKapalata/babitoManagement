@@ -7,8 +7,18 @@
 }
 
 .viewport {
-  height: 80vh; /* Hauteur du scroll */
+  height: 85vh; /* Hauteur du scroll */
   width: 100%;
+
+  /* Masquer la barre sur Firefox */
+  scrollbar-width: none; 
+  
+  /* Masquer la barre sur Internet Explorer et Edge */
+  -ms-overflow-style: none;
+}
+/* Masquer la barre sur Chrome, Safari et Opera (Webkit) */
+.viewport::-webkit-scrollbar {
+  display: none;
 }
 
 .custom-table {
