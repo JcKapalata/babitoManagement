@@ -63,6 +63,21 @@ export class ProduitsService {
     );
   }
 
+  /**
+   * Créer un nouveau produit
+   * @param produit L'objet produit formaté selon l'interface Produit
+   */
+  postProduit(produit: Partial<Produit>): Observable<Produit> {
+    return this.http.post<Produit>(this.API_URL, produit).pipe(
+      tap((res) => {
+        // On déclenche le rafraîchissement des autres composants abonnés
+        console.log(res)
+        this.forceRefresh();
+      }),
+      catchError(err => this.handleError(err))
+    );
+  }
+
   private parseDates(produits: any[]): Produit[] {
     return produits.map(p => ({
       ...p,

@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Produit } from '../../Models/produit';
+import { ProduitsService } from '../produits-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ajout-produit',
@@ -11,7 +13,10 @@ import { Produit } from '../../Models/produit';
   styleUrl: './ajout-produit.css',
 })
 export class AjoutProduit {
+  private readonly produitsService = inject(ProduitsService);
+  private readonly router = inject(Router);
   private fb = inject(FormBuilder);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   // Initialisation du formulaire avec tous les champs de ton interface
   productForm: FormGroup = this.fb.group({
@@ -83,6 +88,9 @@ export class AjoutProduit {
       reader.onload = () => {
         const couleurForm = this.getCouleurs(indexTaille).at(indexCouleur);
         couleurForm.patchValue({ image: reader.result });
+        
+        // Indique à Angular que l'image a changé pour éviter l'erreur NG0100
+        this.cdr.detectChanges(); 
       };
       reader.readAsDataURL(file);
     }
@@ -93,7 +101,7 @@ export class AjoutProduit {
     if (this.productForm.valid) {
       const formValue = this.productForm.value;
 
-      // 1. Transformation du tableau de tailles en Objet Indexé (Interface Produit)
+      // 1. Transformation du FormArray vers l'index signature { [key: string]: ... }
       const tailleMapping: { [key: string]: any } = {};
       
       formValue.taillesArray.forEach((t: any) => {
@@ -107,7 +115,7 @@ export class AjoutProduit {
         };
       });
 
-      // 2. Construction de l'objet final respectant ton interface
+      // 2. Construction de l'objet final (Partial<Produit>)
       const nouveauProduit: Partial<Produit> = {
         codeFournisseur: formValue.codeFournisseur,
         codeProduit: formValue.codeProduit,
@@ -123,13 +131,24 @@ export class AjoutProduit {
         taille: tailleMapping
       };
 
-      console.log('Objet Produit prêt à être envoyé :', nouveauProduit);
-      
-      // Ici, tu appelles ton service :
-      // this.produitsService.postProduit(nouveauProduit).subscribe(...)
+      // 3. Appel au service avec gestion de la réponse
+      this.produitsService.postProduit(nouveauProduit).subscribe({
+        next: (res) => {
+          console.log('Produit ajouté avec succès !', res);
+          alert('Le produit "' + formValue.nom + '" a été enregistré avec succès.');
+          this.router.navigate(['produits/produits-disponibles']); 
+        },
+        error: (err) => {
+          console.error('Erreur API:', err);
+          alert('Erreur lors de l\'enregistrement : ' + err.message);
+        }
+      });
+
     } else {
-      // Marquer tous les champs comme touchés pour afficher les erreurs
+      // Affichage des erreurs si le formulaire est invalide
       this.productForm.markAllAsTouched();
+      alert('Veuillez remplir tous les champs obligatoires correctement.');
     }
   }
+
 }
