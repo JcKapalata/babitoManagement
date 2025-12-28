@@ -75,9 +75,9 @@ var PlatformModule = class _PlatformModule {
 })();
 
 export {
+  normalizePassiveListenerOptions,
   _getShadowRoot,
   _getFocusedElementPierceShadowDom,
-  _getEventTarget,
-  normalizePassiveListenerOptions
+  _getEventTarget
 };
-//# sourceMappingURL=chunk-XOW2YJVX.js.map
+//# sourceMappingURL=chunk-YZBMEIOX.js.map

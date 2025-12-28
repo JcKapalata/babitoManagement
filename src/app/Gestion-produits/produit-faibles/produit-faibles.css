@@ -1,0 +1,15 @@
+/* On utilise .viewport pour correspondre au HTML */
+.viewport {
+  height: 80vh; 
+  width: 100%;
+  border: 2px solid #3498db; /* Bleu pour bien voir le cadre */
+  display: block;
+}
+
+/* On s'assure que la carte fait bien 100px comme itemSize */
+.product-card {
+  height: 100px; 
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+}

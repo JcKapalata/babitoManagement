@@ -8,6 +8,9 @@ export const produits: Routes = [
     {
         path: 'produits/produits-epuises',
         loadComponent: () => import('./produit-epuises/produit-epuises').then(m => m.ProduitEpuises)
+    },{
+        path: 'produits/produits-faibles',
+        loadComponent: () => import('./produit-faibles/produit-faibles').then(m => m.ProduitFaibles)
     },
     { 
         path: 'produits/produits-disponibles', 

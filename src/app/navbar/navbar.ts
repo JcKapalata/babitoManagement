@@ -32,6 +32,10 @@ export class Navbar implements OnInit {
     this.router.navigate(['produits/produits-epuises'])
   }
 
+  goToProduitsFaibles(){
+    this.router.navigate(['produits/produits-faibles'])
+  }
+
 
   // go to dashBord
   goToTableauBord(){

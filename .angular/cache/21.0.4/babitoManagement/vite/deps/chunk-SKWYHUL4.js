@@ -1,10 +1,4 @@
 import {
-  ArrayDataSource,
-  _RecycleViewRepeaterStrategy,
-  _VIEW_REPEATER_STRATEGY,
-  isDataSource
-} from "./chunk-NMV6MEOQ.js";
-import {
   coerceElement,
   coerceNumberProperty
 } from "./chunk-KWY6XFCV.js";
@@ -15,9 +9,15 @@ import {
   supportsScrollBehavior
 } from "./chunk-I6LLMVVY.js";
 import {
+  ArrayDataSource,
+  _RecycleViewRepeaterStrategy,
+  _VIEW_REPEATER_STRATEGY,
+  isDataSource
+} from "./chunk-NMV6MEOQ.js";
+import {
   BidiModule,
   Directionality
-} from "./chunk-VJTSMHA4.js";
+} from "./chunk-L64ZHEPW.js";
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -1336,4 +1336,4 @@ export {
   CdkScrollableModule,
   ScrollingModule
 };
-//# sourceMappingURL=chunk-AFS5W3VW.js.map
+//# sourceMappingURL=chunk-SKWYHUL4.js.map

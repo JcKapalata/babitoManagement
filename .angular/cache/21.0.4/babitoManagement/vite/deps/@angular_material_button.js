@@ -1,7 +1,4 @@
 import {
-  coerceArray
-} from "./chunk-5YB4L7YC.js";
-import {
   _CdkPrivateStyleLoader,
   _VisuallyHiddenLoader
 } from "./chunk-PI3ZXV2I.js";
@@ -10,7 +7,10 @@ import {
   _getFocusedElementPierceShadowDom,
   _getShadowRoot,
   normalizePassiveListenerOptions
-} from "./chunk-XOW2YJVX.js";
+} from "./chunk-YZBMEIOX.js";
+import {
+  coerceArray
+} from "./chunk-5YB4L7YC.js";
 import {
   coerceElement,
   coerceNumberProperty
