@@ -122,11 +122,16 @@ th {
 .table-row {
   height: 65px; 
   border-bottom: 1px solid #f0f0f0;
-  transition: background 0.2s;
+  transition: background 0.3s;
 }
 
 .table-row:hover {
-  background-color: #fcfcfc;
+  background-color: var(--primary-color);
+  .btn-manage{
+    background: white;
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
+  }
 }
 
 /* --- CELLULES ET CONTENU --- */
@@ -151,7 +156,7 @@ td {
 
 .badge-taille {
   background: #e3f2fd;
-  color: #1976d2;
+  color: var(--accent-color);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
@@ -160,8 +165,8 @@ td {
 
 /* Style spécifique pour l'alerte de stock */
 .stock-warning {
-  color: #c62828;
-  background: #ffebee;
+  color: white;
+  background: var(--warning-orange);
   padding: 5px 10px;
   border-radius: 20px;
   font-size: 12px;
