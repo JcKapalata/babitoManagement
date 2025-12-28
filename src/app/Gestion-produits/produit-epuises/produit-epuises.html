@@ -4,31 +4,33 @@
   </div>
 
   <div class="main">
-    @if (dataSource ) {
-      
+    @if (dataSource) {
       <div class="table-wrapper">
-        <cdk-virtual-scroll-viewport itemSize="70" class="viewport">
+        
+        <table class="rupture-table header-only">
+          <thead>
+            <tr>
+              <th class="col-id">Id du Produit</th>
+              <th class="col-produit">Produit</th>
+              <th class="col-taille">Taille</th>
+              <th class="col-couleur">Couleur</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+        </table>
+
+        <cdk-virtual-scroll-viewport itemSize="60" class="viewport">
           <table class="rupture-table">
-            <thead>
-              <tr>
-                <th style="width: 80px;">Id</th>
-                <th>Produit</th>
-                <th style="width: 100px;">Taille</th>
-                <th style="width: 150px;">Couleur</th>
-                <th style="width: 120px;">Action</th>
-              </tr>
-            </thead>
             <tbody>
-              <tr *cdkVirtualFor="let item of dataSource" class="table-row">
-                
-                <td>
+              <tr *cdkVirtualFor="let item of dataSource; trackBy: trackByFn" class="table-row">
+                <td class="col-id">
                   <span>{{ item ? item.produitId : '...' }}</span>
                 </td>
 
-                <td>
+                <td class="col-produit">
                   @if (item) {
                     <div class="product-info">
-                      <img [src]="item.image || 'assets/placeholder.png'" class="thumb" loading="lazy">
+                      <img [src]="item.image" class="thumb" loading="lazy">
                       <strong>{{ item.nomProduit }}</strong>
                     </div>
                   } @else {
@@ -36,7 +38,7 @@
                   }
                 </td>
 
-                <td>
+                <td class="col-taille">
                   @if (item) {
                     <span class="badge-taille">{{ item.taille }}</span>
                   } @else {
@@ -44,18 +46,17 @@
                   }
                 </td>
 
-                <td>
+                <td class="col-couleur">
                   {{ item ? item.couleur : '...' }}
                 </td>
 
-                <td>
+                <td class="col-action">
                   @if (item) {
                     <button class="btn-manage" (click)="goToDetailProduit(item.produitId)">
                       Gérer
                     </button>
                   }
                 </td>
-
               </tr>
             </tbody>
           </table>

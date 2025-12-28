@@ -25,57 +25,71 @@
   margin: 10px 20px;
 }
 
-/* --- VIRTUAL SCROLL CONFIG --- */
-.viewport {
-  min-height: 20vh;
-  max-height: 75vh;
-  width: 100%;
-  scrollbar-width: none; /* Cache le scroll Firefox */
-  -ms-overflow-style: none; /* Cache le scroll Edge */
-}
-
-.viewport::-webkit-scrollbar {
-  display: none; /* Cache le scroll Chrome/Safari */
-}
-
+/* --- CONFIGURATION DES TABLEAUX --- */
 .table-wrapper {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .rupture-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* Performance pour milliards de lignes */
+  table-layout: fixed; /* Essentiel pour l'alignement entre les deux tables */
 }
 
-/* Entête fixe */
-thead {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #f8f9fa;
+/* --- DEFINITION DES LARGEURS DE COLONNES (Identiques pour th et td) --- */
+.col-id      { width: 100px; }
+.col-taille  { width: 100px; }
+.col-couleur { width: 150px; }
+.col-action  { width: 120px; }
+.col-produit { width: auto; } /* La colonne produit prend l'espace restant */
+
+/* --- STYLE DE L'ENTÊTE --- */
+.header-only {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  z-index: 20;
 }
 
 th {
-  padding: 15px;
   text-align: left;
-  border-bottom: 2px solid #eee;
+  padding: 12px 16px;
+  color: #495057;
   font-size: 13px;
   text-transform: uppercase;
-  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --- VIRTUAL SCROLL CONFIG --- */
+.viewport {
+  height: 65vh; /* Ajustez selon vos besoins */
+  width: 100%;
+  overflow-y: auto;
+  /* Masquer la barre sur Firefox */
+  scrollbar-width: none; 
+  
+  /* Masquer la barre sur Internet Explorer et Edge */
+  -ms-overflow-style: none;
+}
+/* Masquer la barre sur Chrome, Safari et Opera (Webkit) */
+.viewport::-webkit-scrollbar {
+  display: none;
 }
 
 /* Ligne avec hauteur fixe pour le Virtual Scroll */
 .table-row {
-  height: 70px; 
+  height: 60px; 
   border-bottom: 1px solid #f0f0f0;
-  transition: 0.2s;
+  transition: 0.3s;
+  cursor: pointer;
 }
 
-/* EFFET HOVER TOTAL */
+/* EFFET HOVER */
 .table-row:hover td {
   background-color: var(--primary-color);
   color: white !important;
@@ -115,7 +129,7 @@ td {
 
 .badge-taille {
   background: #fff3e0;
-  color: #e65100;
+  color: var(--warn-color);
   padding: 4px 10px;
   border-radius: 4px;
   font-weight: bold;
@@ -130,6 +144,14 @@ td {
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+  background: #fdfdfd;
+  border-radius: 8px;
 }
 
 .skeleton-text {

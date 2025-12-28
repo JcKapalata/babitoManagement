@@ -4,7 +4,7 @@ import {
 } from "./chunk-I6LLMVVY.js";
 import {
   BidiModule
-} from "./chunk-L64ZHEPW.js";
+} from "./chunk-VJTSMHA4.js";
 import "./chunk-VMCNKVZC.js";
 import "./chunk-VU7AIJWC.js";
 import {

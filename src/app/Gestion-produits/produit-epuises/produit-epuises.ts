@@ -5,6 +5,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ProduitsService } from '../produits-service';
 import { ProductDataSource } from '../product-data-source';
 import { Loading } from "../../loading/loading";
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-produit-epuises',
@@ -19,9 +20,9 @@ export class ProduitEpuises implements OnInit {
   
   // On utilise la DataSource pour gérer le milliard de données
   dataSource!: ProductDataSource;
+  produitsAffiches: any[] = [];
 
   ngOnInit(): void {
-    // La DataSource s'occupe de tout le chargement paginé
     this.dataSource = new ProductDataSource(this.produitsService, true);
   }
 
@@ -29,5 +30,12 @@ export class ProduitEpuises implements OnInit {
     if (id) {
       this.router.navigate(['produits/detail-produit/', id]);
     }
+  }
+
+  trackByFn(index: number, item: any): string | number {
+    if (!item) {
+      return index;
+    }
+    return `${item.produitId}-${item.taille}`;
   }
 }

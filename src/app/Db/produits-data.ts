@@ -90,7 +90,7 @@ export const PRODUITS: Produit[] = [
         prix: 15.99,
         couleurs: [
           { nom: 'lin', image: 'imagesProduits/bbi-jou-004/lin.jpeg', stock: 15 },
-          { nom: 'chocolat', image: 'imagesProduits/bbi-jou-004/chocolat.jpeg', stock: 10 }
+          { nom: 'chocolat', image: 'imagesProduits/bbi-jou-004/chocolat.jpeg', stock: 0 }
         ]
       },
       '40 cm': {
@@ -447,8 +447,8 @@ export const PRODUITS: Produit[] = [
       '80x80cm': {
         prix: 24.99,
         couleurs: [
-          { nom: 'motifs jungle', image: 'imagesProduits/bbi-eqp-018/motifs-jungle.jpeg', stock: 10 },
-          { nom: 'rose', image: 'imagesProduits/bbi-eqp-018/rose.jpeg', stock: 5 }
+          { nom: 'motifs jungle', image: 'imagesProduits/bbi-eqp-018/motifs-jungle.jpeg', stock: 0 },
+          { nom: 'rose', image: 'imagesProduits/bbi-eqp-018/rose.jpeg', stock: 0 }
         ]
       }
     }

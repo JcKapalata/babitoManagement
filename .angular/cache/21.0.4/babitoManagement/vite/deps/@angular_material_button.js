@@ -1,4 +1,8 @@
 import {
+  coerceElement,
+  coerceNumberProperty
+} from "./chunk-RNJZRFSW.js";
+import {
   _CdkPrivateStyleLoader,
   _VisuallyHiddenLoader
 } from "./chunk-PI3ZXV2I.js";
@@ -9,18 +13,11 @@ import {
   normalizePassiveListenerOptions
 } from "./chunk-YZBMEIOX.js";
 import {
-  coerceArray
-} from "./chunk-5YB4L7YC.js";
-import {
-  coerceElement,
-  coerceNumberProperty
-} from "./chunk-KWY6XFCV.js";
-import {
   Platform
 } from "./chunk-I6LLMVVY.js";
 import {
   BidiModule
-} from "./chunk-L64ZHEPW.js";
+} from "./chunk-VJTSMHA4.js";
 import "./chunk-VMCNKVZC.js";
 import "./chunk-VU7AIJWC.js";
 import {
@@ -483,6 +480,11 @@ var CdkMonitorFocus = class _CdkMonitorFocus {
     }]
   });
 })();
+
+// node_modules/@angular/cdk/fesm2022/_array-chunk.mjs
+function coerceArray(value) {
+  return Array.isArray(value) ? value : [value];
+}
 
 // node_modules/@angular/cdk/fesm2022/_breakpoints-observer-chunk.mjs
 var mediaQueriesForWebkitCompatibility = /* @__PURE__ */ new Set();
