@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormProduit } from "../form-produit/form-produit";
 import { ProduitsService } from '../produits-service';
 import { ActivatedRoute } from '@angular/router';
@@ -13,7 +13,9 @@ import { Loading } from "../../loading/loading";
 })
 export class UpdateProduit {
   private readonly produitsService = inject(ProduitsService);
-  private readonly route = inject(ActivatedRoute)
+  private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef); // Indispensable pour forcer l'affichage
+  
   produitUpdater?: Produit;
 
   ngOnInit() {
@@ -21,12 +23,19 @@ export class UpdateProduit {
       const id = params.get('id');
       
       if (id) {
+        // 1. On vide l'ancien produit pour forcer l'affichage du loader
         this.produitUpdater = undefined; 
+        this.cdr.detectChanges(); 
 
+        // 2. Appel au service
         this.produitsService.getProduitById(+id).subscribe({
           next: (produit) => {
-            this.produitUpdater = produit;
-            console.log("Produit chargé pour modification :", produit);
+            if (produit) {
+              this.produitUpdater = produit;
+              console.log("Produit chargé avec succès :", produit);
+              // 3. On force manuellement Angular à rafraîchir la vue
+              this.cdr.detectChanges(); 
+            }
           },
           error: (err) => {
             console.error("Erreur de chargement :", err);
