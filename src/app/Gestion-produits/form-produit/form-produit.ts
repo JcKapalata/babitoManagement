@@ -70,7 +70,7 @@ export class FormProduit {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) {
       const file = input.files[0];
-      if (file.size > 2 * 1024 * 1024) {
+      if (file.size > 20 * 1024 * 1024) {
         alert("L'image est trop lourde (Max 2Mo)");
         return;
       }

@@ -6,12 +6,27 @@
 
 .main { padding: 30px 20px; max-width: 1000px; margin: 0 auto; }
 
-.card { 
+/* --- CARTES AVEC BORDURES DYNAMIQUES --- */
+.card, .taille-card { 
   background: white; 
   padding: 25px; 
   border-radius: 8px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
   margin-bottom: 25px; 
+  border-left: 6px solid var(--border-color); /* Bordure par défaut */
+  transition: all 0.3s ease;
+}
+
+/* Bordure DIV : ROUGE si erreur touchée */
+.card:has(.ng-invalid.ng-touched), 
+.taille-card:has(.ng-invalid.ng-touched) { 
+  border-left-color: var(--warn-color) !important; 
+}
+
+/* Bordure DIV : BLEU si valide et touché */
+.card:has(.ng-valid.ng-touched):not(:has(.ng-invalid)), 
+.taille-card:has(.ng-valid.ng-touched):not(:has(.ng-invalid)) { 
+  border-left-color: var(--primary-color); 
 }
 
 .card-header { 
@@ -33,6 +48,7 @@
 .field { display: flex; flex-direction: column; gap: 8px; }
 .field label { font-weight: 600; font-size: 13px; color: var(--text-label); }
 
+/* --- BORDURES INPUTS DYNAMIQUES --- */
 input, select, textarea {
   padding: 12px;
   border: 1px solid var(--border-color);
@@ -42,25 +58,25 @@ input, select, textarea {
   font-family: inherit;
 }
 
+/* État Focus */
 input:focus, select:focus, textarea:focus { 
   outline: none; 
   border-color: var(--primary-color); 
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-input.is-invalid { border-color: var(--warn-color); }
+/* Input ROUGE si invalide */
+input.ng-invalid.ng-touched, select.ng-invalid.ng-touched { 
+  border-color: var(--warn-color) !important; 
+}
+
+/* Input BLEU si valide */
+input.ng-valid.ng-touched, select.ng-valid.ng-touched { 
+  border-color: var(--primary-color); 
+}
 
 .variants-container { margin-top: 30px; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-
-.taille-card {
-  background: white;
-  border-left: 6px solid var(--primary-color);
-  padding: 20px;
-  margin-bottom: 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
 
 .taille-main-info { display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-end; }
 
@@ -92,15 +108,6 @@ input.is-invalid { border-color: var(--warn-color); }
   background-position: center; 
   border: 1px solid #ddd; 
   background-color: #f1f5f9;
-}
-
-.preview.placeholder { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 10px; 
-  color: #94a3b8; 
-  text-align: center; 
 }
 
 .btn-file {
