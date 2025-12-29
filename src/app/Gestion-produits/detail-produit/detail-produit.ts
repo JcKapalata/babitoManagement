@@ -1,64 +1,81 @@
-import { produits } from './../produits';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProduitsService } from '../produits-service';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { Produit } from '../../Models/produit';
-import { CommonModule } from '@angular/common';
-import { Location } from '@angular/common';
-import { Loading } from "../../loading/loading";
+import { ProduitsService } from '../produits-service';
 import { NotificationService } from '../../Notification/notification-service';
+import { Loading } from "../../loading/loading";
 import { ConfirmModal } from '../../Notification/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-detail-produit',
+  standalone: true,
   imports: [CommonModule, Loading, ConfirmModal],
   templateUrl: './detail-produit.html',
   styleUrl: './detail-produit.css',
 })
 export class DetailProduit implements OnInit {
-  private produitsServices = inject(ProduitsService);
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
-  private notify = inject(NotificationService)
+  // --- Injections ---
+  private readonly produitsServices = inject(ProduitsService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notify = inject(NotificationService);
 
+  // --- Propriétés ---
   produit: Produit | undefined;
-
-  showDeleteModal = false;
+  showDeleteModal: boolean = false;
   produitIdToDelete?: number;
 
   ngOnInit(): void {
-    const ProduitId = this.route.snapshot.paramMap.get('id');
-    if (ProduitId) {
-      this.produitsServices.getProduitById(+ProduitId).subscribe({
-        next: (produit) => {
+    // On utilise paramMap pour être plus réactif aux changements d'URL
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadProduit(+id);
+      }
+    });
+  }
+
+  private loadProduit(id: number): void {
+    this.produit = undefined; // Déclenche l'affichage du loader
+    
+    this.produitsServices.getProduitById(id).subscribe({
+      next: (produit) => {
+        // Le setTimeout(0) résout l'erreur NG0100 (ExpressionChangedAfterItHasBeenChecked)
+        // en décalant la mise à jour à la prochaine micro-tâche.
+        setTimeout(() => {
           this.produit = produit;
-          
-          // SOLUTION : Force le rendu immédiat du HTML
-          this.cdr.detectChanges(); 
-          
-          console.log('Produit chargé et affichage forcé');
-        },
-        error: (error) => {
-          console.error('Erreur:', error);
-        }
-      });
-    }
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: (error) => {
+        this.notify.showError("Erreur lors du chargement du produit");
+        console.error('Erreur:', error);
+      }
+    });
   }
 
-  goToListProduits() {
-    this.location.back()
+  // --- Actions ---
+
+  goToListProduits(): void {
+    this.location.back();
   }
 
-  goToUpdateProduit(produitId: number){
-    this.router.navigate(['produits/updater-produit/', produitId])
+  goToUpdateProduit(produitId: number): void {
+    this.router.navigate(['produits/updater-produit/', produitId]);
   }
 
-  // Ouvre la modale
-  confirmDelete(id: number) {
+  // --- Gestion de la suppression ---
+
+  confirmDelete(id: number): void {
     this.produitIdToDelete = id;
-    this.showDeleteModal = true;
+    // Un léger délai garantit que la modale s'ouvre sans conflit de détection
+    setTimeout(() => {
+      this.showDeleteModal = true;
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   onDeleteProduit(): void {
@@ -66,10 +83,21 @@ export class DetailProduit implements OnInit {
       this.produitsServices.deleteProduitById(this.produitIdToDelete).subscribe({
         next: () => {
           this.showDeleteModal = false;
-          this.notify.showSuccess('Produit supprimé !');
-          this.goToListProduits()
+          this.cdr.detectChanges();
+          this.notify.showSuccess('Produit supprimé avec succès !');
+          this.goToListProduits();
+        },
+        error: (err) => {
+          this.notify.showError("Impossible de supprimer le produit");
+          this.showDeleteModal = false;
         }
       });
     }
+  }
+
+  onCancelDelete(): void {
+    this.showDeleteModal = false;
+    this.produitIdToDelete = undefined;
+    this.cdr.detectChanges();
   }
 }
