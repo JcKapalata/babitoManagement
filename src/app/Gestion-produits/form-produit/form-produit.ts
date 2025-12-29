@@ -160,6 +160,7 @@ export class FormProduit implements OnInit {
       });
 
       const produitData: Partial<Produit> = {
+        id: this.produitInitial?.id,
         codeFournisseur: val.codeFournisseur,
         codeProduit: val.codeProduit,
         nom: val.nom,
@@ -175,10 +176,12 @@ export class FormProduit implements OnInit {
 
       if (this.produitInitial && this.produitInitial.id) {
         // MODE UPDATE
+        const currentId = this.produitInitial.id;
+        console.log("ID détecté pour update:", this.produitInitial.id);
         this.produitsService.updateProduit(this.produitInitial.id, produitData).subscribe({
-          next: () => {
+          next: (res) => {
             alert('Produit mis à jour !');
-            this.router.navigate(['produits/produits-disponibles']);
+            this.router.navigate(['produits/detail-produit/', currentId]);
           },
           error: (err) => alert('Erreur Update : ' + err.message)
         });

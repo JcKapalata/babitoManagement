@@ -84,7 +84,10 @@ export class ProduitsService {
    * @param produit Les nouvelles données du produit
    */
   updateProduit(id: string | number, produit: Partial<Produit>): Observable<Produit> {
-    return this.http.put<Produit>(`${this.API_URL}/${id}`, produit).pipe(
+    const url = `${this.API_URL}/${id}`;
+    console.log("Tentative de PUT sur :", url)
+
+    return this.http.put<Produit>(url, produit).pipe(
       tap( (res) => {
         console.log(res);
         this.forceRefresh();
