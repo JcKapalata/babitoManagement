@@ -1,0 +1,17 @@
+<div class="modal-overlay" (click)="onCancel()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Confirmation</h3>
+            <button class="close-btn" (click)="onCancel()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>{{ message }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="onCancel()">Annuler</button>
+            <button class="btn-danger" (click)="onConfirm()">Supprimer</button>
+        </div>
+    </div>
+</div>

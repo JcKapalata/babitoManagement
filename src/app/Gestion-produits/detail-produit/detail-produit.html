@@ -59,8 +59,16 @@
       <div class="actions">
         <button class="btn-back" (click)="goToListProduits()">Retour au Stock</button>
         <button class="btn-update" (click)="goToUpdateProduit(produit.id)">Modifier Produit</button>
-        <button class="btn-delete" (click)="onDeleteProduit(produit.id, produit.nom)">Supprimer Produit</button>
+        <button class="btn-delete" (click)="confirmDelete(produit.id)">Supprimer Produit</button>
       </div>
+
+      @if (showDeleteModal) {
+        <app-confirm-modal 
+          [message]="'Voulez-vous vraiment supprimer ce produit ?'"
+          (confirmed)="onDeleteProduit()"
+          (cancelled)="showDeleteModal = false">
+        </app-confirm-modal>
+      }
     } @else {
       <app-loading></app-loading>
     }

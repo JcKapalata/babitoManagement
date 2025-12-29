@@ -7,10 +7,11 @@ import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Loading } from "../../loading/loading";
 import { NotificationService } from '../../Notification/notification-service';
+import { ConfirmModal } from '../../Notification/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-detail-produit',
-  imports: [CommonModule, Loading],
+  imports: [CommonModule, Loading, ConfirmModal],
   templateUrl: './detail-produit.html',
   styleUrl: './detail-produit.css',
 })
@@ -23,6 +24,9 @@ export class DetailProduit implements OnInit {
   private notify = inject(NotificationService)
 
   produit: Produit | undefined;
+
+  showDeleteModal = false;
+  produitIdToDelete?: number;
 
   ngOnInit(): void {
     const ProduitId = this.route.snapshot.paramMap.get('id');
@@ -51,18 +55,19 @@ export class DetailProduit implements OnInit {
     this.router.navigate(['produits/updater-produit/', produitId])
   }
 
-  onDeleteProduit(id: string | number, nomProduit: string): void {
-    // 1. Confirmation de sécurité
-    const confirmation = confirm(`Voulez-vous vraiment supprimer le produit "${nomProduit}" ?`);
+  // Ouvre la modale
+  confirmDelete(id: number) {
+    this.produitIdToDelete = id;
+    this.showDeleteModal = true;
+  }
 
-    if (confirmation) {
-      this.produitsServices.deleteProduitById(id).subscribe({
+  onDeleteProduit(): void {
+    if (this.produitIdToDelete) {
+      this.produitsServices.deleteProduitById(this.produitIdToDelete).subscribe({
         next: () => {
-          this.notify.showSuccess('Le produit a été supprimé avec succès.');
-          this.router.navigate(['produits/produits-disponibles']);
-        },
-        error: (err) => {
-          this.notify.showError('Erreur lors de la suppression : ' + err.message);
+          this.showDeleteModal = false;
+          this.notify.showSuccess('Produit supprimé !');
+          this.goToListProduits()
         }
       });
     }
