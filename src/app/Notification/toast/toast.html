@@ -1,0 +1,9 @@
+@if (message) {
+    <div class="toast-container" [ngClass]="type">
+        <div class="toast-content">
+            <span class="icon">@if(type === 'success'){ ✓ } @else { ✕ }</span>
+            <span class="text">{{ message }}</span>
+        </div>
+        <div class="progress-bar"></div>
+    </div>
+}

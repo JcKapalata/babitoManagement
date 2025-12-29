@@ -12,6 +12,7 @@ import {
 } from '@angular/forms';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../Notification/notification-service';
 
 @Component({
   selector: 'app-form-produit',
@@ -27,6 +28,7 @@ export class FormProduit implements OnInit {
   private readonly router = inject(Router);
   private fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notify = inject(NotificationService);
 
   productForm: FormGroup = this.fb.group({
     codeFournisseur: ['', Validators.required],
@@ -129,7 +131,7 @@ export class FormProduit implements OnInit {
     if (input.files?.[0]) {
       const file = input.files[0];
       if (file.size > 20 * 1024 * 1024) {
-        alert("L'image est trop lourde");
+        this.notify.showError("L'image est trop lourde Max 20 Mo");
         return;
       }
       const reader = new FileReader();
@@ -180,20 +182,20 @@ export class FormProduit implements OnInit {
         console.log("ID détecté pour update:", this.produitInitial.id);
         this.produitsService.updateProduit(this.produitInitial.id, produitData).subscribe({
           next: (res) => {
-            alert('Produit mis à jour !');
+            this.notify.showSuccess('Produit mis à jour !');
             this.router.navigate(['produits/detail-produit/', currentId]);
           },
-          error: (err) => alert('Erreur Update : ' + err.message)
+          error: (err) => this.notify.showError('Erreur Update : ' + err.message)
         });
       } else {
         // MODE POST
         const nouveauProduit = { ...produitData, dateAjout: new Date() };
         this.produitsService.postProduit(nouveauProduit).subscribe({
           next: () => {
-            alert('Produit enregistré !');
+            this.notify.showSuccess('Produit enregistré !');
             this.router.navigate(['produits/produits-disponibles']);
           },
-          error: (err) => alert('Erreur Post : ' + err.message)
+          error: (err) => this.notify.showError('Erreur Post : ' + err.message)
         });
       }
     } else {
