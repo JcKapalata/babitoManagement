@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-form-produit',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-produit.html',
   styleUrl: './form-produit.css',
@@ -23,7 +22,7 @@ export class FormProduit {
     codeProduit: ['', Validators.required],
     nom: ['', [Validators.required, Validators.minLength(3)]],
     devise: ['USD', Validators.required],
-    region: ['Goma', Validators.required],
+    region: ['', [Validators.required, Validators.minLength(3)]],
     classement: ['', Validators.required],
     categorie: ['', Validators.required],
     type: ['', Validators.required],
@@ -59,7 +58,7 @@ export class FormProduit {
     return this.fb.group({
       nom: ['', Validators.required],
       image: ['', Validators.required],
-      stock: [0, [Validators.required, Validators.min(0), Validators.pattern(/^[0-9]+$/)]]
+      stock: [1, [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+$/)]]
     });
   }
 

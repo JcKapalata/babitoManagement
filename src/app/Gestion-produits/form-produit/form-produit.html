@@ -32,7 +32,11 @@
 
       <div class="field">
         <label>Région</label>
-        <input formControlName="region">
+        <input formControlName="region" placeholder="Goma">
+        @if (productForm.get('region')?.touched) {
+          @if (productForm.get('region')?.errors?.['required']) { <span class="err-msg">Region requise</span> }
+          @if (productForm.get('region')?.errors?.['minlength']) { <span class="err-msg">3 caractères minimum</span> }
+        }
       </div>
 
       <div class="field" style="grid-column: 1 / -1;">
@@ -53,15 +57,24 @@
     <div class="form-grid">
       <div class="field">
         <label>Classement</label>
-        <input formControlName="classement">
+        <input formControlName="classement" placeholder="Vêtements & Mode">
+        @if (productForm.get('classement')?.touched) {
+          @if (productForm.get('classement')?.errors?.['required']) { <span class="err-msg">Classement requise</span> }
+        }
       </div>
       <div class="field">
         <label>Catégorie</label>
-        <input formControlName="categorie">
+        <input formControlName="categorie" placeholder="Vêtement">
+        @if (productForm.get('categorie')?.touched) {
+          @if (productForm.get('categorie')?.errors?.['required']) { <span class="err-msg">Categorie requise</span> }
+        }
       </div>
       <div class="field">
         <label>Type</label>
-        <input formControlName="type">
+        <input formControlName="type" placeholder="Body">
+        @if (productForm.get('type')?.touched) {
+          @if (productForm.get('type')?.errors?.['required']) { <span class="err-msg">Type requise</span> }
+        }
       </div>
       <div class="field">
         <label>Devise</label>
@@ -88,7 +101,7 @@
         <div class="taille-main-info">
           <div class="field" style="flex:2">
             <input formControlName="nomTaille" placeholder="Taille (ex: XL)">
-            @if (t.get('nomTaille')?.touched && t.get('nomTaille')?.invalid) { <span class="err-msg">Nom requis</span> }
+            @if (t.get('nomTaille')?.touched && t.get('nomTaille')?.invalid) { <span class="err-msg">Nom de taille requis</span> }
           </div>
           <div class="field" style="flex:1">
             <input type="number" formControlName="prix" placeholder="Prix">
@@ -111,7 +124,7 @@
 
               <div class="couleur-fields">
                 <input formControlName="nom" placeholder="Couleur">
-                @if (c.get('nom')?.touched && c.get('nom')?.invalid) { <span class="err-msg">Requis</span> }
+                @if (c.get('nom')?.touched && c.get('nom')?.invalid) { <span class="err-msg">Nom de couleur requis</span> }
                 
                 <input type="number" formControlName="stock" placeholder="Stock">
                 @if (c.get('stock')?.touched && c.get('stock')?.invalid) {
