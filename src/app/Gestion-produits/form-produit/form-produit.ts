@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ProduitsService } from '../produits-service';
 import { Router } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-form-produit',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-produit.html',
   styleUrl: './form-produit.css',
@@ -17,136 +18,116 @@ export class FormProduit {
   private fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  // Initialisation du formulaire avec tous les champs de ton interface
   productForm: FormGroup = this.fb.group({
     codeFournisseur: ['', Validators.required],
     codeProduit: ['', Validators.required],
-    nom: ['', Validators.required],
+    nom: ['', [Validators.required, Validators.minLength(3)]],
     devise: ['USD', Validators.required],
     region: ['Goma', Validators.required],
     classement: ['', Validators.required],
     categorie: ['', Validators.required],
     type: ['', Validators.required],
-    description: ['', Validators.maxLength(500)],
-    // FormArray temporaire pour la saisie utilisateur
-    taillesArray: this.fb.array([]) 
+    description: ['', [Validators.required, Validators.maxLength(500)]],
+    taillesArray: this.fb.array([], [Validators.required, this.minLengthArray(1)])
   });
 
-  // Getter pour accéder facilement au tableau des tailles dans le HTML
+  private minLengthArray(min: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control instanceof FormArray && control.length >= min) return null;
+      return { minLengthArray: true };
+    };
+  }
+
   get taillesArray(): FormArray {
     return this.productForm.get('taillesArray') as FormArray;
   }
 
-  // Ajouter une nouvelle taille (ex: "6-9 mois")
-  ajouterTaille(): void {
-    const tailleGroup = this.fb.group({
-      nomTaille: ['', Validators.required], // La clé de l'objet (ex: '6-9 mois')
-      prix: [0, [Validators.required, Validators.min(0.01)]],
-      couleurs: this.fb.array([this.creerCouleur()]) // Commence avec une couleur par défaut
-    });
-    this.taillesArray.push(tailleGroup);
-  }
-
-  // Créer le groupe de champs pour une couleur
-  creerCouleur(): FormGroup {
-    return this.fb.group({
-      nom: ['', Validators.required],
-      image: ['', Validators.required], // Contiendra le Base64 pour la preview
-      stock: [0, [Validators.required, Validators.min(0)]]
-    });
-  }
-
-  // Getter pour accéder aux couleurs d'une taille spécifique
   getCouleurs(indexTaille: number): FormArray {
     return this.taillesArray.at(indexTaille).get('couleurs') as FormArray;
   }
 
-  // Ajouter une couleur à une taille (Appelé par le bouton (click) dans le HTML)
+  ajouterTaille(): void {
+    const tailleGroup = this.fb.group({
+      nomTaille: ['', Validators.required],
+      prix: [null, [Validators.required, Validators.min(0.01)]],
+      couleurs: this.fb.array([this.creerCouleur()], [Validators.required, this.minLengthArray(1)])
+    });
+    this.taillesArray.push(tailleGroup);
+  }
+
+  creerCouleur(): FormGroup {
+    return this.fb.group({
+      nom: ['', Validators.required],
+      image: ['', Validators.required],
+      stock: [0, [Validators.required, Validators.min(0), Validators.pattern(/^[0-9]+$/)]]
+    });
+  }
+
   ajouterCouleur(indexTaille: number): void {
     this.getCouleurs(indexTaille).push(this.creerCouleur());
   }
 
-  // Supprimer une taille
-  supprimerTaille(index: number): void {
-    this.taillesArray.removeAt(index);
-  }
-
-  // Supprimer une couleur spécifique
-  supprimerCouleur(indexTaille: number, indexCouleur: number): void {
-    const couleurs = this.getCouleurs(indexTaille);
-    if (couleurs.length > 1) {
-      couleurs.removeAt(indexCouleur);
-    }
-  }
-
-  // Gestion de la sélection d'image et conversion en Base64
-  onFileSelected(event: any, indexTaille: number, indexCouleur: number): void {
-    const file = event.target.files[0];
-    if (file) {
+  onFileSelected(event: Event, indexTaille: number, indexCouleur: number): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) {
+      const file = input.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        alert("L'image est trop lourde (Max 2Mo)");
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = () => {
-        const couleurForm = this.getCouleurs(indexTaille).at(indexCouleur);
-        couleurForm.patchValue({ image: reader.result });
-        
-        // Indique à Angular que l'image a changé pour éviter l'erreur NG0100
+        const control = this.getCouleurs(indexTaille).at(indexCouleur).get('image');
+        control?.setValue(reader.result);
+        control?.markAsTouched();
         this.cdr.detectChanges(); 
       };
       reader.readAsDataURL(file);
     }
   }
 
-  // Soumission et transformation des données
   onSubmit(): void {
     if (this.productForm.valid) {
-      const formValue = this.productForm.value;
-
-      // 1. Transformation du FormArray vers l'index signature { [key: string]: ... }
-      const tailleMapping: { [key: string]: any } = {};
+      const val = this.productForm.value;
+      const tailleMapping: any = {};
       
-      formValue.taillesArray.forEach((t: any) => {
+      // Mapping dynamique conforme à votre interface
+      val.taillesArray.forEach((t: any) => {
         tailleMapping[t.nomTaille] = {
           prix: t.prix,
           couleurs: t.couleurs.map((c: any) => ({
             nom: c.nom,
             image: c.image,
-            stock: c.stock
+            stock: parseInt(c.stock, 10)
           }))
         };
       });
 
-      // 2. Construction de l'objet final (Partial<Produit>)
       const nouveauProduit: Partial<Produit> = {
-        codeFournisseur: formValue.codeFournisseur,
-        codeProduit: formValue.codeProduit,
-        nom: formValue.nom,
-        devise: formValue.devise,
-        region: formValue.region,
-        classement: formValue.classement,
-        categorie: formValue.categorie,
-        type: formValue.type,
-        description: formValue.description,
+        codeFournisseur: val.codeFournisseur,
+        codeProduit: val.codeProduit,
+        nom: val.nom,
+        devise: val.devise,
+        region: val.region,
+        classement: val.classement,
+        categorie: val.categorie,
+        type: val.type,
+        description: val.description,
         dateAjout: new Date(),
         dateModification: new Date(),
         taille: tailleMapping
       };
 
-      // 3. Appel au service avec gestion de la réponse
       this.produitsService.postProduit(nouveauProduit).subscribe({
-        next: (res) => {
-          console.log('Produit ajouté avec succès !', res);
-          alert('Le produit "' + formValue.nom + '" a été enregistré avec succès.');
-          this.router.navigate(['produits/produits-disponibles']); 
+        next: () => {
+          alert('Produit enregistré avec succès !');
+          this.router.navigate(['produits/produits-disponibles']);
         },
-        error: (err) => {
-          console.error('Erreur API:', err);
-          alert('Erreur lors de l\'enregistrement : ' + err.message);
-        }
+        error: (err) => alert('Erreur : ' + err.message)
       });
-
     } else {
-      // Affichage des erreurs si le formulaire est invalide
       this.productForm.markAllAsTouched();
-      alert('Veuillez remplir tous les champs obligatoires correctement.');
     }
   }
 }
