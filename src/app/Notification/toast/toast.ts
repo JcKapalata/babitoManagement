@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NotificationService } from '../notification-service';
 import { CommonModule } from '@angular/common';
 
@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 })
 export class Toast implements OnInit{
   private notify = inject(NotificationService);
+  private cdr = inject(ChangeDetectorRef); // On injecte le détecteur de changements
+  
   message: string | null = null;
   type: 'success' | 'error' = 'success';
 
@@ -17,9 +19,16 @@ export class Toast implements OnInit{
     this.notify.toast$.subscribe(data => {
       this.message = data.message;
       this.type = data.type;
+      
+      // On force l'affichage du message dès qu'il arrive
+      this.cdr.detectChanges(); 
 
-      // Faire disparaître le toast après 3 secondes
-      setTimeout(() => this.message = null, 2000);
+      // Faire disparaître le toast après 2 secondes
+      setTimeout(() => {
+        this.message = null;
+        // On force Angular à voir que le message est maintenant null
+        this.cdr.detectChanges(); 
+      }, 3000);
     });
   }
 }

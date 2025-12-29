@@ -30,7 +30,7 @@
   background: rgba(255,255,255,0.5);
   margin-top: 10px;
   width: 100%;
-  animation: progress 2s linear forwards;
+  animation: progress 3s linear forwards;
 }
 
 @keyframes progress {
