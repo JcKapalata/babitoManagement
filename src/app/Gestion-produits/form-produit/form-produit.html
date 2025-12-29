@@ -1,0 +1,92 @@
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="main">
+    
+    <div class="card">
+      <div class="card-header">
+        <i class="icon-info"></i> <h3>Informations Générales</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Code Fournisseur</label>
+          <input formControlName="codeFournisseur" placeholder="ex: BBI">
+        </div>
+        <div class="field">
+          <label>Code Produit</label>
+          <input formControlName="codeProduit" placeholder="ex: BBI-VET-001">
+        </div>
+        <div class="field">
+          <label>Nom du produit</label>
+          <input formControlName="nom" placeholder="ex: Body bébé coton">
+        </div>
+        <div class="field">
+          <label>Région</label>
+          <input formControlName="region">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <i class="icon-tag"></i> <h3>Classification</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Classement</label>
+          <input formControlName="classement" placeholder="Vêtements & Mode">
+        </div>
+        <div class="field">
+          <label>Catégorie</label>
+          <input formControlName="categorie" placeholder="Vêtement">
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <input formControlName="type" placeholder="Body">
+        </div>
+        <div class="field">
+          <label>Devise</label>
+          <select formControlName="devise">
+            <option value="USD">USD ($)</option>
+            <option value="CDF">CDF (FC)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div formArrayName="taillesArray" class="variants-container">
+      <div class="flex-between">
+        <h3>Variantes par Taille</h3>
+        <button type="button" class="btn-add" (click)="ajouterTaille()">+ Ajouter une taille</button>
+      </div>
+
+      <div *ngFor="let t of taillesArray.controls; let i = index" [formGroupName]="i" class="taille-card">
+        <div class="taille-main-info">
+          <input formControlName="nomTaille" placeholder="Taille (ex: 6-9 mois)">
+          <input type="number" formControlName="prix" placeholder="Prix">
+          <button type="button" class="btn-remove" (click)="taillesArray.removeAt(i)">Supprimer</button>
+        </div>
+
+        <div formArrayName="couleurs" class="couleurs-grid">
+          <div *ngFor="let c of getCouleurs(i).controls; let j = index" [formGroupName]="j" class="couleur-card">
+            
+            <div class="image-picker">
+              <div class="preview" [style.backgroundImage]="'url(' + c.value.image + ')'" *ngIf="c.value.image"></div>
+              <div class="preview placeholder" *ngIf="!c.value.image">Aucun</div>
+              <label [for]="'file-' + i + '-' + j" class="btn-file">Choisir l'image</label>
+              <input type="file" [id]="'file-' + i + '-' + j" (change)="onFileSelected($event, i, j)" hidden accept="image/*">
+            </div>
+
+            <div class="couleur-fields">
+              <input formControlName="nom" placeholder="Couleur (ex: Rose)">
+              <input type="number" formControlName="stock" placeholder="Stock">
+              <button type="button" (click)="getCouleurs(i).removeAt(j)" class="btn-text-del">Supprimer couleur</button>
+            </div>
+
+          </div>
+          <button type="button" class="btn-add-couleur" (click)="ajouterCouleur(i)">+ Ajouter couleur</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn-submit" [disabled]="productForm.invalid">Enregistrer le Produit complet</button>
+    </div>
+</form>
