@@ -6,6 +6,10 @@ export const produits: Routes = [
         loadComponent: () => import('./detail-produit/detail-produit').then(m => m.DetailProduit) 
     },
     {
+        path: 'produits/updater-produit/:id',
+        loadComponent: () => import('./update-produit/update-produit').then(m => m.UpdateProduit)
+    },
+    {
         path: 'produits/ajout-produit', 
         loadComponent: () => import('./ajout-produit/ajout-produit').then(m => m.AjoutProduit)
     },

@@ -1,3 +1,4 @@
+import { produits } from './../produits';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProduitsService } from '../produits-service';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
@@ -16,6 +17,7 @@ export class DetailProduit implements OnInit {
   private produitsServices = inject(ProduitsService);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
   produit: Produit | undefined;
@@ -41,5 +43,9 @@ export class DetailProduit implements OnInit {
 
   goToListProduits() {
     this.location.back()
+  }
+
+  goToUpdateProduit(produitId: number){
+    this.router.navigate(['produits/updater-produit/', produitId])
   }
 }

@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="header">
+    <h2>Modifier Produit</h2>
+  </div>
+
+  @if (produitUpdater) {
+    <app-form-produit [produitInitial]="produitUpdater"></app-form-produit>
+  } @else {
+    <app-loading></app-loading>
+  }
+</div>

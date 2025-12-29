@@ -1,17 +1,28 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
 import { ProduitsService } from '../produits-service';
 import { Router } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { 
+  FormArray, 
+  FormBuilder, 
+  FormGroup, 
+  ReactiveFormsModule, 
+  Validators, 
+  AbstractControl, 
+  ValidationErrors 
+} from '@angular/forms';
 import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-form-produit',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './form-produit.html',
   styleUrl: './form-produit.css',
 })
-export class FormProduit {
+export class FormProduit implements OnInit {  
+  @Input() produitInitial?: Produit; // Reçoit le produit en cas d'update
+
   private readonly produitsService = inject(ProduitsService);
   private readonly router = inject(Router);
   private fb = inject(FormBuilder);
@@ -29,6 +40,53 @@ export class FormProduit {
     description: ['', [Validators.required, Validators.maxLength(500)]],
     taillesArray: this.fb.array([], [Validators.required, this.minLengthArray(1)])
   });
+
+  ngOnInit(): void {
+    // Si on a un produit initial, on remplit le formulaire
+    if (this.produitInitial) {
+      this.remplirFormulaire(this.produitInitial);
+    } else {
+      // Sinon on ajoute une taille vide par défaut pour la création
+      this.ajouterTaille();
+    }
+  }
+
+  // Remplit les champs et les FormArray dynamiquement
+  private remplirFormulaire(produit: Produit): void {
+    this.productForm.patchValue({
+      codeFournisseur: produit.codeFournisseur,
+      codeProduit: produit.codeProduit,
+      nom: produit.nom,
+      devise: produit.devise,
+      region: produit.region,
+      classement: produit.classement,
+      categorie: produit.categorie,
+      type: produit.type,
+      description: produit.description
+    });
+
+    if (produit.taille) {
+      Object.keys(produit.taille).forEach(key => {
+        const t = produit.taille![key];
+        const tailleGroup = this.fb.group({
+          nomTaille: [key, Validators.required],
+          prix: [t.prix, [Validators.required, Validators.min(0.01)]],
+          couleurs: this.fb.array([], [Validators.required, this.minLengthArray(1)])
+        });
+
+        const couleursArray = tailleGroup.get('couleurs') as FormArray;
+        t.couleurs.forEach(c => {
+          couleursArray.push(this.fb.group({
+            nom: [c.nom, Validators.required],
+            image: [c.image, Validators.required],
+            stock: [c.stock, [Validators.required, Validators.min(1), Validators.pattern(/^[0-9]+$/)]]
+          }));
+        });
+
+        this.taillesArray.push(tailleGroup);
+      });
+    }
+  }
 
   private minLengthArray(min: number) {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -71,10 +129,9 @@ export class FormProduit {
     if (input.files?.[0]) {
       const file = input.files[0];
       if (file.size > 20 * 1024 * 1024) {
-        alert("L'image est trop lourde (Max 2Mo)");
+        alert("L'image est trop lourde");
         return;
       }
-      
       const reader = new FileReader();
       reader.onload = () => {
         const control = this.getCouleurs(indexTaille).at(indexCouleur).get('image');
@@ -91,7 +148,6 @@ export class FormProduit {
       const val = this.productForm.value;
       const tailleMapping: any = {};
       
-      // Mapping dynamique conforme à votre interface
       val.taillesArray.forEach((t: any) => {
         tailleMapping[t.nomTaille] = {
           prix: t.prix,
@@ -103,7 +159,7 @@ export class FormProduit {
         };
       });
 
-      const nouveauProduit: Partial<Produit> = {
+      const produitData: Partial<Produit> = {
         codeFournisseur: val.codeFournisseur,
         codeProduit: val.codeProduit,
         nom: val.nom,
@@ -113,18 +169,30 @@ export class FormProduit {
         categorie: val.categorie,
         type: val.type,
         description: val.description,
-        dateAjout: new Date(),
         dateModification: new Date(),
         taille: tailleMapping
       };
 
-      this.produitsService.postProduit(nouveauProduit).subscribe({
-        next: () => {
-          alert('Produit enregistré avec succès !');
-          this.router.navigate(['produits/produits-disponibles']);
-        },
-        error: (err) => alert('Erreur : ' + err.message)
-      });
+      if (this.produitInitial && this.produitInitial.id) {
+        // MODE UPDATE
+        this.produitsService.updateProduit(this.produitInitial.id, produitData).subscribe({
+          next: () => {
+            alert('Produit mis à jour !');
+            this.router.navigate(['produits/produits-disponibles']);
+          },
+          error: (err) => alert('Erreur Update : ' + err.message)
+        });
+      } else {
+        // MODE POST
+        const nouveauProduit = { ...produitData, dateAjout: new Date() };
+        this.produitsService.postProduit(nouveauProduit).subscribe({
+          next: () => {
+            alert('Produit enregistré !');
+            this.router.navigate(['produits/produits-disponibles']);
+          },
+          error: (err) => alert('Erreur Post : ' + err.message)
+        });
+      }
     } else {
       this.productForm.markAllAsTouched();
     }

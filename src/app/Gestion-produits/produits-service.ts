@@ -78,6 +78,21 @@ export class ProduitsService {
     );
   }
 
+  /**
+   * Met à jour un produit existant
+   * @param id L'identifiant unique du produit
+   * @param produit Les nouvelles données du produit
+   */
+  updateProduit(id: string | number, produit: Partial<Produit>): Observable<Produit> {
+    return this.http.put<Produit>(`${this.API_URL}/${id}`, produit).pipe(
+      tap( (res) => {
+        console.log(res);
+        this.forceRefresh();
+      }),
+      catchError( err => this.handleError(err))
+    );
+  }
+
   private parseDates(produits: any[]): Produit[] {
     return produits.map(p => ({
       ...p,

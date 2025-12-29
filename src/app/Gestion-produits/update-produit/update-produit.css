@@ -1,0 +1,28 @@
+/* --- VARIABLES & BASE --- */
+:host {
+  --bg-light: #f4f7f6;
+  --border-color: #ddd;
+  --text-label: #555;
+}
+
+.container {
+  width: 100%;
+  background-color: var(--bg-light);
+  min-height: 100vh;
+}
+
+.header {
+  background: var(--primary-color);
+  padding: 20px 40px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 200px;
+}
+
+.header h2 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
