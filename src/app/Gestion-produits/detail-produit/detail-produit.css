@@ -136,10 +136,9 @@ h3{
 }
 
 /* Buttons */
-.btn-back {
-  margin-top: 2rem;
+.btn-back, .btn-update, .btn-delete{
+  margin: 2rem 1rem;
   padding: 10px 25px;
-  background: var(--accent-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -147,8 +146,29 @@ h3{
   transition: all 0.3s ease;
 }
 
+.btn-back {
+  background: var(--accent-color); 
+}
 .btn-back:hover {
   background: none;
   border: 1.5px solid var(--accent-color);
   color: var(--accent-color);
+}
+
+.btn-update{
+  background: var(--warning-orange);
+}
+.btn-update:hover{
+  background: none;
+  border: 1.5px solid var(--warning-orange);
+  color: var(--warning-orange);
+}
+
+.btn-delete{
+  background: var(--warn-color);
+}
+.btn-delete:hover{
+  background: none;
+  border: 1.5px solid var(--warn-color);
+  color: var(--warn-color);
 }

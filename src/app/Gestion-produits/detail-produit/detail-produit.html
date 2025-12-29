@@ -58,7 +58,8 @@
 
       <div class="actions">
         <button class="btn-back" (click)="goToListProduits()">Retour au Stock</button>
-        <button class="btn-back" (click)="goToUpdateProduit(produit.id)">Modifier Produit</button>
+        <button class="btn-update" (click)="goToUpdateProduit(produit.id)">Modifier Produit</button>
+        <button class="btn-delete" (click)="onDeleteProduit(produit.id, produit.nom)">Supprimer Produit</button>
       </div>
     } @else {
       <app-loading></app-loading>

@@ -6,6 +6,7 @@ import { Produit } from '../../Models/produit';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Loading } from "../../loading/loading";
+import { NotificationService } from '../../Notification/notification-service';
 
 @Component({
   selector: 'app-detail-produit',
@@ -19,6 +20,7 @@ export class DetailProduit implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private notify = inject(NotificationService)
 
   produit: Produit | undefined;
 
@@ -47,5 +49,22 @@ export class DetailProduit implements OnInit {
 
   goToUpdateProduit(produitId: number){
     this.router.navigate(['produits/updater-produit/', produitId])
+  }
+
+  onDeleteProduit(id: string | number, nomProduit: string): void {
+    // 1. Confirmation de sécurité
+    const confirmation = confirm(`Voulez-vous vraiment supprimer le produit "${nomProduit}" ?`);
+
+    if (confirmation) {
+      this.produitsServices.deleteProduitById(id).subscribe({
+        next: () => {
+          this.notify.showSuccess('Le produit a été supprimé avec succès.');
+          this.router.navigate(['produits/produits-disponibles']);
+        },
+        error: (err) => {
+          this.notify.showError('Erreur lors de la suppression : ' + err.message);
+        }
+      });
+    }
   }
 }

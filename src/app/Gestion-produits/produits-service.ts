@@ -63,10 +63,7 @@ export class ProduitsService {
     );
   }
 
-  /**
-   * Créer un nouveau produit
-   * @param produit L'objet produit formaté selon l'interface Produit
-   */
+  // Ajout du produit
   postProduit(produit: Partial<Produit>): Observable<Produit> {
     return this.http.post<Produit>(this.API_URL, produit).pipe(
       tap((res) => {
@@ -78,11 +75,7 @@ export class ProduitsService {
     );
   }
 
-  /**
-   * Met à jour un produit existant
-   * @param id L'identifiant unique du produit
-   * @param produit Les nouvelles données du produit
-   */
+  // Update Produit
   updateProduit(id: string | number, produit: Partial<Produit>): Observable<Produit> {
     const url = `${this.API_URL}/${id}`;
     console.log("Tentative de PUT sur :", url)
@@ -93,6 +86,18 @@ export class ProduitsService {
         this.forceRefresh();
       }),
       catchError( err => this.handleError(err))
+    );
+  }
+
+  // DeleteProduitById
+  deleteProduitById(id: string | number): Observable<void> {
+    const url = `${this.API_URL}/${id}`;
+    return this.http.delete<void>(url).pipe(
+      tap(() => {
+        console.log(`Produit ${id} supprimé`);
+        this.forceRefresh(); 
+      }),
+      catchError(err => this.handleError(err))
     );
   }
 
