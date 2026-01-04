@@ -1,0 +1,30 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Connexion</mat-card-title>
+      <mat-card-subtitle>Accédez à votre gestionnaire de livraison</mat-card-subtitle>
+    </mat-card-header>
+
+    <form class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" placeholder="exemple@mail.com" required>
+        <mat-icon matSuffix>email</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput type="password" required>
+        <mat-icon matSuffix>lock</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="login-button" type="submit">
+        SE CONNECTER
+      </button>
+    </form>
+
+    <mat-card-footer>
+      <a class="forgot-password">Mot de passe oublié ?</a>
+    </mat-card-footer>
+  </mat-card>
+</div>
