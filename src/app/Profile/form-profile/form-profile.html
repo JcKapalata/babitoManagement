@@ -1,74 +1,86 @@
-<div class="form-container">
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-card">
-    <h2 class="form-title">{{ isUpdateMode ? 'MODIFIER LE PROFIL' : 'NOUVEL AGENT' }}</h2>
-
-    <div class="avatar-upload">
-      <div class="preview-container" (click)="fileInput.click()">
-        @if (imagePreview) {
-          <img [src]="imagePreview" alt="Avatar">
-        } @else {
-          <div class="placeholder-icon">📷</div>
-        }
-        <div class="overlay"><span>Changer</span></div>
-      </div>
-      <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
-      <p class="upload-text">Cliquez sur la photo pour modifier</p>
+<form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-container">
+  
+  <div class="avatar-section">
+    <div class="image-wrapper" (click)="fileInput.click()">
+      <img [src]="imagePreview || 'assets/images/default-avatar.png'" alt="Avatar">
+      <div class="overlay"><mat-icon>camera_alt</mat-icon></div>
     </div>
+    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/*">
+  </div>
 
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Prénom</label>
-        <input type="text" formControlName="firstName" placeholder="Prénom">
-        @if (profileForm.get('firstName')?.touched && profileForm.get('firstName')?.invalid) {
-          <span class="error-text">{{ getErrorMessage('firstName') }}</span>
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="firstName">
+      @if (profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched) {
+        <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="lastName">
+      @if (profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched) {
+        <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email">
+      @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+        <mat-error>{{ getErrorMessage('email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Rôle</mat-label>
+      <mat-select formControlName="role">
+        @for (role of roles; track role) {
+          <mat-option [value]="role">{{ role | titlecase }}</mat-option>
         }
-      </div>
+      </mat-select>
+    </mat-form-field>
 
-      <div class="form-group">
-        <label>Nom</label>
-        <input type="text" formControlName="lastName" placeholder="Nom">
-        @if (profileForm.get('lastName')?.touched && profileForm.get('lastName')?.invalid) {
-          <span class="error-text">{{ getErrorMessage('lastName') }}</span>
-        }
+    @if (isUpdateMode) {
+      <div class="full-width password-toggle-row">
+        <mat-divider></mat-divider>
+        <button type="button" mat-button color="accent" (click)="togglePasswordFields()">
+          <mat-icon>{{ showPasswordFields ? 'expand_less' : 'lock_reset' }}</mat-icon>
+          {{ showPasswordFields ? 'Annuler la modification du mot de passe' : 'Modifier le mot de passe' }}
+        </button>
       </div>
+    }
 
-      <div class="form-group full-width">
-        <label>Email</label>
-        <input type="email" formControlName="email" placeholder="exemple@mail.com">
-        @if (profileForm.get('email')?.touched && profileForm.get('email')?.invalid) {
-          <span class="error-text">{{ getErrorMessage('email') }}</span>
-        }
-      </div>
-
-      <div class="form-group full-width">
-        <label>Rôle</label>
-        <select formControlName="role">
-          <option value="" disabled selected>Choisir un rôle</option>
-          @for (r of roles; track r) {
-            <option [value]="r">{{ r | titlecase }}</option>
+    @if (showPasswordFields) {
+      <div class="password-group full-width">
+        <mat-form-field appearance="outline">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput [type]="hidePasswordContent ? 'password' : 'text'" formControlName="password">
+          <button type="button" mat-icon-button matSuffix (click)="hidePasswordContent = !hidePasswordContent">
+            <mat-icon>{{ hidePasswordContent ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (profileForm.get('password')?.invalid) {
+            <mat-error>{{ getErrorMessage('password') }}</mat-error>
           }
-        </select>
-      </div>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" formControlName="password" placeholder="********">
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmation</mat-label>
+          <input matInput [type]="hidePasswordContent ? 'password' : 'text'" formControlName="confirmPassword">
+          @if (profileForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+            <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error>
+          }
+        </mat-form-field>
       </div>
+    }
+  </div>
 
-      <div class="form-group">
-        <label>Confirmer le mot de passe</label>
-        <input type="password" formControlName="confirmPassword" placeholder="********">
-        @if (profileForm.get('confirmPassword')?.touched && profileForm.get('confirmPassword')?.invalid) {
-          <span class="error-text">{{ getErrorMessage('confirmPassword') }}</span>
-        }
-      </div>
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="btn btn-cancel" (click)="cancel()">ANNULER</button>
-      <button type="submit" class="btn btn-submit" [disabled]="profileForm.invalid">
-        {{ isUpdateMode ? 'METTRE À JOUR' : 'ENREGISTRER' }}
-      </button>
-    </div>
-  </form>
-</div>
+  <div class="actions">
+    <button mat-button type="button" (click)="cancel()">Annuler</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="profileForm.invalid">
+      <mat-icon>save</mat-icon>
+      {{ isUpdateMode ? 'Enregistrer les modifications' : 'Créer le profil' }}
+    </button>
+  </div>
+</form>

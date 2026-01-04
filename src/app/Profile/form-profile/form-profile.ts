@@ -4,75 +4,91 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { Router } from '@angular/router';
 import { User } from '../../Models/agent';
 
+// Angular Material
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+
 @Component({
   selector: 'app-form-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, ReactiveFormsModule, MatFormFieldModule, 
+    MatInputModule, MatButtonModule, MatSelectModule, MatIconModule, MatDividerModule
+  ],
   templateUrl: './form-profile.html',
   styleUrl: './form-profile.css'
 })
 export class FormProfile implements OnInit {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   profileForm!: FormGroup;
-  roles = ['admin', 'livreur', 'finance'];
+  roles: string[] = ['admin', 'livreur', 'finance'];
   isUpdateMode = false;
   imagePreview: string | null = null;
+  
+  // États de l'interface
+  hidePasswordContent = true; // Masquer les caractères (●●●)
+  showPasswordFields = false; // Afficher/Masquer les blocs d'input
+  
+  readonly passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   @Input() set userToUpdate(value: User | null) {
-    console.log('1. Réception Input:', value);
-
-    // CONDITION CRUCIALE : On ne fait rien si la donnée est null ou incomplète
-    if (!value || !value.agent) {
-      console.warn('Données ignorées car null ou agent manquant');
-      return; 
-    }
-
-    console.log('2. Données valides, remplissage...');
-    this.isUpdateMode = true;
-    
-    // On s'assure que le formulaire existe
-    if (!this.profileForm) {
+    if (value?.agent) {
+      this.isUpdateMode = true;
+      this.showPasswordFields = false; // Masqué par défaut en édition
       this.initForm();
+      this.patchData(value);
+      this.cdr.markForCheck();
     }
-    
-    this.patchData(value);
-    
-    // Forcer Angular à rafraîchir les inputs
-    this.cdr.detectChanges();
   }
 
   ngOnInit(): void {
-    // Si le formulaire n'a pas été créé par l'Input, on le crée vide (Mode Création)
     if (!this.profileForm) {
+      this.showPasswordFields = true; // Affiché par défaut en création
       this.initForm();
     }
   }
 
   private initForm(): void {
     this.profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       role: ['', Validators.required],
-      avatar: [''], 
+      avatar: [''],
       password: [''],
       confirmPassword: ['']
-    }, { validators: this.passwordMatchValidator });
+    }, { validators: (c: AbstractControl) => this.passwordMatchValidator(c) });
 
-    this.applyPasswordValidators();
+    this.updatePasswordValidators();
   }
 
-  private applyPasswordValidators(): void {
-    const passwordControl = this.profileForm.get('password');
-    if (!this.isUpdateMode) {
-      passwordControl?.setValidators([Validators.required, Validators.minLength(6)]);
+  // Active ou désactive les validateurs selon l'affichage des champs
+  togglePasswordFields(): void {
+    this.showPasswordFields = !this.showPasswordFields;
+    this.updatePasswordValidators();
+  }
+
+  private updatePasswordValidators(): void {
+    const pwd = this.profileForm.get('password');
+    const cpwd = this.profileForm.get('confirmPassword');
+
+    if (this.showPasswordFields) {
+      pwd?.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
     } else {
-      passwordControl?.clearValidators(); // Optionnel en Update
+      pwd?.clearValidators();
+      cpwd?.clearValidators();
+      pwd?.setValue('');
+      cpwd?.setValue('');
     }
-    passwordControl?.updateValueAndValidity();
+    pwd?.updateValueAndValidity();
+    cpwd?.updateValueAndValidity();
   }
 
   private patchData(user: User): void {
@@ -86,34 +102,36 @@ export class FormProfile implements OnInit {
     this.imagePreview = user.agent.avatar || null;
   }
 
-  getErrorMessage(field: string): string {
-    const control = this.profileForm?.get(field);
-    if (!control || !control.errors || !control.touched) return '';
-    if (control.hasError('required')) return 'Obligatoire';
-    if (control.hasError('email')) return 'Email invalide';
-    if (control.hasError('passwordMismatch')) return 'Mots de passe différents';
-    return '';
-  }
-
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  passwordMatchValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!this.showPasswordFields) return null;
+    
     const password = control.get('password')?.value;
     const confirm = control.get('confirmPassword')?.value;
-    if (!password && !confirm) return null;
+
     if (password !== confirm) {
       control.get('confirmPassword')?.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
     return null;
+  };
+
+  getErrorMessage(field: string): string {
+    const control = this.profileForm.get(field);
+    if (control?.hasError('required')) return 'Obligatoire';
+    if (control?.hasError('email')) return 'Email invalide';
+    if (control?.hasError('pattern')) return 'Sécurité insuffisante (8+ caractere, Maj, Min, Chiffre, Spécial)';
+    if (control?.hasError('passwordMismatch')) return 'Les mots de passe divergent';
+    return '';
   }
 
   onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const file = (event.currentTarget as HTMLInputElement).files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
-        this.profileForm.patchValue({ avatar: this.imagePreview });
-        this.cdr.detectChanges(); 
+        this.profileForm.get('avatar')?.setValue(this.imagePreview);
+        this.cdr.markForCheck();
       };
       reader.readAsDataURL(file);
     }
@@ -121,13 +139,14 @@ export class FormProfile implements OnInit {
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      console.log('Envoi au serveur:', this.profileForm.value);
+      const payload = { ...this.profileForm.value };
+      if (!this.showPasswordFields) delete payload.password;
+      delete payload.confirmPassword;
+      console.log('Payload Final:', payload);
     } else {
       this.profileForm.markAllAsTouched();
     }
   }
 
-  cancel(): void {
-    this.router.navigate(['/profile']);
-  }
+  cancel = () => this.router.navigate(['/profile']);
 }

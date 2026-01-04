@@ -14,12 +14,12 @@ import {
   isDataSource
 } from "./chunk-NMV6MEOQ.js";
 import {
+  Platform
+} from "./chunk-NLH7XRI5.js";
+import {
   coerceElement,
   coerceNumberProperty
 } from "./chunk-RNJZRFSW.js";
-import {
-  Platform
-} from "./chunk-NLH7XRI5.js";
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -1338,4 +1338,4 @@ export {
   CdkScrollableModule,
   ScrollingModule
 };
-//# sourceMappingURL=chunk-ZGTTBTHJ.js.map
+//# sourceMappingURL=chunk-NOBTM7I5.js.map

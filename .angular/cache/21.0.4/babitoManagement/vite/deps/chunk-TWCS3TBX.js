@@ -8,15 +8,18 @@ import {
   normalizePassiveListenerOptions
 } from "./chunk-YEEMYZUP.js";
 import {
+  coerceArray
+} from "./chunk-AIEYJCOW.js";
+import {
   _CdkPrivateStyleLoader
 } from "./chunk-PT2GDYOZ.js";
+import {
+  Platform
+} from "./chunk-NLH7XRI5.js";
 import {
   coerceElement,
   coerceNumberProperty
 } from "./chunk-RNJZRFSW.js";
-import {
-  Platform
-} from "./chunk-NLH7XRI5.js";
 import {
   ANIMATION_MODULE_TYPE,
   APP_ID,
@@ -707,11 +710,6 @@ var CdkMonitorFocus = class _CdkMonitorFocus {
     }]
   });
 })();
-
-// node_modules/@angular/cdk/fesm2022/_array-chunk.mjs
-function coerceArray(value) {
-  return Array.isArray(value) ? value : [value];
-}
 
 // node_modules/@angular/cdk/fesm2022/_breakpoints-observer-chunk.mjs
 var mediaQueriesForWebkitCompatibility = /* @__PURE__ */ new Set();
@@ -2548,19 +2546,6 @@ var ConfigurableFocusTrapFactory = class _ConfigurableFocusTrapFactory {
   }], () => [], null);
 })();
 
-// node_modules/@angular/cdk/fesm2022/_css-pixel-value-chunk.mjs
-function coerceCssPixelValue(value) {
-  if (value == null) {
-    return "";
-  }
-  return typeof value === "string" ? value : `${value}px`;
-}
-
-// node_modules/@angular/cdk/fesm2022/coercion.mjs
-function coerceBooleanProperty(value) {
-  return value != null && `${value}` !== "false";
-}
-
 // node_modules/@angular/cdk/fesm2022/layout.mjs
 var LayoutModule = class _LayoutModule {
   static ɵfac = function LayoutModule_Factory(__ngFactoryType__) {
@@ -2608,7 +2593,6 @@ export {
   DOWN_ARROW,
   A,
   FocusMonitor,
-  coerceArray,
   ObserversModule,
   LiveAnnouncer,
   _IdGenerator,
@@ -2616,8 +2600,6 @@ export {
   ActiveDescendantKeyManager,
   addAriaReferencedId,
   removeAriaReferencedId,
-  coerceCssPixelValue,
-  coerceBooleanProperty,
   _animationsDisabled
 };
-//# sourceMappingURL=chunk-YJWJVNOT.js.map
+//# sourceMappingURL=chunk-TWCS3TBX.js.map
