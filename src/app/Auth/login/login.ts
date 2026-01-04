@@ -50,8 +50,8 @@ export class Login {
         next: (user) => {
           this.isLoading = false;
           if (user) {
-            // ÉTAPE CRUCIALE : On stocke l'agent dans le ProfileService
-            this.profileService.setAgent(user.agent);
+            // On passe l'agent pour l'affichage ET le token pour le stockage
+            this.profileService.setSession(user.agent, user.token);
             
             console.log('Utilisateur authentifié :', user.agent.firstName);
             // Redirection vers le tableau de bord

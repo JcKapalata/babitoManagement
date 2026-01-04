@@ -1,39 +1,50 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Agent } from '../Models/agent';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, of, catchError } from 'rxjs';
+import { Agent, User } from '../Models/agent';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
-  // Le BehaviorSubject stocke l'agent actuel (initialement nul)
+  private http = inject(HttpClient);
+  private readonly API_URL = `${environment.apiUrl}/users`;
+
   private currentAgentSubject = new BehaviorSubject<Agent | null>(null);
-  
-  // Observable que les composants vont écouter
-  public currentAgent$: Observable<Agent | null> = this.currentAgentSubject.asObservable();
+  public currentAgent$ = this.currentAgentSubject.asObservable();
 
   constructor() {
-    // Au démarrage, on regarde si un agent était déjà sauvé dans le navigateur
-    const savedAgent = localStorage.getItem('active_agent');
-    if (savedAgent) {
-      this.currentAgentSubject.next(JSON.parse(savedAgent));
+    this.loadSessionFromServer();
+  }
+
+  // On récupère les infos depuis l'API In-Memory au démarrage
+  private loadSessionFromServer() {
+    const token = localStorage.getItem('auth_token');
+    
+    if (token) {
+      // On simule une requête GET vers /users en filtrant par token
+      this.http.get<User[]>(this.API_URL).pipe(
+        map(users => users.find(u => u.token === token)),
+        catchError(() => of(null)) // En cas d'erreur API
+      ).subscribe(userFound => {
+        if (userFound) {
+          this.currentAgentSubject.next(userFound.agent);
+        } else {
+          this.clearProfile();
+        }
+      });
     }
   }
 
-  // Cette méthode sera appelée par ton AuthService juste après un login réussi
-  setAgent(agent: Agent): void {
-    localStorage.setItem('active_agent', JSON.stringify(agent));
+  // Stocke uniquement le token sur le disque, et l'agent en RAM (BehaviorSubject)
+  setSession(agent: Agent, token: string): void {
+    localStorage.setItem('auth_token', token);
     this.currentAgentSubject.next(agent);
   }
 
-  // Pour vider le profil à la déconnexion
   clearProfile(): void {
-    localStorage.removeItem('active_agent');
+    localStorage.removeItem('auth_token');
     this.currentAgentSubject.next(null);
-  }
-
-  // Accès rapide à la valeur sans passer par un Observable
-  get currentAgentValue(): Agent | null {
-    return this.currentAgentSubject.value;
   }
 }
