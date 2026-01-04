@@ -1,18 +1,18 @@
 import {
+  DomSanitizer
+} from "./chunk-5M665N7G.js";
+import {
   trustedHTMLFromString
 } from "./chunk-NGX5KMVR.js";
 import "./chunk-4IRCW4OZ.js";
 import {
-  DomSanitizer
-} from "./chunk-63V537XR.js";
-import {
   BidiModule
 } from "./chunk-L64ZHEPW.js";
 import "./chunk-PT2GDYOZ.js";
+import "./chunk-VMCNKVZC.js";
 import {
   HttpClient
 } from "./chunk-QFUUJDY3.js";
-import "./chunk-VMCNKVZC.js";
 import "./chunk-VU7AIJWC.js";
 import {
   ChangeDetectionStrategy,

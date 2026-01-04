@@ -1,3 +1,4 @@
+import "./chunk-VMCNKVZC.js";
 import {
   HttpBackend,
   HttpHeaders,
@@ -5,7 +6,6 @@ import {
   HttpResponse,
   HttpXhrBackend
 } from "./chunk-QFUUJDY3.js";
-import "./chunk-VMCNKVZC.js";
 import {
   XhrFactory
 } from "./chunk-VU7AIJWC.js";

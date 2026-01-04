@@ -2548,6 +2548,19 @@ var ConfigurableFocusTrapFactory = class _ConfigurableFocusTrapFactory {
   }], () => [], null);
 })();
 
+// node_modules/@angular/cdk/fesm2022/_css-pixel-value-chunk.mjs
+function coerceCssPixelValue(value) {
+  if (value == null) {
+    return "";
+  }
+  return typeof value === "string" ? value : `${value}px`;
+}
+
+// node_modules/@angular/cdk/fesm2022/coercion.mjs
+function coerceBooleanProperty(value) {
+  return value != null && `${value}` !== "false";
+}
+
 // node_modules/@angular/cdk/fesm2022/layout.mjs
 var LayoutModule = class _LayoutModule {
   static ɵfac = function LayoutModule_Factory(__ngFactoryType__) {
@@ -2583,19 +2596,6 @@ function _animationsDisabled() {
   return _getAnimationsState() !== "enabled";
 }
 
-// node_modules/@angular/cdk/fesm2022/_css-pixel-value-chunk.mjs
-function coerceCssPixelValue(value) {
-  if (value == null) {
-    return "";
-  }
-  return typeof value === "string" ? value : `${value}px`;
-}
-
-// node_modules/@angular/cdk/fesm2022/coercion.mjs
-function coerceBooleanProperty(value) {
-  return value != null && `${value}` !== "false";
-}
-
 export {
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
@@ -2616,8 +2616,8 @@ export {
   ActiveDescendantKeyManager,
   addAriaReferencedId,
   removeAriaReferencedId,
-  _animationsDisabled,
   coerceCssPixelValue,
-  coerceBooleanProperty
+  coerceBooleanProperty,
+  _animationsDisabled
 };
-//# sourceMappingURL=chunk-X4W4OUYJ.js.map
+//# sourceMappingURL=chunk-YJWJVNOT.js.map

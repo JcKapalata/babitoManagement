@@ -4,6 +4,11 @@
   </div>
 
   <div class="main">
-    <app-form-profile [userToUpdate]="selectedUser"></app-form-profile>
+    @if (selectedUser) {
+      <app-form-profile [userToUpdate]="selectedUser"></app-form-profile>
+    }@else {
+      <app-loading></app-loading>
+    }
+    
   </div>
 </div>
