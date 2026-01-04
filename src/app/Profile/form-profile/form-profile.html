@@ -2,7 +2,7 @@
   
   <div class="avatar-section">
     <div class="image-wrapper" (click)="fileInput.click()">
-      <img [src]="imagePreview || 'assets/images/default-avatar.png'" alt="Avatar">
+      <img [src]="imagePreview || 'profileAvatar/default-avatar.jpeg'" alt="Avatar">
       <div class="overlay"><mat-icon>camera_alt</mat-icon></div>
     </div>
     <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/*">

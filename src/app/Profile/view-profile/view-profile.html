@@ -11,9 +11,8 @@
             @if (agent.avatar) {
               <img [src]="agent?.avatar" alt="Photo de profil" class="avatar">
             } @else {
-              <div class="avatar-placeholder">
-                <mat-icon>person</mat-icon>
-              </div>
+              
+              <img [src]="'profileAvatar/default-avatar.jpeg'" alt="Photo de profil" class="avatar">
             }
           </div>
           <h2>{{ agent.firstName }} {{ agent.lastName }}</h2>
