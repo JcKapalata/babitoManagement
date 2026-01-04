@@ -2,23 +2,44 @@
   <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title>Connexion</mat-card-title>
-      <mat-card-subtitle>Accédez à votre gestionnaire de livraison</mat-card-subtitle>
+      <mat-card-subtitle>Accédez à votre compte de gestion</mat-card-subtitle>
     </mat-card-header>
 
-    <form class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput type="email" placeholder="exemple@mail.com" required>
+        <input matInput formControlName="email" type="email" placeholder="exemple@mail.com">
         <mat-icon matSuffix>email</mat-icon>
+        
+        @if (loginForm.get('email')?.hasError('required')) {
+          <mat-error>L'email est requis</mat-error>
+        }
+        @if (loginForm.get('email')?.hasError('email')) {
+          <mat-error>Format d'email invalide</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mot de passe</mat-label>
-        <input matInput type="password" required>
-        <mat-icon matSuffix>lock</mat-icon>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
+        <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+
+        @if (loginForm.get('password')?.hasError('required')) {
+          <mat-error>Le mot de passe est requis</mat-error>
+        }
+        @if (loginForm.get('password')?.hasError('minlength')){
+          <mat-error>Minimum 8 caractères</mat-error>
+        }
       </mat-form-field>
 
-      <button mat-raised-button color="primary" class="login-button" type="submit">
+      <button mat-raised-button 
+              color="primary" 
+              class="login-button" 
+              type="submit" 
+              [disabled]="loginForm.invalid">
         SE CONNECTER
       </button>
     </form>

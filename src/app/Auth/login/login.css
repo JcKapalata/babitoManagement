@@ -1,14 +1,12 @@
-/* Conteneur principal qui prend toute la hauteur de l'écran */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background: #f0f2f5; /* Gris très clair */
+  background: #f0f2f5;
 }
 
-/* Style de la carte de login */
 .login-card {
   width: 100%;
   max-width: 400px;
@@ -21,6 +19,7 @@ mat-card-title {
   font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
+  color: var(--primary-color);
 }
 
 mat-card-subtitle {
@@ -28,7 +27,6 @@ mat-card-subtitle {
   margin-bottom: 20px;
 }
 
-/* Formulaire */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -40,12 +38,12 @@ mat-card-subtitle {
   width: 100%;
 }
 
-/* Bouton de connexion */
 .login-button {
   height: 50px;
   font-size: 16px;
   font-weight: 600;
   margin-top: 10px;
+  color: var(--primary-color) !important;
 }
 
 .forgot-password {
@@ -53,6 +51,7 @@ mat-card-subtitle {
   text-align: center;
   margin: 15px 0;
   font-size: 14px;
-  color: #3f51b5;
+  color: var(--primary-color);
+  cursor: pointer;
   text-decoration: none;
 }
