@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, of, catchError } from 'rxjs';
+import { BehaviorSubject, map, of, catchError, Observable } from 'rxjs';
 import { Agent, User } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
@@ -48,5 +48,22 @@ export class ProfileService {
     this.currentAgentSubject.next(null);
   }
 
+  //get User by Id
+  getUserById(userId: number): Observable<User | undefined> {
+    return this.http.get<User[]>(this.API_URL).pipe(
+      map(users => users.find(u => u.agent.id === userId)),
+      catchError(err => {
+        console.error('Erreur lors de la récupération de l\'utilisateur', err);
+        return of(undefined);
+      })
+    );
+  }
+
   //update Profile
+  updateAgent(userId: number, updatedData: Partial<Agent>): Observable<any> {
+    // Dans une vraie API, on ferait un PUT sur /users/id
+    // Ici avec in-memory, on adapte selon la structure de ta DB
+    return this.http.put(`${this.API_URL}/${userId}`, updatedData);
+  }
+
 }

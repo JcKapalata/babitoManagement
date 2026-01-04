@@ -1,1 +1,67 @@
-<p>form-profile works!</p>
+<div class="form-container">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-card">
+    <h2>{{ isUpdateMode ? 'MODIFIER LE PROFIL' : 'NOUVEL AGENT' }}</h2>
+
+    <div class="avatar-upload">
+      <div class="preview-container" (click)="fileInput.click()">
+        @if (imagePreview) {
+          <img [src]="imagePreview" alt="Avatar">
+        } @else {
+          <mat-icon class="placeholder-icon">add_a_photo</mat-icon>
+        }
+        <div class="overlay"><mat-icon>camera_alt</mat-icon></div>
+      </div>
+      <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+      <p>Cliquez pour changer la photo</p>
+    </div>
+
+    <div class="grid-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="firstName">
+        <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="lastName">
+        <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email">
+      <mat-error>{{ getErrorMessage('email') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Rôle</mat-label>
+      <mat-select formControlName="role">
+        @for (r of roles; track r) {
+          <mat-option [value]="r">{{ r | titlecase }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="grid-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput formControlName="password" type="password">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmer</mat-label>
+        <input matInput formControlName="confirmPassword" type="password">
+        <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-actions">
+      <button mat-button type="button" (click)="cancel()">ANNULER</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="profileForm.invalid">
+        {{ isUpdateMode ? 'METTRE À JOUR' : 'ENREGISTRER' }}
+      </button>
+    </div>
+  </form>
+</div>
