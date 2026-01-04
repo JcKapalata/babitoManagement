@@ -33,6 +33,12 @@
         @if (loginForm.get('password')?.hasError('minlength')){
           <mat-error>Minimum 8 caractères</mat-error>
         }
+        @if (loginForm.get('password')?.hasError('pattern') && !(
+          loginForm.get('password')?.hasError('required') || 
+          loginForm.get('password')?.hasError('minlength')
+        ) ){
+          <mat-error>Doit contenir : 1 Majuscule, 1 Minuscule, 1 Chiffre et 1 Caractère spécial (@$!%*?&)</mat-error>
+        }
       </mat-form-field>
 
       <button mat-raised-button 

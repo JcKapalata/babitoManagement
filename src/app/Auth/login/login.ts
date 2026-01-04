@@ -27,11 +27,14 @@ export class Login {
   loginForm: FormGroup;
   hidePassword = true; // Pour basculer la visibilité du mot de passe
 
+  // Regex : au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial
+  passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   constructor(private fb: FormBuilder, private router: Router) {
     // Initialisation du formulaire avec validations
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(this.passwordPattern)]]
     });
   }
 
