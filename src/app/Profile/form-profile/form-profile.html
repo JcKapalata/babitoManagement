@@ -3,7 +3,9 @@
   <div class="avatar-section">
     <div class="image-wrapper" (click)="fileInput.click()">
       <img [src]="imagePreview || 'profileAvatar/default-avatar.jpeg'" alt="Avatar">
-      <div class="overlay"><mat-icon>camera_alt</mat-icon></div>
+      <div class="overlay">
+        <mat-icon>camera_alt</mat-icon>
+      </div>
     </div>
     <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/*">
   </div>
@@ -45,7 +47,7 @@
     @if (isUpdateMode) {
       <div class="full-width password-toggle-row">
         <mat-divider></mat-divider>
-        <button type="button" class="btn-secondary" mat-button color="accent" (click)="togglePasswordFields()">
+        <button type="button" class="btn-secondary" mat-button (click)="togglePasswordFields()">
           <mat-icon>{{ showPasswordFields ? 'expand_less' : 'lock_reset' }}</mat-icon>
           {{ showPasswordFields ? 'Annuler la modification du mot de passe' : 'Modifier le mot de passe' }}
         </button>

@@ -2,7 +2,7 @@ import {
   MatRipple,
   MatRippleModule,
   _StructuralStylesLoader
-} from "./chunk-AFZMFMML.js";
+} from "./chunk-EMWGJBVV.js";
 import "./chunk-NGX5KMVR.js";
 import {
   ErrorStateMatcher,
@@ -24,7 +24,7 @@ import {
   MatLabel,
   MatPrefix,
   MatSuffix
-} from "./chunk-4VBGD4RF.js";
+} from "./chunk-QNIPYTY6.js";
 import {
   A,
   ActiveDescendantKeyManager,
@@ -37,11 +37,13 @@ import {
   SPACE,
   UP_ARROW,
   _IdGenerator,
-  _animationsDisabled,
   addAriaReferencedId,
   hasModifierKey,
   removeAriaReferencedId
-} from "./chunk-TWCS3TBX.js";
+} from "./chunk-36J3BURN.js";
+import {
+  coerceCssPixelValue
+} from "./chunk-42QFQP6S.js";
 import {
   _VisuallyHiddenLoader
 } from "./chunk-4IRCW4OZ.js";
@@ -50,9 +52,11 @@ import {
   _isTestEnvironment
 } from "./chunk-YEEMYZUP.js";
 import {
-  coerceArray,
-  coerceCssPixelValue
-} from "./chunk-AIEYJCOW.js";
+  _animationsDisabled
+} from "./chunk-B2PGGP4B.js";
+import {
+  coerceArray
+} from "./chunk-N4DOILP3.js";
 import {
   SelectionModel
 } from "./chunk-KPHILXDZ.js";
@@ -61,7 +65,7 @@ import {
   ScrollDispatcher,
   ScrollingModule,
   ViewportRuler
-} from "./chunk-NOBTM7I5.js";
+} from "./chunk-ZGTTBTHJ.js";
 import {
   supportsScrollBehavior
 } from "./chunk-GUGIMSVJ.js";
@@ -73,10 +77,10 @@ import "./chunk-NMV6MEOQ.js";
 import {
   _CdkPrivateStyleLoader
 } from "./chunk-PT2GDYOZ.js";
+import "./chunk-RNJZRFSW.js";
 import {
   Platform
 } from "./chunk-NLH7XRI5.js";
-import "./chunk-RNJZRFSW.js";
 import {
   Location,
   NgClass

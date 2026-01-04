@@ -12,7 +12,10 @@ export class DataService implements InMemoryDbService {
   createDb() {
 
     const produits: Produit[] = PRODUITS;
-    const users: User[] = USERS
+    const users: User[] = USERS.map(user => ({
+      ...user,
+      id: user.agent.id
+    }));
     return { produits, users };
   }
 }

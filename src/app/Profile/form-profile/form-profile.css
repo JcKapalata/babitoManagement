@@ -23,19 +23,37 @@
   cursor: pointer;
 }
 
-.image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-.overlay {
-  position: absolute; inset: 0; background: rgba(0,0,0,0.3);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; opacity: 0; transition: 0.3s;
+.image-wrapper img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
 }
 
-.image-wrapper:hover .overlay { opacity: 1; }
+.overlay {
+  position: absolute; 
+  inset: 0; 
+  background: rgba(0,0,0,0.3);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  color: #fff; 
+  opacity: 0; 
+  transition: 0.3s;
+}
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.image-wrapper:hover .overlay { 
+  opacity: 1; 
+}
 
-.full-width { grid-column: span 2; }
+.form-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 15px; 
+}
+
+.full-width { 
+  grid-column: span 2; 
+}
 
 .password-toggle-row {
   margin: 10px 0;
@@ -51,23 +69,34 @@
   animation: slideDown 0.3s ease-out;
 }
 
-.btn-secondary{
+/* Styles personnalisés pour les boutons */
+.btn-secondary {
   color: var(--primary-color) !important;
   transition: 0.3s;
 }
-.btn-secondary:hover{
+
+.btn-secondary:hover {
   background: var(--primary-color) !important;
   color: white !important;
 }
 
-.btn-submit{
+.btn-submit {
   background: var(--primary-color) !important;
   transition: 0.3s;
 }
-.btn-submit:hover{
+
+.btn-submit:hover {
   color: var(--primary-color) !important;
-  background: none !important;
+  background: transparent !important;
   border: 1.5px solid var(--primary-color) !important;
+}
+
+/* Désactivation du style hover si le bouton est invalide */
+.btn-submit:disabled {
+  background: #ccc !important;
+  border: none !important;
+  color: white !important;
+  cursor: not-allowed;
 }
 
 @keyframes slideDown {
@@ -85,6 +114,10 @@
 }
 
 @media (max-width: 600px) {
-  .form-grid, .password-group { grid-template-columns: 1fr; }
-  .full-width { grid-column: span 1; }
+  .form-grid, .password-group { 
+    grid-template-columns: 1fr; 
+  }
+  .full-width { 
+    grid-column: span 1; 
+  }
 }

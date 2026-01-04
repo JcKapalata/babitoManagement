@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ProfileService } from '../profile-service';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-view-profile',
@@ -17,7 +18,11 @@ export class ViewProfile {
   private router = inject(Router)
   
   // On récupère l'agent sous forme d'observable
-  agent$ = this.profileService.currentAgent$;
+  agent$ = this.profileService.currentAgent$.pipe(
+    tap(agent => {
+      console.log('%c[VIEW PROFILE] Données de l\'agent reçues:', 'color: #007bff; font-weight: bold;', agent);
+    })
+  );
 
   //goToUpdate
   goToUpdateProfile(userId: number){

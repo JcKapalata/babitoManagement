@@ -1,8 +1,3 @@
-// node_modules/@angular/cdk/fesm2022/_array-chunk.mjs
-function coerceArray(value) {
-  return Array.isArray(value) ? value : [value];
-}
-
 // node_modules/@angular/cdk/fesm2022/_css-pixel-value-chunk.mjs
 function coerceCssPixelValue(value) {
   if (value == null) {
@@ -17,8 +12,7 @@ function coerceBooleanProperty(value) {
 }
 
 export {
-  coerceArray,
   coerceCssPixelValue,
   coerceBooleanProperty
 };
-//# sourceMappingURL=chunk-AIEYJCOW.js.map
+//# sourceMappingURL=chunk-42QFQP6S.js.map

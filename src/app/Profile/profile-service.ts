@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, of, catchError, Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, map, of, catchError, Observable, throwError, tap } from 'rxjs';
 import { Agent, User } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
@@ -16,6 +16,11 @@ export class ProfileService {
 
   constructor() {
     this.loadSessionFromServer();
+  }
+
+  // Cette méthode "pousse" les nouvelles données à tous les composants qui écoutent
+  updateLocalAgent(agent: Agent) {
+    this.currentAgentSubject.next(agent);
   }
 
   // On récupère les infos depuis l'API In-Memory au démarrage
@@ -51,6 +56,7 @@ export class ProfileService {
   //get User by Id
   getUserById(userId: number): Observable<User | undefined> {
     return this.http.get<User[]>(this.API_URL).pipe(
+      tap( data => console.log('En DB actuellement:', data)),
       map(users => users.find(u => u.agent.id === userId)),
       catchError(err => {
         console.error('Erreur lors de la récupération de l\'utilisateur', err);
@@ -60,10 +66,29 @@ export class ProfileService {
   }
 
   //update Profile
-  updateAgent(userId: number, updatedData: Partial<Agent>): Observable<any> {
-    // Dans une vraie API, on ferait un PUT sur /users/id
-    // Ici avec in-memory, on adapte selon la structure de ta DB
-    return this.http.put(`${this.API_URL}/${userId}`, updatedData);
+  updateAgent(userId: number, updatedData: any): Observable<any> {
+    const url = `${this.API_URL}/${userId}`;
+    
+    // LOG DE DÉBOGAGE AVANT ENVOI
+    console.log(
+      `%c[HTTP PUT REQUEST]%c Vers: ${url}`, 
+      'color: #94D8B5',
+      updatedData
+    );
+
+    return this.http.put(url, updatedData).pipe(
+      tap(() => console.log(`%c[SUCCESS]%c Utilisateur ${userId} mis à jour`, 'color: green')),
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    const message = `Code ${error.status} : ${error.statusText || 'Non trouvé'}`;
+    console.error(
+      `%c[ERROR API]%c ${message}`, 
+      'color: #d32f2f;'
+    );
+    return throwError(() => new Error(message));
   }
 
 }
