@@ -147,54 +147,83 @@ export class FormProfile implements OnInit {
   }
 
   onSubmit(): void {
-    // 1. Garde-fous (Early exits)
+    // 1. Garde-fou : Validation du formulaire
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
     }
 
-    const cleanId = Number(this.userId);
-    if (!cleanId || isNaN(cleanId)) {
-      console.error('%c[ERROR] ID invalide', 'color: red; font-weight: bold;');
-      return;
-    }
-
     this.isLoading = true;
-    
-    // Destructuring des valeurs du formulaire pour plus de clarté
-    const { firstName, lastName, email, role, avatar, password } = this.profileForm.value;
+    const val = this.profileForm.value;
 
-    // 2. Construction du Payload typé
-    const updatedUserPayload = {
-      id: cleanId,
-      token: 'fake-jwt-token-002', 
-      agent: {
-        id: cleanId,
-        firstName,
-        lastName,
-        email,
-        role,
-        avatar: avatar || 'profileAvatar/default-avatar.jpeg',
-        ...(this.showPasswordFields && password ? { password } : {}) // Ajout conditionnel propre
-      }
-    };
-
-    // 3. Traitement de la requête
-    this.profileService.updateAgent(cleanId, updatedUserPayload)
-      .pipe(
-        first(),
-        finalize(() => this.isLoading = false) // Gère le passage à false en cas de succès ET d'erreur
-      )
-      .subscribe({
-        next: () => {
-          console.log('%c[SUCCESS] Profil mis à jour', 'color: green; font-weight: bold;');
-          
-          // Synchronisation de l'état local (Source unique de vérité)
-          this.profileService.updateLocalAgent(updatedUserPayload.agent);
-
-          this.router.navigate(['profile/user-profile']);
+    // 2. Détermination du mode et préparation du traitement
+    if (this.isUpdateMode) {
+      /** * --- MODE ÉDITION (PUT) ---
+       */
+      const cleanId = Number(this.userId);
+      const updatedUserPayload = {
+        id: cleanId, // Nécessaire pour In-Memory Web API
+        token: 'fake-jwt-token-002', // Conserver ou rafraîchir le token
+        agent: {
+          id: cleanId,
+          firstName: val.firstName,
+          lastName: val.lastName,
+          email: val.email,
+          role: val.role,
+          avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
+          // On n'ajoute le password que s'il a été saisi
+          ...(this.showPasswordFields && val.password ? { password: val.password } : {})
         }
-      });
+      };
+
+      this.profileService.updateAgent(cleanId, updatedUserPayload)
+        .pipe(
+          first(),
+          finalize(() => this.isLoading = false)
+        )
+        .subscribe({
+          next: () => {
+            console.log('%c[UPDATE SUCCESS]', 'color: green; font-weight: bold;');
+            // Mise à jour de la source de vérité locale
+            this.profileService.updateLocalAgent(updatedUserPayload.agent);
+            this.router.navigate(['profile/user-profile']);
+          }
+        });
+
+    } else {
+      /** * --- MODE CRÉATION (POST) ---
+       */
+      const newUserPayload = {
+        // Pas d'ID à la racine : le simulateur In-Memory le générera automatiquement
+        token: 'fake-jwt-token-' + Math.random().toString(36).substring(7),
+        agent: {
+          firstName: val.firstName,
+          lastName: val.lastName,
+          email: val.email,
+          role: val.role,
+          avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
+          password: val.password // Obligatoire en création (géré par les validateurs)
+        }
+      };
+
+      this.profileService.createAgent(newUserPayload)
+        .pipe(
+          first(),
+          finalize(() => this.isLoading = false)
+        )
+        .subscribe({
+          next: (createdUser) => {
+            console.log('%c[CREATE SUCCESS]', 'color: #2ecc71; font-weight: bold;', createdUser);
+            
+            // Si vous voulez que l'utilisateur voie son nouveau profil après création :
+            if (createdUser && createdUser.agent) {
+              this.profileService.updateLocalAgent(createdUser.agent);
+            }
+            
+            this.router.navigate(['profile/user-profile']);
+          }
+        });
+    }
   }
 
   cancel = () => this.router.navigate(['profile/user-profile']);

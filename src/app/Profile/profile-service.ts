@@ -82,6 +82,13 @@ export class ProfileService {
     );
   }
 
+  //create user
+  createAgent(userPayload: any): Observable<any> {
+    return this.http.post<any>(this.API_URL, userPayload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     const message = `Code ${error.status} : ${error.statusText || 'Non trouvé'}`;
     console.error(
