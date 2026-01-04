@@ -17,17 +17,24 @@ export class Navbar implements OnInit {
   private readonly router = inject(Router);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+
   isShowedProduits = false;
+  isShowedRH = false;
 
   ngOnInit(): void {
     this.isShowedProduits = false;
   }
 
+  // ======= Toggle =======
   toggleProduits() {
     this.isShowedProduits = !this.isShowedProduits;
   }
 
-  // go to Produit information
+  toggleRH(){
+    this.isShowedRH = !this.isShowedRH;
+  }
+
+  // ====== go to Produit information =====
   goToProduitsDesponibles() {
     this.router.navigate(['produits/produits-disponibles']);
   }
@@ -44,7 +51,12 @@ export class Navbar implements OnInit {
     this.router.navigate(['produits/ajout-produit'])
   }
 
-  // go to dashBord
+  // ===== go to RH information =====
+  goToAjout(){
+    this.router.navigate(['profile/add-profile'])
+  }
+
+  // ======= go to dashBord =======
   goToTableauBord(){
     this.router.navigate(['tableau-de-bord']);
   }

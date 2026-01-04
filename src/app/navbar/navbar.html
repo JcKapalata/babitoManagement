@@ -43,6 +43,19 @@
     <button mat-button class="nav-item desactive">
       <mat-icon>payments</mat-icon> Gestion Finances
     </button>
+
+    <button mat-button class="nav-item" (click)="toggleRH()">
+      <mat-icon>payments</mat-icon> Gestion RH
+    </button>
+
+    @if (isShowedRH) {
+      <div class="sub-menu">
+        <button mat-button class="sub-nav-item" (click)="goToAjout()">
+          <mat-icon>person_add</mat-icon> Ajouter Agent
+        </button>
+      </div>
+    }
+
   </nav>
 
   <div class="footer">
