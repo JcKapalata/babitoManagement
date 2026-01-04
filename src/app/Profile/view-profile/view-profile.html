@@ -1,0 +1,48 @@
+<div class="profile-container">
+  @if (agent$ | async; as agent) {
+    <mat-card class="profile-card">
+      <div class="profile-header">
+        <div class="avatar-container">
+          @if (agent.avatar) {
+            <img [src]="agent.avatar" alt="Photo de profil" class="avatar">
+          } @else {
+            <div class="avatar-placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+          }
+        </div>
+        <h2>{{ agent.firstName }} {{ agent.lastName }}</h2>
+        <span class="role-badge" [attr.data-role]="agent.role">
+          {{ agent.role | uppercase }}
+        </span>
+      </div>
+
+      <mat-card-content class="profile-info">
+        <div class="info-row">
+          <mat-icon>email</mat-icon>
+          <div>
+            <label>Email Professionnel</label>
+            <p>{{ agent.email }}</p>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <mat-icon>badge</mat-icon>
+          <div>
+            <label>ID Agent</label>
+            <p>#BA-00{{ agent.id }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-stroked-button color="primary">MODIFIER LE PROFIL</button>
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <div class="no-profile">
+      <mat-icon>account_circle</mat-icon>
+      <p>Aucun profil chargé. Veuillez vous reconnecter.</p>
+    </div>
+  }
+</div>

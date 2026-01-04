@@ -46,8 +46,20 @@
   </nav>
 
   <div class="footer">
-    <button mat-flat-button color="warn" class="full-width">
-      <mat-icon>logout</mat-icon> Déconnexion
-    </button>
+    <button mat-flat-button 
+          color="primary" 
+          (click)="goToProfile()" 
+          class="full-width margin-bottom">
+    <mat-icon>account_circle</mat-icon> 
+    PROFIL
+  </button>
+
+  <button mat-flat-button 
+          color="warn" 
+          (click)="logout()" 
+          class="full-width">
+    <mat-icon>logout</mat-icon> 
+    DÉCONNEXION
+  </button>
   </div>
 </div>

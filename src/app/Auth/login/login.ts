@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth-service';
 import { Credentials } from '../../Models/credentials';
+import { ProfileService } from '../../Profile/profile-service';
 @Component({
   selector: 'app-login',
   imports: [
@@ -23,6 +24,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private profileService = inject(ProfileService)
 
   loginForm: FormGroup;
   hidePassword = true;
@@ -48,6 +50,9 @@ export class Login {
         next: (user) => {
           this.isLoading = false;
           if (user) {
+            // ÉTAPE CRUCIALE : On stocke l'agent dans le ProfileService
+            this.profileService.setAgent(user.agent);
+            
             console.log('Utilisateur authentifié :', user.agent.firstName);
             // Redirection vers le tableau de bord
             this.router.navigate(['/tableau-de-bord']);

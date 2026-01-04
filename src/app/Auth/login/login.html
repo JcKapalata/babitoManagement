@@ -46,7 +46,14 @@
               class="login-button" 
               type="submit" 
               [disabled]="loginForm.invalid">
-        SE CONNECTER
+        @if (!isLoading) {
+          <span>SE CONNECTER</span>
+        } @else {
+          <div class="loading-content">
+            <mat-icon class="spinner">autorenew</mat-icon>
+            <span>CONNEXION...</span>
+          </div>
+        }
       </button>
     </form>
 

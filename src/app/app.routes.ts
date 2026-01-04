@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { produits } from './Gestion-produits/produits';
+import { profile } from './Profile/profile';
 
 export const routes: Routes = [
     // 1. Redirection par défaut (À METTRE EN PREMIER)
@@ -20,6 +21,7 @@ export const routes: Routes = [
                 path: 'tableau-de-bord', 
                 loadComponent: () => import('./tableau-de-bord/tableau-de-bord').then(m => m.TableauDeBord) 
             },
+            ...profile,
             ...produits,
         ]
     },
