@@ -25,7 +25,11 @@ export class ViewProfile {
   );
 
   //goToUpdate
-  goToUpdateProfile(userId: number){
-    this.router.navigate(['profile/update-profile', userId])
+  goToUpdateProfile(userId: number | undefined) {
+  if (!userId) {
+    console.error("Impossible de modifier : l'ID de l'agent est introuvable dans l'objet", this.agent$);
+    return;
   }
+  this.router.navigate(['profile/update-profile', userId]);
+}
 }

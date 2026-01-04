@@ -32,7 +32,6 @@ export class UpdateProfile implements OnInit {
             this.selectedUser = { ...user }; 
             
             // 2. On force Angular à détecter que selectedUser n'est plus null
-            // Cela va déclencher le @if dans le HTML et envoyer l'Input à l'enfant
             this.cdr.detectChanges(); 
           }
         },

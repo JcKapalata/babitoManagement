@@ -85,6 +85,13 @@ export class ProfileService {
   //create user
   createAgent(userPayload: any): Observable<any> {
     return this.http.post<any>(this.API_URL, userPayload).pipe(
+      map(user => {
+        // On s'assure que l'agent à l'intérieur possède l'ID de la racine
+        if (user && user.agent && !user.agent.id) {
+          user.agent.id = user.id;
+        }
+        return user;
+      }),
       catchError(this.handleError)
     );
   }

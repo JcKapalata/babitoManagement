@@ -147,7 +147,7 @@ export class FormProfile implements OnInit {
   }
 
   onSubmit(): void {
-    // 1. Garde-fou : Validation du formulaire
+    // 1. Validation de sécurité
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
@@ -156,14 +156,13 @@ export class FormProfile implements OnInit {
     this.isLoading = true;
     const val = this.profileForm.value;
 
-    // 2. Détermination du mode et préparation du traitement
     if (this.isUpdateMode) {
       /** * --- MODE ÉDITION (PUT) ---
        */
       const cleanId = Number(this.userId);
       const updatedUserPayload = {
-        id: cleanId, // Nécessaire pour In-Memory Web API
-        token: 'fake-jwt-token-002', // Conserver ou rafraîchir le token
+        id: cleanId,
+        token: 'fake-jwt-token-002', 
         agent: {
           id: cleanId,
           firstName: val.firstName,
@@ -171,7 +170,6 @@ export class FormProfile implements OnInit {
           email: val.email,
           role: val.role,
           avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
-          // On n'ajoute le password que s'il a été saisi
           ...(this.showPasswordFields && val.password ? { password: val.password } : {})
         }
       };
@@ -184,7 +182,6 @@ export class FormProfile implements OnInit {
         .subscribe({
           next: () => {
             console.log('%c[UPDATE SUCCESS]', 'color: green; font-weight: bold;');
-            // Mise à jour de la source de vérité locale
             this.profileService.updateLocalAgent(updatedUserPayload.agent);
             this.router.navigate(['profile/user-profile']);
           }
@@ -194,7 +191,7 @@ export class FormProfile implements OnInit {
       /** * --- MODE CRÉATION (POST) ---
        */
       const newUserPayload = {
-        // Pas d'ID à la racine : le simulateur In-Memory le générera automatiquement
+        // On ne met pas d'ID ici, In-Memory le générera
         token: 'fake-jwt-token-' + Math.random().toString(36).substring(7),
         agent: {
           firstName: val.firstName,
@@ -202,7 +199,7 @@ export class FormProfile implements OnInit {
           email: val.email,
           role: val.role,
           avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
-          password: val.password // Obligatoire en création (géré par les validateurs)
+          password: val.password 
         }
       };
 
@@ -212,12 +209,18 @@ export class FormProfile implements OnInit {
           finalize(() => this.isLoading = false)
         )
         .subscribe({
-          next: (createdUser) => {
-            console.log('%c[CREATE SUCCESS]', 'color: #2ecc71; font-weight: bold;', createdUser);
+          next: (response) => {
+            console.log('%c[CREATE SUCCESS]', 'color: #2ecc71; font-weight: bold;', response);
             
-            // Si vous voulez que l'utilisateur voie son nouveau profil après création :
-            if (createdUser && createdUser.agent) {
-              this.profileService.updateLocalAgent(createdUser.agent);
+            // CRUCIAL : On fusionne l'ID généré par In-Memory dans l'objet agent
+            if (response && response.agent) {
+              const agentWithId = {
+                ...response.agent,
+                id: response.id // L'ID généré par le simulateur est ici
+              };
+              
+              // On informe le reste de l'appli que cet agent est l'agent courant
+              this.profileService.updateLocalAgent(agentWithId);
             }
             
             this.router.navigate(['profile/user-profile']);
