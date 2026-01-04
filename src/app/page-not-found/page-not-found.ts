@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,9 +10,15 @@ import { Router } from '@angular/router';
   styleUrl: './page-not-found.css',
 })
 export class PageNotFound {
-  private router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly router = inject(Router);
 
-  goToLogin(){
-    this.router.navigate(['login'])
+  // Déconnexion complète
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 }

@@ -41,7 +41,14 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-stroked-button class="modifier" color="primary">MODIFIER LE PROFIL</button>
+          <button 
+              mat-stroked-button 
+              class="modifier" 
+              color="primary"
+              (click)="goToUpdateProfile(agent.id)"
+              >
+              MODIFIER LE PROFIL
+            </button>
         </mat-card-actions>
       </mat-card>
     } @else {

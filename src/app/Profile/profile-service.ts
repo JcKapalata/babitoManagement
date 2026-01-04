@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, of, catchError } from 'rxjs';
+import { BehaviorSubject, map, of, catchError } from 'rxjs';
 import { Agent, User } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
@@ -47,4 +47,6 @@ export class ProfileService {
     localStorage.removeItem('auth_token');
     this.currentAgentSubject.next(null);
   }
+
+  //update Profile
 }
