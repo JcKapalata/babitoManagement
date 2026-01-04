@@ -76,6 +76,14 @@
     border: 1.5px solid white;
 }
 
+/* desactivation */
+.desactive{
+    background: gray !important;
+    cursor: not-allowed;
+}
+.desactive:hover{
+    cursor: not-allowed;
+}
 
 
 /* pour le footer */
