@@ -1,10 +1,4 @@
 import {
-  FormGroupDirective,
-  NgControl,
-  NgForm,
-  Validators
-} from "./chunk-UD6NNHA4.js";
-import {
   MAT_FORM_FIELD,
   MatError,
   MatFormField,
@@ -14,28 +8,34 @@ import {
   MatLabel,
   MatPrefix,
   MatSuffix
-} from "./chunk-P23MRLBR.js";
+} from "./chunk-KSETUCLW.js";
 import {
   _IdGenerator,
   coerceBooleanProperty
-} from "./chunk-OEWJKXZ5.js";
+} from "./chunk-KE2LIWEO.js";
+import "./chunk-4IRCW4OZ.js";
 import {
   getSupportedInputTypes
 } from "./chunk-7IG2CV2X.js";
-import "./chunk-4IRCW4OZ.js";
+import "./chunk-GUGIMSVJ.js";
+import {
+  BidiModule
+} from "./chunk-L64ZHEPW.js";
 import {
   AutofillMonitor,
   TextFieldModule
 } from "./chunk-KCGGOPZZ.js";
 import "./chunk-PT2GDYOZ.js";
-import "./chunk-GUGIMSVJ.js";
-import {
-  BidiModule
-} from "./chunk-L64ZHEPW.js";
 import "./chunk-RNJZRFSW.js";
 import {
   Platform
 } from "./chunk-NLH7XRI5.js";
+import {
+  FormGroupDirective,
+  NgControl,
+  NgForm,
+  Validators
+} from "./chunk-UD6NNHA4.js";
 import "./chunk-VMCNKVZC.js";
 import "./chunk-VU7AIJWC.js";
 import {
