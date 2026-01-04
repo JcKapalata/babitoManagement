@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,31 +7,30 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../auth-service';
+import { Credentials } from '../../Models/credentials';
 @Component({
   selector: 'app-login',
   imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule
+    CommonModule, FormsModule, ReactiveFormsModule,
+    MatCardModule, MatFormFieldModule, MatInputModule,
+    MatButtonModule, MatIconModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-  loginForm: FormGroup;
-  hidePassword = true; // Pour basculer la visibilité du mot de passe
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
-  // Regex : au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial
+  loginForm: FormGroup;
+  hidePassword = true;
+  isLoading = false; // Pour désactiver le bouton pendant la requête
+
   passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    // Initialisation du formulaire avec validations
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(this.passwordPattern)]]
@@ -40,11 +39,29 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log('Données saisies :', this.loginForm.value);
-      // Simulez une connexion réussie
-      this.router.navigate(['/tableau-de-bord']);
+      this.isLoading = true;
+      
+      // On transtype les valeurs du formulaire vers l'interface Credentials
+      const credentials = this.loginForm.value as Credentials;
+
+      this.authService.login(credentials.email, credentials.password).subscribe({
+        next: (user) => {
+          this.isLoading = false;
+          if (user) {
+            console.log('Utilisateur authentifié :', user.agent.firstName);
+            // Redirection vers le tableau de bord
+            this.router.navigate(['/tableau-de-bord']);
+          } else {
+            alert('Email ou mot de passe incorrect.');
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erreur technique :', err);
+          alert('Impossible de contacter le serveur.');
+        }
+      });
     } else {
-      // Marque tous les champs comme touchés pour afficher les erreurs
       this.loginForm.markAllAsTouched();
     }
   }
