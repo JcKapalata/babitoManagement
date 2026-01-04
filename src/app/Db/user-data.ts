@@ -10,7 +10,7 @@ export const USERS: User[] = [
       firstName: 'Jean',
       lastName: 'Kaps',
       role: 'admin',
-      avatar: 'assets/avatars/admin.png'
+      avatar: 'profileAvatar/jean-kaps.jpeg'
     }
   },
   {
