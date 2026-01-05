@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { produits } from './Gestion-produits/produits';
 import { profile } from './Profile/profile';
+import { authGuard } from './Auth/guard/auth-guard';
 
 export const routes: Routes = [
     // 1. Redirection par défaut (À METTRE EN PREMIER)
@@ -19,7 +20,8 @@ export const routes: Routes = [
         children: [
             { 
                 path: 'tableau-de-bord', 
-                loadComponent: () => import('./tableau-de-bord/tableau-de-bord').then(m => m.TableauDeBord) 
+                loadComponent: () => import('./tableau-de-bord/tableau-de-bord').then(m => m.TableauDeBord),
+                canActivate: [authGuard] 
             },
             ...profile,
             ...produits,
