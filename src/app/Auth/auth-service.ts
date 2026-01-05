@@ -18,11 +18,6 @@ export class AuthService {
     );
   }
 
-  // Exemple d'un POST (pour créer un nouvel agent par exemple)
-  register(newUser: User): Observable<User> {
-    return this.http.post<User>(this.API_URL, newUser);
-  }
-
   logout() {
     // 1. Supprimer le token de sécurité
     localStorage.removeItem('auth_token');
