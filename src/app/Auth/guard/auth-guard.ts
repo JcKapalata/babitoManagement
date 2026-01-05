@@ -19,7 +19,9 @@ export const authGuard: CanActivateFn = (route, state) => {
         const token = localStorage.getItem('auth_token');
         
         if (!token) {
-          router.navigate(['/login']);
+          // On capture l'URL actuelle (ex: /profile/user-profile) pour y revenir plus tard
+          console.warn(`Redirection : session absente pour ${state.url}`);
+          router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
           return false;
         }
 

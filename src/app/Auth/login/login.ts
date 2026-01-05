@@ -6,10 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth-service';
 import { Credentials } from '../../Models/credentials';
 import { ProfileService } from '../../Profile/profile-service';
+import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-login',
   imports: [
@@ -23,6 +24,7 @@ import { ProfileService } from '../../Profile/profile-service';
 export class Login {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService)
 
@@ -39,35 +41,41 @@ export class Login {
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      
-      // On transtype les valeurs du formulaire vers l'interface Credentials
-      const credentials = this.loginForm.value as Credentials;
+  async onSubmit() {
+    if (this.loginForm.invalid) return;
 
-      this.authService.login(credentials.email, credentials.password).subscribe({
-        next: (user) => {
+    this.isLoading = true;
+    const credentials = this.loginForm.value as Credentials;
+
+    // 1. On récupère la destination AVANT ou PENDANT le login de manière asynchrone
+    // On utilise l'Observable pour être sûr de ne pas rater le paramètre
+    const params = await firstValueFrom(this.route.queryParams);
+    const returnUrl = params['returnUrl'];
+
+    this.authService.login(credentials.email, credentials.password).subscribe({
+      next: (user) => {
+        if (user) {
+          // 2. Initialisation de la session
+          this.profileService.setSession(user.agent, user.token);
+
+          // 3. Calcul de la cible
+          const finalTarget = returnUrl ? decodeURIComponent(returnUrl) : '/tableau-de-bord';
+          
+          console.log(`[Login] Redirection vers: ${finalTarget}`);
+
+          // 4. Navigation avec gestion du rafraîchissement
+          this.router.navigateByUrl(finalTarget).then(() => {
+            this.isLoading = false;
+          });
+        } else {
           this.isLoading = false;
-          if (user) {
-            // On passe l'agent pour l'affichage ET le token pour le stockage
-            this.profileService.setSession(user.agent, user.token);
-            
-            console.log('Utilisateur authentifié :', user.agent.firstName);
-            // Redirection vers le tableau de bord
-            this.router.navigate(['/tableau-de-bord']);
-          } else {
-            alert('Email ou mot de passe incorrect.');
-          }
-        },
-        error: (err) => {
-          this.isLoading = false;
-          console.error('Erreur technique :', err);
-          alert('Impossible de contacter le serveur.');
+          alert('Identifiants incorrects');
         }
-      });
-    } else {
-      this.loginForm.markAllAsTouched();
-    }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur Login:', err);
+      }
+    });
   }
 }
