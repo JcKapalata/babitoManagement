@@ -147,7 +147,6 @@ export class FormProfile implements OnInit {
   }
 
   onSubmit(): void {
-    // 1. Validation de sécurité
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
@@ -157,12 +156,12 @@ export class FormProfile implements OnInit {
     const val = this.profileForm.value;
 
     if (this.isUpdateMode) {
-      /** * --- MODE ÉDITION (PUT) ---
+      /** * --- MODE ÉDITION (PUT) --- 
        */
       const cleanId = Number(this.userId);
       const updatedUserPayload = {
         id: cleanId,
-        token: 'fake-jwt-token-002', 
+        token: localStorage.getItem('auth_token'), // On conserve le token actuel
         agent: {
           id: cleanId,
           firstName: val.firstName,
@@ -182,16 +181,21 @@ export class FormProfile implements OnInit {
         .subscribe({
           next: () => {
             console.log('%c[UPDATE SUCCESS]', 'color: green; font-weight: bold;');
-            this.profileService.updateLocalAgent(updatedUserPayload.agent);
+            
+            // SÉCURITÉ : On ne met à jour l'affichage local QUE si on modifie son PROPRE profil
+            const currentAgent = this.profileService.getSnapshot(); 
+            if (currentAgent && currentAgent.id === cleanId) {
+              this.profileService.updateLocalAgent(updatedUserPayload.agent);
+            }
+            
             this.router.navigate(['profile/user-profile']);
           }
         });
 
     } else {
-      /** * --- MODE CRÉATION (POST) ---
+      /** * --- MODE CRÉATION (POST) --- 
        */
       const newUserPayload = {
-        // On ne met pas d'ID ici, In-Memory le générera
         token: 'fake-jwt-token-' + Math.random().toString(36).substring(7),
         agent: {
           firstName: val.firstName,
@@ -212,17 +216,11 @@ export class FormProfile implements OnInit {
           next: (response) => {
             console.log('%c[CREATE SUCCESS]', 'color: #2ecc71; font-weight: bold;', response);
             
-            // CRUCIAL : On fusionne l'ID généré par In-Memory dans l'objet agent
-            if (response && response.agent) {
-              const agentWithId = {
-                ...response.agent,
-                id: response.id // L'ID généré par le simulateur est ici
-              };
-              
-              // On informe le reste de l'appli que cet agent est l'agent courant
-              this.profileService.updateLocalAgent(agentWithId);
-            }
+            // --- CORRECTION EFFECTUÉE ICI ---
+            // On ne fait PLUS updateLocalAgent().
+            // Claude est ajouté en base, mais JC reste l'utilisateur connecté.
             
+            alert(`L'agent ${val.firstName} a été créé avec succès.`);
             this.router.navigate(['profile/user-profile']);
           }
         });
