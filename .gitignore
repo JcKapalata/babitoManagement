@@ -11,4 +11,4 @@ yarn-error.log
 .DS_Store
 
 # Fichiers d'environnement (Sensible en production)
-src/environments/environment.prod.ts
+# src/environments/environment.prod.ts
