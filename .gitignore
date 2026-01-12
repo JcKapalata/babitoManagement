@@ -1,0 +1,14 @@
+# Fichiers de dépendances (Très lourd)
+node_modules/
+
+# Sorties de compilation
+dist/
+.angular/
+
+# Logs et temporaires
+npm-debug.log
+yarn-error.log
+.DS_Store
+
+# Fichiers d'environnement (Sensible en production)
+src/environments/environment.prod.ts
