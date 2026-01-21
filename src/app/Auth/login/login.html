@@ -7,6 +7,13 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
       
+      @if (errorMessage) {
+        <div style="color: #d32f2f; background-color: #fdecea; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #d32f2f; font-size: 13px; display: flex; align-items: center;">
+          <mat-icon style="margin-right: 8px; font-size: 18px; width: 18px; height: 18px;">error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email" placeholder="exemple@mail.com">
@@ -23,7 +30,7 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Mot de passe</mat-label>
         <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
-        <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword">
+        <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword" tabindex="-1">
           <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
 
@@ -33,11 +40,11 @@
         @if (loginForm.get('password')?.hasError('minlength')){
           <mat-error>Minimum 8 caractères</mat-error>
         }
-        @if (loginForm.get('password')?.hasError('pattern') && !(
-          loginForm.get('password')?.hasError('required') || 
-          loginForm.get('password')?.hasError('minlength')
-        ) ){
-          <mat-error>Doit contenir : 1 Majuscule, 1 Minuscule, 1 Chiffre et 1 Caractère spécial (@$!%*?&)</mat-error>
+        
+        @if (loginForm.get('password')?.hasError('pattern') && !loginForm.get('password')?.hasError('minlength')) {
+          <mat-error style="font-size: 10.5px;">
+            Requis : 1 Majuscule, 1 Minuscule, 1 Chiffre et 1 Caractère spécial
+          </mat-error>
         }
       </mat-form-field>
 
@@ -45,12 +52,12 @@
               color="primary" 
               class="login-button" 
               type="submit" 
-              [disabled]="loginForm.invalid">
+              [disabled]="loginForm.invalid || isLoading">
         @if (!isLoading) {
           <span>SE CONNECTER</span>
         } @else {
-          <div class="loading-content">
-            <mat-icon class="spinner">autorenew</mat-icon>
+          <div class="loading-content" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <mat-icon style="animation: spin 2s linear infinite;">autorenew</mat-icon>
             <span>CONNEXION...</span>
           </div>
         }
@@ -58,7 +65,14 @@
     </form>
 
     <mat-card-footer>
-      <a class="forgot-password">Mot de passe oublié ?</a>
+      <a class="forgot-password" style="cursor: pointer;">Mot de passe oublié ?</a>
     </mat-card-footer>
   </mat-card>
 </div>
+
+<style>
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>

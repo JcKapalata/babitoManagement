@@ -1,28 +1,63 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { User } from '../Models/agent';
+import { Observable, catchError, map, throwError } from 'rxjs';
+import { User, Agent } from '../Models/agent'; 
+import { AuthResponse } from '../Models/authResponse'; 
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/users`;
+  private readonly AUTH_API = `${environment.apiUrl}/auth`; 
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // Simulation d'un GET pour vérifier la connexion
-  login(email: string, password: string): Observable<User | undefined> {
-    return this.http.get<User[]>(this.API_URL).pipe(
-      map(users => users.find(u => u.agent.email === email && u.agent.password === password))
+  /**
+   * LOGIN
+   * Le map ne s'exécute que si le statut est 2xx (Succès)
+   */
+  login(email: string, password: string): Observable<User> {
+    if (!email || !password) {
+      return throwError(() => new Error('Email et mot de passe requis'));
+    }
+
+    return this.http.post<AuthResponse>(`${this.AUTH_API}/login`, { email, password }).pipe(
+      map(response => {
+        // Le backend renvoie 'agent' et 'token' dans l'objet de réponse
+        if (response.token && response.agent) {
+          return {
+            agent: response.agent as Agent,
+            token: response.token
+          };
+        }
+        throw new Error('Format de réponse invalide');
+      }),
+      catchError(this.handleError)
     );
   }
 
-  logout() {
-    // 1. Supprimer le token de sécurité
+  logout(): void {
     localStorage.removeItem('auth_token');
+    sessionStorage.clear();
+    this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  /**
+   * GESTION DES ERREURS
+   * Capture les messages d'erreur envoyés par le contrôleur Node.js
+   */
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Une erreur serveur est survenue';
     
-    // 2. Rediriger vers la page de login
-    this.router.navigate(['/login']);
+    if (error.error instanceof ErrorEvent) {
+      // Erreur réseau ou côté client
+      errorMessage = error.error.message;
+    } else {
+      // Erreur envoyée par l'API (401, 403, 500)
+      // On récupère le champ "message" défini dans ton backend
+      errorMessage = error.error?.message || `Erreur ${error.status}: ${error.statusText}`;
+    }
+    
+    return throwError(() => new Error(errorMessage));
   }
 }

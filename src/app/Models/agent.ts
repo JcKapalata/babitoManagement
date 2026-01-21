@@ -1,5 +1,5 @@
 export interface Agent {
-  id: number;
+  id: string;
   email: string;
   password?: string; // Optionnel ici car le serveur ne renvoie souvent pas le mot de passe
   firstName: string;

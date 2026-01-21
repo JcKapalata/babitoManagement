@@ -1,42 +1,62 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormProfile } from "../form-profile/form-profile";
-import { User } from '../../Models/agent';
+import { Agent } from '../../Models/agent'; 
 import { ProfileService } from '../profile-service';
 import { Loading } from "../../loading/loading";
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-update-profile',
   standalone: true,
-  imports: [FormProfile, Loading],
+  imports: [CommonModule, FormProfile, Loading],
   templateUrl: './update-profile.html',
   styleUrl: './update-profile.css',
 })
-export class UpdateProfile implements OnInit {
+export class UpdateProfile implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private profileService = inject(ProfileService);
-  private cdr = inject(ChangeDetectorRef); // On injecte ici
+  private cdr = inject(ChangeDetectorRef);
   
-  selectedUser: User | null = null;
+  // Changement : On utilise Agent car le GET renvoie les données de l'agent
+  selectedAgent: Agent | null = null;
+  private subscription: Subscription = new Subscription();
 
   ngOnInit() {
-    const rawId = this.route.snapshot.paramMap.get('id');
-    const userId = Number(rawId);
+    // 1. Récupération sécurisée
+    const userId = this.route.snapshot.paramMap.get('id');
 
-    if (userId) {
-      this.profileService.getUserById(userId).subscribe({
-        next: (user) => {
-          if (user) {
-            console.log('Données reçues du service:', user);
-            // 1. On assigne la donnée
-            this.selectedUser = { ...user }; 
-            
-            // 2. On force Angular à détecter que selectedUser n'est plus null
+    // Sécurité : on vérifie que l'ID n'est pas nul et ressemble à un UID Firebase (optionnel)
+    if (userId && userId.length > 5) {
+      const sub = this.profileService.getAgentById(userId).subscribe({
+        next: (agentData) => {
+          if (agentData) {
+            // 2. Protection contre les données corrompues : 
+            // On s'assure que l'ID de l'objet est bien celui de l'URL
+            this.selectedAgent = { 
+              ...agentData, 
+              id: agentData.id || userId 
+            }; 
             this.cdr.detectChanges(); 
           }
         },
-        error: (err) => console.error('Erreur lors de la récupération:', err)
+        error: (err) => {
+          // PRODUCTION : Log plus discret ou redirection
+          console.error('Erreur profil récup:', err.status);
+          if (err.status === 404) this.router.navigate(['/404']);
+        }
       });
+      this.subscription.add(sub);
+    } else {
+      // Si pas d'ID valide dans l'URL, on redirige vers le login ou accueil
+      this.router.navigate(['/login']);
     }
+  }
+
+  ngOnDestroy() {
+    // 4. Robustesse : Nettoyage de la souscription pour éviter les fuites mémoire
+    this.subscription.unsubscribe();
   }
 }

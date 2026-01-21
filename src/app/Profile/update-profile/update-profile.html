@@ -4,9 +4,12 @@
   </div>
 
   <div class="main">
-    @if (selectedUser) {
-      <app-form-profile [userToUpdate]="selectedUser"></app-form-profile>
-    }@else {
+    @if (selectedAgent) {
+      <app-form-profile 
+        [userToUpdate]="selectedAgent" 
+        [userId]="selectedAgent.id">
+      </app-form-profile>
+    } @else {
       <app-loading></app-loading>
     }
     

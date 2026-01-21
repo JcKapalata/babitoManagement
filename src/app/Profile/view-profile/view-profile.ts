@@ -25,11 +25,18 @@ export class ViewProfile {
   );
 
   //goToUpdate
-  goToUpdateProfile(userId: number | undefined) {
-  if (!userId) {
-    console.error("Impossible de modifier : l'ID de l'agent est introuvable dans l'objet", this.agent$);
-    return;
+  goToUpdateProfile(userId: string | undefined) {
+    // 1. Sécurité : Vérification stricte de l'ID
+    if (!userId || userId.trim() === '') {
+      console.error("[SECURITY ALERT] Tentative de navigation sans ID valide");
+      // Optionnel : afficher un toast/alerte à l'utilisateur
+      return;
+    }
+
+    // 2. Navigation robuste
+    // On utilise un chemin relatif ou absolu propre
+    this.router.navigate(['profile/update-profile', userId]).then(nav => {
+      if (!nav) console.error("Échec de la navigation vers le profil");
+    });
   }
-  this.router.navigate(['profile/update-profile', userId]);
-}
 }

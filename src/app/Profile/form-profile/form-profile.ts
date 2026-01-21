@@ -2,7 +2,7 @@ import { Component, inject, OnInit, Input, ChangeDetectorRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from '../../Models/agent';
+import { Agent } from '../../Models/agent';
 import { finalize, first } from 'rxjs';
 
 // Angular Material
@@ -36,27 +36,23 @@ export class FormProfile implements OnInit {
   roles: string[] = ['admin', 'livreur', 'finance'];
   isUpdateMode = false;
   imagePreview: string | null = null;
-  isLoading = false; // État de chargement pour le bouton
-  
+  isLoading = false;
   hidePasswordContent = true;
   showPasswordFields = false; 
   
   readonly passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  @Input() userId!: number; // Reçu du composant parent
-  @Input() set userToUpdate(value: User | null) {
-    if (value?.agent) {
+  @Input() userId!: string;
+
+  @Input() set userToUpdate(value: any | null) {
+    const agent: Agent = value?.agent ? value.agent : value;
+    if (agent && agent.id) {
       this.isUpdateMode = true;
       this.showPasswordFields = false;
-      
-      // CORRECTION ICI : On récupère l'id de l'agent
-      this.userId = value.agent.id; 
-      
+      this.userId = agent.id; 
       this.initForm();
-      this.patchData(value);
+      this.patchData(agent);
       this.cdr.markForCheck();
-      
-      console.log('%c[DEBUG] ID récupéré:', 'color: blue; font-weight: bold;', this.userId);
     }
   }
 
@@ -81,6 +77,8 @@ export class FormProfile implements OnInit {
     this.updatePasswordValidators();
   }
 
+  // --- MÉTHODES DE GESTION DU FORMULAIRE ---
+
   togglePasswordFields(): void {
     this.showPasswordFields = !this.showPasswordFields;
     this.updatePasswordValidators();
@@ -92,6 +90,7 @@ export class FormProfile implements OnInit {
 
     if (this.showPasswordFields) {
       pwd?.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
+      cpwd?.setValidators([Validators.required]);
     } else {
       pwd?.clearValidators();
       cpwd?.clearValidators();
@@ -102,27 +101,17 @@ export class FormProfile implements OnInit {
     cpwd?.updateValueAndValidity();
   }
 
-  private patchData(user: User): void {
-    this.profileForm.patchValue({
-      firstName: user.agent.firstName,
-      lastName: user.agent.lastName,
-      email: user.agent.email,
-      role: user.agent.role,
-      avatar: user.agent.avatar
-    });
-    this.imagePreview = user.agent.avatar || null;
-  }
-
-  passwordMatchValidator = (control: AbstractControl): ValidationErrors | null => {
+  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     if (!this.showPasswordFields) return null;
     const password = control.get('password')?.value;
     const confirm = control.get('confirmPassword')?.value;
+    
     if (password !== confirm) {
       control.get('confirmPassword')?.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
     return null;
-  };
+  }
 
   getErrorMessage(field: string): string {
     const control = this.profileForm.get(field);
@@ -131,6 +120,17 @@ export class FormProfile implements OnInit {
     if (control?.hasError('pattern')) return '8+ car., Maj, Min, Chiffre, Spécial';
     if (control?.hasError('passwordMismatch')) return 'Les mots de passe divergent';
     return '';
+  }
+
+  private patchData(agent: Agent): void {
+    this.profileForm.patchValue({
+      firstName: agent.firstName,
+      lastName: agent.lastName,
+      email: agent.email,
+      role: agent.role,
+      avatar: agent.avatar
+    });
+    this.imagePreview = agent.avatar || null;
   }
 
   onFileSelected(event: Event): void {
@@ -146,6 +146,8 @@ export class FormProfile implements OnInit {
     }
   }
 
+  // --- ACTIONS ---
+
   onSubmit(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
@@ -156,73 +158,38 @@ export class FormProfile implements OnInit {
     const val = this.profileForm.value;
 
     if (this.isUpdateMode) {
-      /** * --- MODE ÉDITION (PUT) --- 
-       */
-      const cleanId = Number(this.userId);
-      const updatedUserPayload = {
-        id: cleanId,
-        token: localStorage.getItem('auth_token'), // On conserve le token actuel
-        agent: {
-          id: cleanId,
-          firstName: val.firstName,
-          lastName: val.lastName,
-          email: val.email,
-          role: val.role,
-          avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
-          ...(this.showPasswordFields && val.password ? { password: val.password } : {})
-        }
+      const updatedAgentPayload = {
+        firstName: val.firstName,
+        lastName: val.lastName,
+        role: val.role,
+        avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
+        ...(this.showPasswordFields && val.password ? { password: val.password } : {})
       };
 
-      this.profileService.updateAgent(cleanId, updatedUserPayload)
-        .pipe(
-          first(),
-          finalize(() => this.isLoading = false)
-        )
+      this.profileService.updateAgent(this.userId, updatedAgentPayload)
+        .pipe(first(), finalize(() => this.isLoading = false))
         .subscribe({
-          next: () => {
-            console.log('%c[UPDATE SUCCESS]', 'color: green; font-weight: bold;');
-            
-            // SÉCURITÉ : On ne met à jour l'affichage local QUE si on modifie son PROPRE profil
-            const currentAgent = this.profileService.getSnapshot(); 
-            if (currentAgent && currentAgent.id === cleanId) {
-              this.profileService.updateLocalAgent(updatedUserPayload.agent);
-            }
-            
-            this.router.navigate(['profile/user-profile']);
-          }
+          next: () => this.router.navigate(['profile/user-profile']),
+          error: (err) => alert(err.message)
         });
-
     } else {
-      /** * --- MODE CRÉATION (POST) --- 
-       */
       const newUserPayload = {
-        token: 'fake-jwt-token-' + Math.random().toString(36).substring(7),
-        agent: {
-          firstName: val.firstName,
-          lastName: val.lastName,
-          email: val.email,
-          role: val.role,
-          avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
-          password: val.password 
-        }
+        email: val.email,
+        password: val.password,
+        firstName: val.firstName,
+        lastName: val.lastName,
+        role: val.role,
+        avatar: val.avatar || 'profileAvatar/default-avatar.jpeg'
       };
 
       this.profileService.createAgent(newUserPayload)
-        .pipe(
-          first(),
-          finalize(() => this.isLoading = false)
-        )
+        .pipe(first(), finalize(() => this.isLoading = false))
         .subscribe({
-          next: (response) => {
-            console.log('%c[CREATE SUCCESS]', 'color: #2ecc71; font-weight: bold;', response);
-            
-            // --- CORRECTION EFFECTUÉE ICI ---
-            // On ne fait PLUS updateLocalAgent().
-            // Claude est ajouté en base, mais JC reste l'utilisateur connecté.
-            
-            alert(`L'agent ${val.firstName} a été créé avec succès.`);
+          next: () => {
+            alert(`L'agent ${val.firstName} a été créé.`);
             this.router.navigate(['profile/user-profile']);
-          }
+          },
+          error: (err) => alert(err.message)
         });
     }
   }
