@@ -1,5 +1,5 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -7,11 +7,10 @@ import { ProfileService } from '../../Profile/profile-service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('auth_token');
-  const profileService = inject(ProfileService);
   const router = inject(Router);
+  const injector = inject(Injector); // Correction boucle NG0200
 
   const isApiUrl = req.url.startsWith(environment.apiUrl);
-  // Vérifier si la requête est une tentative de login
   const isLoginRequest = req.url.includes('/auth/login');
 
   let cloned = req;
@@ -23,13 +22,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(cloned).pipe(
     catchError((error: HttpErrorResponse) => {
-      // SI 401/403 ET que ce n'est PAS un login -> Déconnexion
+      // Si 401 ou 403 (Token expiré), on nettoie et on redirige
       if ([401, 403].includes(error.status) && !isLoginRequest) {
-        console.error('Session expirée. Déconnexion...');
+        const profileService = injector.get(ProfileService);
         profileService.clearProfile();
         router.navigate(['/login']);
       }
-      // On renvoie l'erreur telle quelle pour que le AuthService la lise
       return throwError(() => error);
     })
   );
