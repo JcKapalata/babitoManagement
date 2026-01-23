@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize } from 'rxjs';
+import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize, first } from 'rxjs';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
@@ -101,20 +101,24 @@ export class ProfileService {
     );
   }
 
-  updateAgent(updatedData: any): Observable<Agent> {
-  // On tape toujours sur /profile, le Backend s'occupe de savoir qui est connecté
-  return this.http.put<{ success: boolean, data: Agent }>(`${this.MANAGER_API}/profile`, updatedData).pipe(
-    map(res => {
-      if (res.success) {
-        // Optionnel : on met à jour localement sans refaire un GET
-        this.currentUser.set(res.data);
-        this.currentAgentSubject.next(res.data);
-      }
-      return res.data;
-    }),
-    catchError(this.handleError)
-  );
-}
+  // On ne passe plus l'ID, seulement les données (payload)
+  updateAgent(updatedData: any): Observable<Agent | null> {
+    const url = `${this.MANAGER_API}/profile`; 
+      
+    return this.http.put<{ success: boolean, data: Agent }>(url, updatedData).pipe(
+      first(), // Sécurité : s'assure que la souscription s'arrête après la réponse
+      map(res => {
+        if (res.success && res.data) {
+          // Mise à jour immédiate des données dans l'application
+          this.currentUser.set(res.data);
+          this.currentAgentSubject.next(res.data);
+          return res.data;
+        }
+        return null;
+      }),
+      catchError(this.handleError)
+    );
+  }
 
   deleteAgent(agentId: string): Observable<any> {
     return this.http.delete(`${this.MANAGER_API}/agents/${agentId}`).pipe(

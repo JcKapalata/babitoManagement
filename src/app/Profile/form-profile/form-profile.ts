@@ -158,17 +158,19 @@ export class FormProfile implements OnInit {
     const val = this.profileForm.value;
 
     if (this.isUpdateMode) {
+      // --- LOGIQUE DE MISE À JOUR ---
       const updatedAgentPayload = {
         firstName: val.firstName,
         lastName: val.lastName,
-        role: val.role,
+        // On peut laisser le rôle ici, mais le backend décidera s'il l'accepte
+        role: val.role, 
         avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
         ...(this.showPasswordFields && val.password ? { password: val.password } : {})
       };
 
-      this.profileService.updateAgent(updatedAgentPayload) 
+      this.profileService.updateAgent(updatedAgentPayload)
         .pipe(
-          first(), 
+          first(),
           finalize(() => this.isLoading = false)
         )
         .subscribe({
@@ -176,13 +178,12 @@ export class FormProfile implements OnInit {
             console.log('Update réussi !');
             this.router.navigate(['profile/user-profile']);
           },
-          error: (err) => {
-            // Rappelle-toi : err.message contient le texte renvoyé par ton handleError
-            alert("Erreur lors de la mise à jour : " + err.message);
-          }
+          error: (err) => alert("Erreur mise à jour : " + err.message)
         });
-        
+
     } else {
+      // --- LOGIQUE DE CRÉATION (Nouveau Profil) ---
+      // Pour une création, tous les champs sont généralement obligatoires
       const newUserPayload = {
         email: val.email,
         password: val.password,
