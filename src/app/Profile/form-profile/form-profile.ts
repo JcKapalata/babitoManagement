@@ -166,12 +166,22 @@ export class FormProfile implements OnInit {
         ...(this.showPasswordFields && val.password ? { password: val.password } : {})
       };
 
-      this.profileService.updateAgent(this.userId, updatedAgentPayload)
-        .pipe(first(), finalize(() => this.isLoading = false))
+      this.profileService.updateAgent(updatedAgentPayload) 
+        .pipe(
+          first(), 
+          finalize(() => this.isLoading = false)
+        )
         .subscribe({
-          next: () => this.router.navigate(['profile/user-profile']),
-          error: (err) => alert(err.message)
+          next: () => {
+            console.log('Update réussi !');
+            this.router.navigate(['profile/user-profile']);
+          },
+          error: (err) => {
+            // Rappelle-toi : err.message contient le texte renvoyé par ton handleError
+            alert("Erreur lors de la mise à jour : " + err.message);
+          }
         });
+        
     } else {
       const newUserPayload = {
         email: val.email,

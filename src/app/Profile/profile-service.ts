@@ -101,21 +101,20 @@ export class ProfileService {
     );
   }
 
-  updateAgent(agentId: string, updatedData: any): Observable<Agent> {
-    const isSelf = this.getSnapshot()?.id === agentId;
-    const url = isSelf ? `${this.MANAGER_API}/profile` : `${this.MANAGER_API}/accounts/${agentId}/status`;
-    
-    return this.http.put<{ success: boolean, data: Agent }>(url, updatedData).pipe(
-      map(res => {
-        if (isSelf && res.success) {
-          // Si on s'est mis à jour soi-même, on rafraîchit la mémoire vive
-          this.refreshProfileFromServer();
-        }
-        return res.data;
-      }),
-      catchError(this.handleError)
-    );
-  }
+  updateAgent(updatedData: any): Observable<Agent> {
+  // On tape toujours sur /profile, le Backend s'occupe de savoir qui est connecté
+  return this.http.put<{ success: boolean, data: Agent }>(`${this.MANAGER_API}/profile`, updatedData).pipe(
+    map(res => {
+      if (res.success) {
+        // Optionnel : on met à jour localement sans refaire un GET
+        this.currentUser.set(res.data);
+        this.currentAgentSubject.next(res.data);
+      }
+      return res.data;
+    }),
+    catchError(this.handleError)
+  );
+}
 
   deleteAgent(agentId: string): Observable<any> {
     return this.http.delete(`${this.MANAGER_API}/agents/${agentId}`).pipe(

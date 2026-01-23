@@ -1,11 +1,10 @@
-import { Component, inject, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import {  Router } from '@angular/router';
 import { FormProfile } from "../form-profile/form-profile";
 import { Agent } from '../../Models/agent'; 
 import { ProfileService } from '../profile-service';
 import { Loading } from "../../loading/loading";
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-update-profile',
@@ -14,49 +13,26 @@ import { Subscription } from 'rxjs';
   templateUrl: './update-profile.html',
   styleUrl: './update-profile.css',
 })
-export class UpdateProfile implements OnInit, OnDestroy {
-  private route = inject(ActivatedRoute);
+export class UpdateProfile implements OnInit {
   private readonly router = inject(Router);
   private profileService = inject(ProfileService);
   private cdr = inject(ChangeDetectorRef);
   
-  // Changement : On utilise Agent car le GET renvoie les données de l'agent
   selectedAgent: Agent | null = null;
-  private subscription: Subscription = new Subscription();
 
   ngOnInit() {
-    // 1. Récupération sécurisée
-    const userId = this.route.snapshot.paramMap.get('id');
+    // 1. On récupère l'agent directement depuis la mémoire vive (RAM) du service
+    // C'est instantané et ça évite l'erreur 404 du serveur
+    const currentAgent = this.profileService.getSnapshot();
 
-    // Sécurité : on vérifie que l'ID n'est pas nul et ressemble à un UID Firebase (optionnel)
-    if (userId && userId.length > 5) {
-      const sub = this.profileService.getAgentById(userId).subscribe({
-        next: (agentData) => {
-          if (agentData) {
-            // 2. Protection contre les données corrompues : 
-            // On s'assure que l'ID de l'objet est bien celui de l'URL
-            this.selectedAgent = { 
-              ...agentData, 
-              id: agentData.id || userId 
-            }; 
-            this.cdr.detectChanges(); 
-          }
-        },
-        error: (err) => {
-          // PRODUCTION : Log plus discret ou redirection
-          console.error('Erreur profil récup:', err.status);
-          if (err.status === 404) this.router.navigate(['/404']);
-        }
-      });
-      this.subscription.add(sub);
+    if (currentAgent) {
+      this.selectedAgent = currentAgent;
+      this.cdr.detectChanges();
     } else {
-      // Si pas d'ID valide dans l'URL, on redirige vers le login ou accueil
-      this.router.navigate(['/login']);
+      // 2. Si l'agent n'est pas en mémoire (ex: refresh de page), 
+      // on redirige vers le profil pour relancer le chargement initial
+      console.warn("Données non trouvées en mémoire, redirection...");
+      this.router.navigate(['/manager/profile']); 
     }
-  }
-
-  ngOnDestroy() {
-    // 4. Robustesse : Nettoyage de la souscription pour éviter les fuites mémoire
-    this.subscription.unsubscribe();
   }
 }
