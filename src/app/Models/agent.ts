@@ -1,11 +1,13 @@
 export interface Agent {
-  id: string;
+  id: string;          // UID Firebase
   email: string;
-  password?: string; // Optionnel ici car le serveur ne renvoie souvent pas le mot de passe
   firstName: string;
   lastName: string;
+  phoneNumber: string; // Ajouté pour être raccord avec le back
   role: 'admin' | 'livreur' | 'finance';
-  avatar?: string;
+  avatar?: string;     // Base64 ou URL
+  password?: string;   // Optionnel (utilisé seulement pour l'envoi)
+  createdAt?: string;
 }
 
 export interface User {

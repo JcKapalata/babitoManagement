@@ -61,13 +61,24 @@ export class FormProfile implements OnInit {
       this.showPasswordFields = true; 
       this.initForm();
     }
+    if (this.isUpdateMode) {
+      // On désactive le champ rôle pour que l'agent ne puisse pas se promouvoir lui-même
+      this.profileForm.get('role')?.disable();
+    } else {
+      // On s'assure qu'il est activé pour la création d'un nouvel agent
+      this.profileForm.get('role')?.enable();
+    }
   }
 
   private initForm(): void {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: [{ value: '', disabled: this.isUpdateMode }, [Validators.required, Validators.email]],
+      phoneNumber: ['', [
+        Validators.required, 
+        Validators.pattern('^[+]?[0-9]{9,15}$') 
+      ]],
       role: ['', Validators.required],
       avatar: [''],
       password: [''],
@@ -115,10 +126,24 @@ export class FormProfile implements OnInit {
 
   getErrorMessage(field: string): string {
     const control = this.profileForm.get(field);
-    if (control?.hasError('required')) return 'Obligatoire';
-    if (control?.hasError('email')) return 'Email invalide';
-    if (control?.hasError('pattern')) return '8+ car., Maj, Min, Chiffre, Spécial';
-    if (control?.hasError('passwordMismatch')) return 'Les mots de passe divergent';
+    if (!control) return '';
+
+    if (control.hasError('required')) return 'Ce champ est obligatoire';
+    if (control.hasError('email')) return 'Format d’email invalide';
+    
+    // Gestion différenciée du "pattern" (Regex)
+    if (control.hasError('pattern')) {
+      if (field === 'phoneNumber') {
+        return 'Format invalide (ex: +243...)'; // Message pour le téléphone
+      }
+      if (field === 'password') {
+        return '8+ car., Maj, Min, Chiffre, Spécial'; // Message pour la sécu password
+      }
+    }
+
+    if (control.hasError('passwordMismatch')) return 'Les mots de passe ne sont pas identiques';
+    if (control.hasError('minlength')) return 'Trop court';
+    
     return '';
   }
 
@@ -162,6 +187,7 @@ export class FormProfile implements OnInit {
       const updatedAgentPayload = {
         firstName: val.firstName,
         lastName: val.lastName,
+        phoneNumber: val.phoneNumber,
         // On peut laisser le rôle ici, mais le backend décidera s'il l'accepte
         role: val.role, 
         avatar: val.avatar || 'profileAvatar/default-avatar.jpeg',
@@ -187,6 +213,7 @@ export class FormProfile implements OnInit {
       const newUserPayload = {
         email: val.email,
         password: val.password,
+        phoneNumber: val.phoneNumber,
         firstName: val.firstName,
         lastName: val.lastName,
         role: val.role,
