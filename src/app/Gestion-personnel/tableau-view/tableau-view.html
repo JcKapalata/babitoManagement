@@ -10,6 +10,7 @@
         <th>Statut</th>
         <th>Actions</th>
         <th>Date creation</th>
+        <th>Dernière modification</th>
       </tr>
     </thead>
     <tbody>
@@ -38,7 +39,9 @@
             </button>
           </td>
 
-          <td>{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+          <td>{{ item.createdAt | date:'dd/MM/yyyy à HH:mm' }}</td>
+
+          <td>{{ item.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</td>
         </tr>
       } @empty {
         <tr>

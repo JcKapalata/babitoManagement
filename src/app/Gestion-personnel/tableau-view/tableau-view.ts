@@ -9,6 +9,7 @@ export interface BaseUser {
   status: 'active' | 'banned';
   avatar?: string;
   createdAt?: string;
+  updatedAt?: string;
   role?: string; // Optionnel car absent chez le client
 }
 

@@ -19,7 +19,7 @@ export interface UserClient {
     status: 'active' | 'banned';
     avatar?: string;
     adressesLivraison: AddressData[];
-    createdAt: string;
+    createdAt?: string;
 }
 
 /**

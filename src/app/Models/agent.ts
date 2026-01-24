@@ -9,6 +9,7 @@ export interface Agent {
   avatar?: string;     // Base64 ou URL
   password?: string;   // Optionnel (utilisé seulement pour l'envoi)
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface User {

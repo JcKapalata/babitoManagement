@@ -19,7 +19,8 @@
           <div class="item"><strong>Email</strong> {{ user().email }}</div>
           <div class="item"><strong>Téléphone</strong> {{ user().phoneNumber }}</div>
           <div class="item"><strong>Statut</strong> {{ user().status }}</div>
-          <div class="item"><strong>Membre depuis</strong> {{ user().createdAt | date:'longDate' }}</div>
+          <div class="item"><strong>Membre depuis</strong> {{ user().createdAt | date:'dd MMMM yyyy à HH:mm' }}</div>
+          <div class="item"><strong>Dernière modification</strong> {{ user().updatedAt | date:'dd MMMM yyyy à HH:mm' }}</div>
         </div>
 
         @if (user()?.adressesLivraison?.length > 0) {
