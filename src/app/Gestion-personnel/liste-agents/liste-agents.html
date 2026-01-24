@@ -1,1 +1,66 @@
-<p>liste-agents works!</p>
+<div class="container">
+  <div class="header">
+    <h2>Gestion du Personnel</h2>
+    <p>Liste des agents (Admins, Vendeurs, Finance)</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loader">Chargement des agents...</div>
+  }
+
+  @if (errorMessage()) {
+    <div class="error-banner">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (!isLoading()) {
+    <div class="table-responsive">
+      <table class="agent-table">
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (agent of agents(); track agent.id) {
+            <tr>
+              <td>
+                <div class="user-info">
+                  <img [src]="agent.avatar || 'assets/default-avatar.png'" alt="avatar" class="avatar-small">
+                  <span>{{ agent.firstName }} {{ agent.lastName }}</span>
+                </div>
+              </td>
+              <td>{{ agent.email }}</td>
+              <td>
+                <span class="badge role" [ngClass]="agent.role">{{ agent.role }}</span>
+              </td>
+              <td>
+                <span class="badge status" [ngClass]="agent.status || 'active'">
+                  {{ agent.status === 'banned' ? 'Banni' : 'Actif' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button 
+                  (click)="toggleStatus(agent)" 
+                  [class.btn-unban]="agent.status === 'banned'" 
+                  class="btn-status">
+                  {{ agent.status === 'banned' ? 'Réactiver' : 'Bannir' }}
+                </button>
+                <button (click)="onDelete(agent.id)" class="btn-delete">Supprimer</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 20px;">Aucun agent trouvé.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

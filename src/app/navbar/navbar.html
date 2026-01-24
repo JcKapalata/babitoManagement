@@ -8,10 +8,11 @@
       <mat-icon>dashboard</mat-icon> Dashboard
     </button>
     
+    <!-- Gestion Produits -->
     <button mat-button class="nav-item" (click)="toggleProduits()">
       <mat-icon>inventory_2</mat-icon> Gestions Produits
     </button>
-
+    <!--  Sub nav item produit-->
     @if (isShowedProduits) {
       <div class="sub-menu">
         <button mat-button class="sub-nav-item" (click)="goToProduitsDesponibles()">
@@ -32,24 +33,32 @@
       </div>
     }
 
+    <!-- Gestion Livraisons -->
     <button mat-button class="nav-item desactive" >
       <mat-icon>local_shipping</mat-icon> Gestion Livraisons
     </button>
 
+    <!-- Gestion Ventes -->
     <button mat-button class="nav-item desactive">
       <mat-icon>shopping_cart</mat-icon> Gestion Ventes
     </button>
 
+    <!-- Gestion Finances -->
     <button mat-button class="nav-item desactive">
       <mat-icon>payments</mat-icon> Gestion Finances
     </button>
 
+    <!-- Gestion RH -->
     <button mat-button class="nav-item" (click)="toggleRH()">
       <mat-icon>payments</mat-icon> Gestion RH
     </button>
 
+    <!--  Sub nav item RH-->
     @if (isShowedRH) {
       <div class="sub-menu">
+        <button mat-button class="sub-nav-item" (click)="goToListsAgents()">
+          <mat-icon>people</mat-icon> Liste des Agents
+        </button>
         <button mat-button class="sub-nav-item" (click)="goToAjout()">
           <mat-icon>person_add</mat-icon> Ajouter Agent
         </button>

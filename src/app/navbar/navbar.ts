@@ -61,6 +61,11 @@ export class Navbar implements OnInit {
     this.router.navigate(['tableau-de-bord']);
   }
 
+  // ======= go to personnel management =======
+  goToListsAgents(){
+    this.router.navigate(['manager/agents-list']);
+  }
+
   // Rediriger vers le profil
   goToProfile() {
     this.router.navigate(['profile/user-profile']);

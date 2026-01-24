@@ -1,0 +1,63 @@
+.container { padding: 20px; font-family: 'Segoe UI', sans-serif; }
+.header { margin-bottom: 25px; }
+
+.table-responsive {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+.agent-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.agent-table th, .agent-table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.agent-table th { background-color: #f8f9fa; font-weight: 600; color: #333; }
+
+.user-info { display: flex; align-items: center; gap: 10px; }
+.avatar-small { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+
+/* Badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Couleurs Rôles */
+.admin { background: #e3f2fd; color: #1976d2; }
+.vendeur { background: #f3e5f5; color: #7b1fa2; }
+.finance { background: #fff3e0; color: #f57c00; }
+
+/* Couleurs Statut */
+.active { background: #e8f5e9; color: #2e7d32; }
+.banned { background: #ffebee; color: #c62828; }
+
+/* Boutons */
+.actions { display: flex; gap: 8px; }
+button {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+
+.btn-status { background: #f1f3f5; color: #495057; }
+.btn-status:hover { background: #e9ecef; }
+.btn-unban { background: #2e7d32 !important; color: white; }
+
+.btn-delete { background: #fee2e2; color: #dc2626; }
+.btn-delete:hover { background: #ef4444; color: white; }
+
+.loader { text-align: center; padding: 50px; color: #666; }
