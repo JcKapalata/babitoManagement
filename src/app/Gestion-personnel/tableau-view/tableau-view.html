@@ -1,0 +1,52 @@
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Email</th>
+        @if (type === 'agent') {
+          <th>Rôle</th>
+        }
+        <th>Statut</th>
+        <th>Actions</th>
+        <th>Date creation</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of data; track item.id) {
+        <tr>
+          <td>
+            <div class="user-cell">
+              <img [src]="item.avatar || 'assets/img/default-avatar.png'" alt="avatar">
+              <span>{{ item.firstName }} {{ item.lastName }}</span>
+            </div>
+          </td>
+          <td>{{ item.email }}</td>
+          
+          @if (type === 'agent') {
+            <td><span class="badge">{{ item.role }}</span></td>
+          }
+
+          <td>
+            <span class="status-dot" [class.active]="item.status === 'active'"></span>
+            {{ item.status === 'active' ? 'Actif' : 'Banni' }}
+          </td>
+
+          <td>
+            <button (click)="handleStatus(item)" [class.ban-btn]="item.status === 'active'">
+              {{ item.status === 'active' ? 'Bannir' : 'Réactiver' }}
+            </button>
+          </td>
+
+          <td>{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="type === 'agent' ? 5 : 4" class="empty-msg">
+            Aucun {{ type }} trouvé.
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

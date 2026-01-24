@@ -9,4 +9,9 @@ export const personnelRoutes: Routes = [
         loadComponent: () => import('./liste-agents/liste-agents').then(m => m.ListeAgents),
         canActivate: [authGuard] // + adminGuard si disponible
     },
+    {
+        path: 'manager/clients-list', 
+        loadComponent: () => import('./liste-clients/liste-clients').then(m => m.ListeClients),
+        canActivate: [authGuard]
+    },
 ];

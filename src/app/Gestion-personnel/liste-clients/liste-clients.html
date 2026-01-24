@@ -1,18 +1,18 @@
 <div class="container">
   <div class="title">
-    <h2>Gestion du Personnel</h2>
-    <p>Liste des agents (Admins, Vendeurs, Finance)</p>
+    <h2>Gestion des Clients</h2>
+    <p>Liste des utilisateurs de la plateforme Babito</p>
   </div>
 
   @if (isLoading()) {
-    <div class="loader">Chargement des agents...</div>
+    <div class="loader">Chargement des clients...</div>
   } @else if (errorMessage()) {
     <div class="error-banner">{{ errorMessage() }}</div>
   } @else {
     <div class="main-content">
       <app-tableau-view 
-        [data]="agents()" 
-        type="agent"
+        [data]="clients()" 
+        type="client"
         (onToggleStatus)="toggleStatus($event)">
       </app-tableau-view>
     </div>

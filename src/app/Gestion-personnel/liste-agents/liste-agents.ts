@@ -2,11 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Agent } from '../../Models/agent';
 import { PersonnelService } from '../personnel-service';
+import { TableauView } from "../tableau-view/tableau-view";
 
 @Component({
   selector: 'app-liste-agents',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TableauView],
   templateUrl: './liste-agents.html',
   styleUrl: './liste-agents.css',
 })

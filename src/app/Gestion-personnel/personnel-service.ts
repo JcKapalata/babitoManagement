@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
+import { UserClient } from '../Models/client';
 
 @Injectable({
   providedIn: 'root',
@@ -54,11 +55,27 @@ export class PersonnelService {
    * Liste tous les clients (collection 'users')
    */
   getAllClients(): Observable<any[]> {
-    return this.http.get<{ success: boolean; data: any[] }>(`${this.ADMIN_API}/users`).pipe(
+    return this.http.get<{ success: boolean; data: UserClient[] }>(`${this.ADMIN_API}/users`).pipe(
       map(res => res.data || []),
       catchError(this.handleError)
     );
   }
+
+  // ==========================================
+  // 3. PROFIL PERSONNEL (Routes /profile)
+  // ==========================================
+
+  // getProfile(): Observable<Agent> {
+  //   return this.http.get<Agent>(`${this.ADMIN_API}/profile`).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  // updateProfile(data: Partial<Agent>): Observable<any> {
+  //   return this.http.put(`${this.ADMIN_API}/profile`, data).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
 
   // ==========================================
   // 3. STATUT ET SÉCURITÉ DES COMPTES
