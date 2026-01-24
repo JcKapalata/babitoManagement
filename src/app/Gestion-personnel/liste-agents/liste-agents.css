@@ -1,11 +1,41 @@
-.container { padding: 20px; font-family: 'Segoe UI', sans-serif; }
-.header { margin-bottom: 25px; }
+.container {
+  width: 100%;
+  min-height: 100%;
+  background-color: #f5f5f5;
+}
+
+.title {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 10vh;
+  margin-bottom: 10px;
+  background: var(--primary-color) !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.title p {
+  color: white;
+  margin: 0 30px;
+  font-size: 1.2rem;
+}
+
+/* Titre stylisé */
+h2 {
+  color: white;
+  margin: 0 30px;
+  border-left: 5px solid white; /* Bleu Angular Material */
+  padding-left: 15px;
+}
 
 .table-responsive {
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   overflow-x: auto;
+  margin: 20px;
 }
 
 .agent-table {
