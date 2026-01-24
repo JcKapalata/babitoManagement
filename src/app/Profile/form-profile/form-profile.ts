@@ -33,7 +33,7 @@ export class FormProfile implements OnInit {
   private readonly profileService = inject(ProfileService);
 
   profileForm!: FormGroup;
-  roles: string[] = ['admin', 'livreur', 'finance'];
+  roles: ('admin' | 'vendeur' | 'finance')[] = ['admin', 'vendeur', 'finance'];
   isUpdateMode = false;
   imagePreview: string | null = null;
   isLoading = false;
@@ -151,6 +151,7 @@ export class FormProfile implements OnInit {
     this.profileForm.patchValue({
       firstName: agent.firstName,
       lastName: agent.lastName,
+      phoneNumber: agent.phoneNumber,
       email: agent.email,
       role: agent.role,
       avatar: agent.avatar

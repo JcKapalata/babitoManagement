@@ -4,7 +4,7 @@ export interface Agent {
   firstName: string;
   lastName: string;
   phoneNumber: string; // Ajouté pour être raccord avec le back
-  role: 'admin' | 'livreur' | 'finance';
+  role: 'admin' | 'vendeur' | 'finance';
   avatar?: string;     // Base64 ou URL
   password?: string;   // Optionnel (utilisé seulement pour l'envoi)
   createdAt?: string;
