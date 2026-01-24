@@ -65,6 +65,14 @@ export class PersonnelService {
   // 3. PROFIL PERSONNEL (Routes /profile)
   // ==========================================
 
+  // Récupérer les détails d'un compte spécifique (Agent ou Client)
+  getAccountDetails(id: string): Observable<any> {
+    return this.http.get<{ success: boolean; data: any }>(`${this.ADMIN_API}/accounts/${id}`).pipe(
+      map(res => res.data),
+      catchError(this.handleError)
+    );
+  }
+
   // getProfile(): Observable<Agent> {
   //   return this.http.get<Agent>(`${this.ADMIN_API}/profile`).pipe(
   //     catchError(this.handleError)

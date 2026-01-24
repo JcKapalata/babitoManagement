@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Agent } from '../../Models/agent';
 import { PersonnelService } from '../personnel-service';
 import { TableauView } from "../tableau-view/tableau-view";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-liste-agents',
@@ -12,6 +13,7 @@ import { TableauView } from "../tableau-view/tableau-view";
 })
 export class ListeAgents implements OnInit {
   private readonly personnelService = inject(PersonnelService);
+  private readonly router = inject(Router);
 
   agents = signal<Agent[]>([]);
   isLoading = signal<boolean>(false);
@@ -37,6 +39,10 @@ export class ListeAgents implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  goToDetailsPersonnel(id: string) {
+    this.router.navigate(['manager/personnel-detail', id]);
   }
 
   toggleStatus(agent: Agent): void {

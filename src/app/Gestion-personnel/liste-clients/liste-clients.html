@@ -13,7 +13,8 @@
       <app-tableau-view 
         [data]="clients()" 
         type="client"
-        (onToggleStatus)="toggleStatus($event)">
+        (onToggleStatus)="toggleStatus($event)"
+        (onRowClick)="goToDetailsPersonnel($event)">
       </app-tableau-view>
     </div>
   }

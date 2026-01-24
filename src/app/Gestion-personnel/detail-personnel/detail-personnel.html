@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="title">
+    <h2>Détails du Profil</h2>
+  </div>
+
+  <div class="main"> @if (isLoading()) {
+      <div class="loader">Chargement des informations...</div>
+    } @else if (user()) {
+      <div class="profile-card">
+        <div class="header">
+          <img [src]="user().avatar || '/profileAvatar/default-avatar.jpeg'" class="large-avatar">
+          <h2>{{ user().firstName }} {{ user().lastName }}</h2>
+          <span class="badge" [ngClass]="user().role || 'client'">
+            {{ user().role || 'Client' }}
+          </span>
+        </div>
+
+        <div class="info-grid">
+          <div class="item"><strong>Email</strong> {{ user().email }}</div>
+          <div class="item"><strong>Téléphone</strong> {{ user().phoneNumber }}</div>
+          <div class="item"><strong>Statut</strong> {{ user().status }}</div>
+          <div class="item"><strong>Membre depuis</strong> {{ user().createdAt | date:'longDate' }}</div>
+        </div>
+
+        @if (user()?.adressesLivraison?.length > 0) {
+          <div class="addresses">
+            <h3>Adresses de livraison</h3>
+            <ul>
+              @for (addr of user().adressesLivraison; track addr.id) {
+                <li>{{ addr.street }}, {{ addr.city }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

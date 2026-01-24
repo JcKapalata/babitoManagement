@@ -14,7 +14,7 @@
     </thead>
     <tbody>
       @for (item of data; track item.id) {
-        <tr>
+        <tr (click)="goToDetail(item.id)">
           <td>
             <div class="user-cell">
               <img [src]="item.avatar || '/profileAvatar/default-avatar.jpeg'" alt="avatar">
@@ -32,7 +32,7 @@
             {{ item.status === 'active' ? 'Actif' : 'Banni' }}
           </td>
 
-          <td>
+          <td (click)="$event.stopPropagation()">
             <button (click)="handleStatus(item)" [class.ban-btn]="item.status === 'active'">
               {{ item.status === 'active' ? 'Bannir' : 'Réactiver' }}
             </button>

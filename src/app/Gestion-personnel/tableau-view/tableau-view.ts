@@ -24,8 +24,13 @@ export class TableauView {
   @Input() type: 'agent' | 'client' = 'client';
 
   @Output() onToggleStatus = new EventEmitter<any>();
+  @Output() onRowClick = new EventEmitter<string>(); // Envoie l'ID pour la navigation
 
   handleStatus(item: any) {
     this.onToggleStatus.emit(item);
+  }
+
+  goToDetail(id: string) {
+    this.onRowClick.emit(id);
   }
 }
