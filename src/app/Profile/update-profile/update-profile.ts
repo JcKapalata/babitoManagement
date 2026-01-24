@@ -21,16 +21,13 @@ export class UpdateProfile implements OnInit {
   selectedAgent: Agent | null = null;
 
   ngOnInit() {
-    // 1. On récupère l'agent directement depuis la mémoire vive (RAM) du service
-    // C'est instantané et ça évite l'erreur 404 du serveur
-    const currentAgent = this.profileService.getSnapshot();
+    // On lit la valeur du Signal directement
+    const currentAgent = this.profileService.currentUser();
 
     if (currentAgent) {
       this.selectedAgent = currentAgent;
       this.cdr.detectChanges();
     } else {
-      // 2. Si l'agent n'est pas en mémoire (ex: refresh de page), 
-      // on redirige vers le profil pour relancer le chargement initial
       console.warn("Données non trouvées en mémoire, redirection...");
       this.router.navigate(['/manager/profile']); 
     }

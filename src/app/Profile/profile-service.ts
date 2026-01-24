@@ -1,26 +1,21 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize, first } from 'rxjs';
+import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize } from 'rxjs';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly PROFILE_API = `${environment.apiUrl}/manager/profile`;
 
-  /**
-   * Endpoints Manager pour interagir avec 'agentManager'
-   */
-  private readonly MANAGER_API = `${environment.apiUrl}/manager`;
-
-  // Identité en mémoire vive (RAM) uniquement
+  // États réactifs pour le profil de l'utilisateur connecté
   currentUser = signal<Agent | null>(null);
   private currentAgentSubject = new BehaviorSubject<Agent | null>(null);
   public currentAgent$ = this.currentAgentSubject.asObservable();
-
-  // Indicateur de chargement pour l'initialisation
+  
   isLoading = signal<boolean>(false);
 
   constructor() {
@@ -28,7 +23,7 @@ export class ProfileService {
   }
 
   /**
-   * Initialisation : On vérifie s'il existe un token pour charger le profil
+   * Initialisation au démarrage : charge le profil si un token existe
    */
   private initAuth(): void {
     const token = localStorage.getItem('auth_token');
@@ -38,14 +33,12 @@ export class ProfileService {
   }
 
   /**
-   * Récupère les données de l'agent depuis le serveur via le token
-   * Route : GET /manager/profile
+   * Récupère les données fraîches depuis /manager/profile
    */
-  private refreshProfileFromServer(): void {
+  refreshProfileFromServer(): void {
     this.isLoading.set(true);
-    this.http.get<{ success: boolean, data: Agent }>(`${this.MANAGER_API}/profile`).pipe(
+    this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API).pipe(
       catchError(() => {
-        // Si le token est invalide ou expiré, on nettoie tout
         this.clearProfile();
         return of(null);
       }),
@@ -59,57 +52,12 @@ export class ProfileService {
   }
 
   /**
-   * Login : On enregistre UNIQUEMENT le token
+   * Met à jour ses propres informations
    */
-  setSession(agent: Agent, token: string): void {
-    localStorage.setItem('auth_token', token);
-    
-    // On remplit les états en mémoire pour usage immédiat
-    this.currentUser.set(agent);
-    this.currentAgentSubject.next(agent);
-  }
-
-  /**
-   * Logout : Nettoyage du localStorage et de la mémoire
-   */
-  clearProfile(): void {
-    localStorage.removeItem('auth_token');
-    this.currentUser.set(null);
-    this.currentAgentSubject.next(null);
-    this.router.navigate(['/login']);
-  }
-
-  /**
-   * Snapshot de l'agent (depuis la mémoire vive)
-   */
-  getSnapshot(): Agent | null {
-    return this.currentUser();
-  }
-
-  // --- GESTION ADMINISTRATIVE (Staff) ---
-
-  createAgent(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.MANAGER_API}/agents`, payload).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  getAgentById(agentId: string): Observable<Agent> {
-    return this.http.get<{ success: boolean, data: Agent }>(`${this.MANAGER_API}/agents/${agentId}`).pipe(
-      map(res => res.data),
-      catchError(this.handleError)
-    );
-  }
-
-  // On ne passe plus l'ID, seulement les données (payload)
-  updateAgent(updatedData: any): Observable<Agent | null> {
-    const url = `${this.MANAGER_API}/profile`; 
-      
-    return this.http.put<{ success: boolean, data: Agent }>(url, updatedData).pipe(
-      first(), // Sécurité : s'assure que la souscription s'arrête après la réponse
+  updateProfile(updatedData: Partial<Agent>): Observable<Agent | null> {
+    return this.http.put<{ success: boolean, data: Agent }>(this.PROFILE_API, updatedData).pipe(
       map(res => {
         if (res.success && res.data) {
-          // Mise à jour immédiate des données dans l'application
           this.currentUser.set(res.data);
           this.currentAgentSubject.next(res.data);
           return res.data;
@@ -120,14 +68,38 @@ export class ProfileService {
     );
   }
 
-  deleteAgent(agentId: string): Observable<any> {
-    return this.http.delete(`${this.MANAGER_API}/agents/${agentId}`).pipe(
-      catchError(this.handleError)
-    );
+  // A ADAPTER PLUTATARD DANS personnel-service.ts
+ 
+  /**
+   * Crée un nouvel agent (Admin, Vendeur ou Finance)
+   */
+    createAgent(payload: Partial<Agent>): Observable<any> {
+      return this.http.post(`${environment.apiUrl}/manager/agents`, payload).pipe(
+        catchError(this.handleError)
+      );
+    }
+
+  /**
+   * Enregistre la session après login
+   */
+  setSession(agent: Agent, token: string): void {
+    localStorage.setItem('auth_token', token);
+    this.currentUser.set(agent);
+    this.currentAgentSubject.next(agent);
+  }
+
+  /**
+   * Déconnexion
+   */
+  clearProfile(): void {
+    localStorage.removeItem('auth_token');
+    this.currentUser.set(null);
+    this.currentAgentSubject.next(null);
+    this.router.navigate(['/login']);
   }
 
   private handleError(error: HttpErrorResponse) {
-    const message = error.error?.message || `Erreur serveur (${error.status})`;
+    const message = error.error?.message || `Erreur profil (${error.status})`;
     return throwError(() => new Error(message));
   }
 }

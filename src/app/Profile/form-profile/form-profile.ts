@@ -195,7 +195,7 @@ export class FormProfile implements OnInit {
         ...(this.showPasswordFields && val.password ? { password: val.password } : {})
       };
 
-      this.profileService.updateAgent(updatedAgentPayload)
+      this.profileService.updateProfile(updatedAgentPayload)
         .pipe(
           first(),
           finalize(() => this.isLoading = false)
