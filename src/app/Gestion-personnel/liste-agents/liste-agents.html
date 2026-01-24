@@ -24,6 +24,7 @@
             <th>Rôle</th>
             <th>Statut</th>
             <th>Actions</th>
+            <th>Date création</th>
           </tr>
         </thead>
         <tbody>
@@ -53,6 +54,7 @@
                 </button>
                 <button (click)="onDelete(agent.id)" class="btn-delete">Supprimer</button>
               </td>
+              <td>{{ agent.createdAt | date:'dd/MM/yyyy' }}</td>
             </tr>
           } @empty {
             <tr>
