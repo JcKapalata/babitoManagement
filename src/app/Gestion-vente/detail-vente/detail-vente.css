@@ -175,7 +175,7 @@ h3 {
 
 /* --- 6. Carte des Totaux --- */
 .total-card {
-  background: #1a202c; /* Look sombre pro */
+  background: var(--primary-color); /* Look sombre pro */
   color: #ffffff;
 }
 
@@ -189,8 +189,8 @@ h3 {
 .total-row.highlight {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #2d3748;
-  color: #63b3ed; /* Bleu clair pour le prix */
+  border-top: 1px solid white;
+  color: white; /* Bleu clair pour le prix */
 }
 
 .price-big {

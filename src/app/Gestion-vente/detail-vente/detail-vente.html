@@ -49,7 +49,7 @@
                 <span>Status:</span> 
                 <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status }}</span>
               </div>
-              <div class="info-row"><span>Date:</span> {{ vente.createdAt | date:'short' }}</div>
+              <div class="info-row"><span>Date:</span> {{ vente.createdAt | date:'dd MMM yyyy à HH:mm' }}</div>
             </section>
           </div>
 
