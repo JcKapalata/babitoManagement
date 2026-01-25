@@ -3,6 +3,7 @@ import { produits } from './Gestion-produits/produits';
 import { profile } from './Profile/profile';
 import { authGuard } from './Auth/guard/auth-guard';
 import { personnelRoutes } from './Gestion-personnel/personnel';
+import { ventes } from './Gestion-vente/vente.routes';
 
 export const routes: Routes = [
     // 1. Redirection par défaut (À METTRE EN PREMIER)
@@ -26,6 +27,7 @@ export const routes: Routes = [
             },
             ...profile,
             ...produits,
+            ...ventes,
             ...personnelRoutes
         ]
     },

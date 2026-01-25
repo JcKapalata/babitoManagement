@@ -36,6 +36,7 @@
     color: white !important;
     transition: 0.3s;
     border-radius: 0 !important;
+    position:  relative !important;
 }
 .nav-item mat-icon {
     margin-right: 15px;
@@ -84,6 +85,32 @@
 .desactive:hover{
     cursor: not-allowed;
 }
+
+/* --- Gestion du Badge --- */
+
+/* 2. Le conteneur span (ton point d'ancrage) */
+.badge-sub-menu {
+  /* display: inline-flex; */
+  align-items: center;
+  position: absolute; 
+  top: 50%;  
+  right: -20px;
+  width: 40px;         
+}
+
+/* 3. Style du badge Angular Material (via ng-deep) */
+::ng-deep .mat-badge-content {
+  /* Centrage vertical absolu par rapport au span */
+  top: 50% !important;
+  
+  /* Style visuel */
+  font-size: 10px !important;
+  font-weight: 600;
+  height: 18px !important;
+  width: 18px !important;
+  line-height: 18px !important; /* Centre le chiffre dans le cercle */
+}
+
 
 
 /* pour le footer */

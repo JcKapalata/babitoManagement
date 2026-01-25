@@ -39,9 +39,36 @@
     </button>
 
     <!-- Gestion Ventes -->
-    <button mat-button class="nav-item desactive">
-      <mat-icon>shopping_cart</mat-icon> Gestion Ventes
+    <button mat-button class="nav-item" (click)="toogleVentes()">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Gestion Ventes</span>
+
+      @if (!isShowedVentes && nbVentes > 0) {
+        <span [matBadge]="nbVentes" 
+              matBadgeColor="warn" 
+              matBadgeOverlap="false"
+              class="badge-sub-menu">
+        </span>
+      }
     </button>
+
+    <!--  Sub nav item vente-->
+    @if (isShowedVentes) {
+      <div class="sub-menu">
+        <button mat-button class="sub-nav-item" (click)="goToVenteEncours()">
+          <mat-icon>pending_actions</mat-icon>
+          <span>Ventes en cours</span>
+          
+          @if (nbVentes > 0) {
+            <span [matBadge]="nbVentes" 
+                  matBadgeColor="warn" 
+                  matBadgeOverlap="false"
+                  class="badge-sub-menu">
+            </span>
+          }
+        </button>
+      </div>
+    }
 
     <!-- Gestion Finances -->
     <button mat-button class="nav-item desactive">
@@ -50,7 +77,7 @@
 
     <!-- Gestion RH -->
     <button mat-button class="nav-item" (click)="toggleRH()">
-      <mat-icon>payments</mat-icon> Gestion RH
+      <mat-icon>people</mat-icon> Gestion RH
     </button>
 
     <!--  Sub nav item RH-->

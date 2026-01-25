@@ -3,13 +3,14 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatBadgeModule } from '@angular/material/badge';
 import { Router } from '@angular/router';
 import { AuthService } from '../Auth/auth-service';
 import { ProfileService } from '../Profile/profile-service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatBadgeModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -18,16 +19,27 @@ export class Navbar implements OnInit {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
 
-  isShowedProduits = false;
-  isShowedRH = false;
+  // Cette variable contient ton nombre de ventes
+  // À l'avenir, tu pourras la récupérer via un Service
+  nbVentes: number = 8;
+
+  isShowedProduits: boolean = false;
+  isShowedRH: boolean = false;
+  isShowedVentes = false;
 
   ngOnInit(): void {
     this.isShowedProduits = false;
+    this.isShowedRH = false;
+    this.isShowedVentes = false;
   }
 
   // ======= Toggle =======
   toggleProduits() {
     this.isShowedProduits = !this.isShowedProduits;
+  }
+
+  toogleVentes(){
+    this.isShowedVentes = !this.isShowedVentes;
   }
 
   toggleRH(){
@@ -51,7 +63,7 @@ export class Navbar implements OnInit {
     this.router.navigate(['produits/ajout-produit'])
   }
 
-  // ===== go to RH information =====
+  // ===== go to profile information =====
   goToAjout(){
     this.router.navigate(['profile/add-profile'])
   }
@@ -73,6 +85,11 @@ export class Navbar implements OnInit {
   // Rediriger vers le profil
   goToProfile() {
     this.router.navigate(['profile/user-profile']);
+  }
+
+  // ========== go vente management =======
+  goToVenteEncours(){
+    this.router.navigate(['ventes/vente-encours']);
   }
 
   // Déconnexion complète
