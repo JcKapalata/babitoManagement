@@ -13,7 +13,7 @@ export interface PaginatedProduits {
   providedIn: 'root',
 })
 export class ProduitsService {
-  private readonly API_URL = `${environment.apiUrl}/produits`;
+  private readonly API_URL = `${environment.apiUrl}/manager/produits`;
   private readonly http = inject(HttpClient);
   
   // Signal de rafraîchissement
