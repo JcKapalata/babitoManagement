@@ -6,7 +6,7 @@ export const environment = {
   firebase: {
     // Tes clés Firebase de test ici
     apiKey: "AIza...",
-    authDomain: "babito-dev.firebaseapp.com",
-    projectId: "babito-dev",
+    authDomain: "bdemo-babito.firebaseapp.com",
+    projectId: "demo-babito",
   }
 };
