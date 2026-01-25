@@ -1,38 +1,45 @@
-.ventes-table {
-  width: 100%;
-  border-collapse: collapse;
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  background: #f4f7f6;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.side-panel {
+  width: 400px;
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  animation: slideIn 0.3s ease-out;
 }
 
-.ventes-table th {
-  background: #f8f9fa;
-  padding: 15px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
-  color: #495057;
+.btn-paid {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.ventes-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.client-info { display: flex; flex-direction: column; }
-.ref { font-size: 0.75rem; color: #888; font-family: monospace; }
-.client-name { font-weight: 600; }
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
-
-.status-badge[data-status="paid"] { background: #d4edda; color: #155724; }
-.status-badge[data-status="pending"] { background: #fff3cd; color: #856404; }
-
-.price-col { font-weight: bold; }

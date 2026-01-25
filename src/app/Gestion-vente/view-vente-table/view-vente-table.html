@@ -1,0 +1,33 @@
+<div class="table-container">
+  <table class="ventes-table">
+    <thead>
+      <tr>
+        <th>Réf / Client</th>
+        <th>Date</th>
+        <th>Total (USD)</th>
+        <th>Total (CDF)</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of ventes; track item.id) {
+        <tr class="table-row clickable-row" (click)="onOpenDetail(item)">
+          <td>
+            <div class="client-info">
+              <span class="ref">#{{ item.id.substring(0,6).toUpperCase() }}</span>
+              <span class="client-name">{{ item.customerName }}</span>
+            </div>
+          </td>
+          <td class="date-col">{{ item.createdAt | date:'dd MMM yyyy HH:mm' }}</td>
+          <td class="price-usd">{{ item.total.usd | number:'1.2-2' }}$</td>
+          <td class="price-cdf">{{ item.total.cdf | number }} FC</td>
+          <td>
+            <span class="status-badge" [attr.data-status]="item.status">
+              {{ item.status }}
+            </span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

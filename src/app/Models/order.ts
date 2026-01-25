@@ -46,3 +46,9 @@ export interface OrderAdmin {
     createdAt: string;             // ISO Date
     updatedAt: string;             // ISO Date
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}

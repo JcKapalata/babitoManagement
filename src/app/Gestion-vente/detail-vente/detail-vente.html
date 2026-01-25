@@ -1,0 +1,29 @@
+<div class="detail-container">
+  <button mat-button (click)="retour()">
+    <mat-icon>arrow_back</mat-icon> Retour à la liste
+  </button>
+
+  @if (vente) {
+    <div class="card">
+      <header>
+        <h2>Commande #{{ vente.id }}</h2>
+        <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status }}</span>
+      </header>
+
+      <section class="info">
+        <p><strong>Client:</strong> {{ vente.customerName }}</p>
+        <p><strong>Date:</strong> {{ vente.createdAt | date:'long' }}</p>
+        <p><strong>Total:</strong> {{ vente.total.usd }}$ ({{ vente.total.cdf }} FC)</p>
+      </section>
+
+      <div class="actions">
+        @if (vente.status === 'pending') {
+          <button class="btn-paid" (click)="changerStatut('paid')">Confirmer Paiement</button>
+          <button class="btn-cancel" (click)="changerStatut('cancelled')">Annuler</button>
+        }
+      </div>
+    </div>
+  } @else {
+    <p>Chargement de la vente...</p>
+  }
+</div>

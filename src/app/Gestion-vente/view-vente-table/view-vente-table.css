@@ -1,0 +1,101 @@
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.ventes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+}
+
+thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #edf2f7;
+}
+
+th {
+  padding: 16px;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #718096;
+  letter-spacing: 0.05em;
+}
+
+.table-row {
+  border-bottom: 1px solid #edf2f7;
+  transition: background 0.2s;
+}
+
+.table-row:hover {
+  background-color: #f7fafc;
+}
+
+/* Infos Client */
+.client-info {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+}
+
+.ref {
+  font-weight: bold;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.client-name {
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+/* Prix et Dates */
+.price-usd { font-weight: 700; color: #2d3748; }
+.price-cdf { color: #718096; font-size: 0.85rem; }
+.date-col { color: #4a5568; font-size: 0.85rem; }
+
+/* Badges de Statut */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge[data-status="paid"] { background: #c6f6d5; color: #22543d; }
+.status-badge[data-status="pending"] { background: #feebc8; color: #744210; }
+.status-badge[data-status="cancelled"] { background: #fed7d7; color: #822727; }
+
+/* Bouton Détails */
+.detail-btn {
+  background-color: #ebf4ff !important;
+  color: #3182ce !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+
+.detail-btn:hover {
+  background-color: #3182ce !important;
+  color: white !important;
+}
+
+.text-center { text-align: center; }
+
+.clickable-row {
+  cursor: pointer; /* Transforme la souris en main */
+  transition: all 0.2s ease;
+}
+
+.clickable-row:hover {
+  background-color: #f0f7ff !important; /* Couleur de survol légère */
+  transform: scale(1.002); /* Effet de zoom très subtil */
+}
+
+.clickable-row:active {
+  background-color: #e2e8f0; /* Effet de clic */
+}

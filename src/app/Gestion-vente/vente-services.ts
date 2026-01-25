@@ -9,7 +9,7 @@ import {
 } from '@angular/fire/firestore'; 
 
 import { environment } from '../../environments/environment';
-import { OrderAdmin } from '../Models/order';
+import { ApiResponse, OrderAdmin } from '../Models/order';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +21,7 @@ export class VenteServices {
   
   private readonly API_URL = `${environment.apiUrl}/admin/ventes`;
 
+  // Récupération des ventes en temps réel avec tri côté client
   getVentesRealtime(): Observable<OrderAdmin[]> {
     return new Observable<OrderAdmin[]>((observer) => {
       const colRef = collection(this.firestore, 'orders');
@@ -54,7 +55,17 @@ export class VenteServices {
     });
   }
 
-  updateStatus(orderId: string, status: string): Observable<any> {
-    return this.http.put(`${this.API_URL}/${orderId}/status`, { status });
+  // ✅ Récupération typée : on attend une ApiResponse contenant un OrderAdmin
+  getVenteById(id: string): Observable<ApiResponse<OrderAdmin>> {
+    return this.http.get<ApiResponse<OrderAdmin>>(`${this.API_URL}/${id}`);
+  }
+
+  // ✅ Mise à jour typée
+  updateStatus(orderId: string, status: string): Observable<ApiResponse<void>> {
+    // Correction de l'URL pour correspondre à ton Backend Express
+    return this.http.put<ApiResponse<void>>(
+      `${this.API_URL}/${orderId}/status`, 
+      { status }
+    );
   }
 }
