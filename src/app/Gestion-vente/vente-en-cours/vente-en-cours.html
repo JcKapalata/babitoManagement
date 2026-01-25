@@ -1,1 +1,70 @@
-<p>vente-en-cours works!</p>
+<div class="admin-container">
+  <header class="page-header">
+    <h1><mat-icon>bolt</mat-icon> Gestion des Ventes </h1>
+  </header>
+
+  <div class="table-responsive">
+    @if (ventes$ | async; as ventes) {
+      <table class="ventes-table">
+        <thead>
+          <tr>
+            <th>Réf / Client</th>
+            <th>Date</th>
+            <th>Total (USD)</th>
+            <th>Total (CDF)</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of ventes; track item.id) {
+            <tr [class]="item.status">
+              <td>
+                <div class="client-info">
+                  <span class="ref">#{{ item.id.substring(0,6) }}</span>
+                  <span class="client-name">{{ item.customerName }}</span>
+                </div>
+              </td>
+              <td>{{ item.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+              <td class="price-col">{{ item.total.usd | number:'1.2-2' }}$</td>
+              <td class="price-col">{{ item.total.cdf | number }} FC</td>
+              <td>
+                <span class="status-badge" [attr.data-status]="item.status">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  @if (item.status === 'pending') {
+                    <button mat-icon-button color="primary" 
+                            (click)="changerStatut(item.id, 'paid')"
+                            title="Marquer comme payé">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" 
+                            (click)="changerStatut(item.id, 'cancelled')"
+                            title="Annuler">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="no-data">
+                <mat-icon>inventory_2</mat-icon>
+                <p>Aucune vente détectée dans la base de données.</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Synchronisation avec Firestore...</p>
+      </div>
+    }
+  </div>
+</div>

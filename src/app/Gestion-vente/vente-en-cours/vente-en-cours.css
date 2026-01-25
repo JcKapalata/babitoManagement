@@ -1,0 +1,38 @@
+.ventes-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.ventes-table th {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  color: #495057;
+}
+
+.ventes-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.client-info { display: flex; flex-direction: column; }
+.ref { font-size: 0.75rem; color: #888; font-family: monospace; }
+.client-name { font-weight: 600; }
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.status-badge[data-status="paid"] { background: #d4edda; color: #155724; }
+.status-badge[data-status="pending"] { background: #fff3cd; color: #856404; }
+
+.price-col { font-weight: bold; }
