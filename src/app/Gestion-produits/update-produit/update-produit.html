@@ -3,9 +3,12 @@
     <h2>Modifier Produit</h2>
   </div>
 
-  @if (produitUpdater) {
-    <app-form-produit [produitInitial]="produitUpdater"></app-form-produit>
-  } @else {
-    <app-loading></app-loading>
-  }
+  <div class=".main-content">
+    @if (produitUpdater) {
+      <app-form-produit [produitInitial]="produitUpdater"></app-form-produit>
+    } @else {
+      <app-loading></app-loading>
+    }
+  </div>
+  
 </div>

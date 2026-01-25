@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VenteServices } from '../vente-services';
 import { OrderAdmin } from '../../Models/order';
@@ -23,34 +23,34 @@ export class DetailVente implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private venteService = inject(VenteServices);
+  private cdr = inject(ChangeDetectorRef);
 
   vente: OrderAdmin | null = null;
   loading = true; // Pour gérer l'état d'affichage
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    
     if (id) {
       this.fetchVente(id);
     } else {
-      console.error('ID introuvable dans l\'URL');
       this.retour();
     }
   }
 
   fetchVente(id: string) {
     this.loading = true;
-    // ✅ On utilise l'API REST typée maintenant
     this.venteService.getVenteById(id).subscribe({
       next: (response) => {
         if (response.success) {
           this.vente = response.data;
+          this.loading = false;
+          this.cdr.detectChanges(); // ✅ Force Angular à rafraîchir la vue avec les données
         }
-        this.loading = false;
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération:', err);
+        console.error('Erreur:', err);
         this.loading = false;
+        this.cdr.detectChanges(); // ✅ Rafraîchit aussi pour enlever le spinner en cas d'erreur
       }
     });
   }
@@ -61,11 +61,13 @@ export class DetailVente implements OnInit {
     this.venteService.updateStatus(this.vente.id, statut).subscribe({
       next: (res) => {
         if (res.success) {
-          console.log('Statut mis à jour avec succès');
           this.retour(); 
         }
       },
-      error: (err) => console.error('Erreur lors de la mise à jour:', err)
+      error: (err) => {
+        console.error('Erreur:', err);
+        this.cdr.detectChanges(); // ✅ Utile si tu affiches un message d'erreur à l'écran
+      }
     });
   }
 

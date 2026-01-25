@@ -1,28 +1,36 @@
 .container {
   width: 100%;
-  margin: 0 auto;
+  background-color: var(--bg-light);
+  min-height: 100vh;
 }
 
-.header {
+.title {
+  overflow: hidden;
   position: sticky;
   top: 0;
   height: 10vh;
+  margin-bottom: 10px;
   background: var(--primary-color) !important;
   width: 100%;
   display: flex;
   align-items: center;
-  z-index: 100;
+  z-index: 200;
 }
 
-.header h2 {
+/* Titre stylisé */
+.title h2 {
   color: white;
   margin: 0 30px;
-  border-left: 5px solid white;
+  border-left: 5px solid white; /* Bleu Angular Material */
   padding-left: 15px;
 }
 
-.main {
-  margin: 10px 20px;
+.main-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow-x: auto;
+  margin: 20px;
 }
 
 /* --- CONFIGURATION DES TABLEAUX --- */

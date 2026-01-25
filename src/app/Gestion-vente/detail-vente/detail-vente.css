@@ -1,0 +1,251 @@
+.container {
+  width: 100%;
+  background-color: var(--bg-light);
+  min-height: 100vh;
+}
+
+.title {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 10vh;
+  margin-bottom: 10px;
+  background: var(--primary-color) !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 200;
+}
+
+/* Titre stylisé */
+.title h2 {
+  color: white;
+  margin: 0 30px;
+  border-left: 5px solid white; /* Bleu Angular Material */
+  padding-left: 15px;
+}
+
+.main-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+/* --- 1. Conteneur Principal --- */
+.detail-container {
+  padding: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .detail-container {
+    padding: 24px;
+  }
+}
+
+/* --- 2. Barre Supérieure (Titre & Actions) --- */
+.top-bar {
+  display: flex;
+  flex-direction: column; /* Colonne sur mobile */
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+  .top-bar {
+    flex-direction: row; /* Ligne sur tablette/PC */
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Groupe de boutons d'action */
+.actions {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .actions {
+    width: auto;
+  }
+}
+
+/* --- 3. Grille de Mise en Page --- */
+.order-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 colonne par défaut */
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .order-grid {
+    /* Sidebar à gauche (380px) et contenu principal à droite */
+    grid-template-columns: 380px 1fr; 
+    gap: 24px;
+    align-items: start;
+  }
+}
+
+/* --- 4. Cartes (Cards) --- */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  word-wrap: break-word; /* Empêche les longs emails de casser le design */
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 20px;
+  }
+}
+
+h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1a202c;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+/* --- 5. Tableau des Articles (Responsive) --- */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto; /* Scroll horizontal sur mobile */
+  -webkit-overflow-scrolling: touch;
+}
+
+.items-table {
+  width: 100%;
+  min-width: 500px; /* Force la lisibilité sur mobile */
+  border-collapse: collapse;
+}
+
+.items-table th {
+  text-align: left;
+  color: #718096;
+  font-weight: 500;
+  padding: 12px;
+  border-bottom: 2px solid #edf2f7;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.items-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.product-cell {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 220px;
+}
+
+.prod-img {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f7fafc;
+}
+
+/* --- 6. Carte des Totaux --- */
+.total-card {
+  background: #1a202c; /* Look sombre pro */
+  color: #ffffff;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  opacity: 0.9;
+}
+
+.total-row.highlight {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #2d3748;
+  color: #63b3ed; /* Bleu clair pour le prix */
+}
+
+.price-big {
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .price-big {
+    font-size: 1.5rem;
+  }
+}
+
+/* --- 7. Badges de Statut --- */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge[data-status="paid"] { background: #c6f6d5; color: #22543d; }
+.status-badge[data-status="pending"] { background: #feebc8; color: #744210; }
+.status-badge[data-status="cancelled"] { background: #fed7d7; color: #822727; }
+
+/* --- 8. Boutons --- */
+.btn-paid, .btn-cancel {
+  flex: 1; /* Pleine largeur sur mobile */
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .btn-paid, .btn-cancel {
+    flex: none;
+    padding: 10px 20px;
+  }
+}
+
+.btn-paid { background: #38a169; color: white; }
+.btn-cancel { background: #e53e3e; color: white; }
+.btn-paid:hover, .btn-cancel:hover { opacity: 0.9; }
+
+/* État de chargement */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 0;
+  color: #718096;
+}
