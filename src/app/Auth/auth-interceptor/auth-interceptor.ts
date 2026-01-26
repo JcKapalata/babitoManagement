@@ -8,13 +8,14 @@ import { ProfileService } from '../../Profile/profile-service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('auth_token');
   const router = inject(Router);
-  const injector = inject(Injector); // Correction boucle NG0200
+  const injector = inject(Injector);
 
-  const isApiUrl = req.url.startsWith(environment.apiUrl);
+  // Vérifier si c'est une requête vers l'API (avec ou sans /manager)
+  const isApiUrl = req.url.includes('/api/') || req.url.includes('127.0.0.1:5001');
   const isLoginRequest = req.url.includes('/auth/login');
 
   let cloned = req;
-  if (token && isApiUrl) {
+  if (token && isApiUrl && !isLoginRequest) {
     cloned = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` }
     });

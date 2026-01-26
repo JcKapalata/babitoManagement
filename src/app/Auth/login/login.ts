@@ -69,7 +69,8 @@ export class Login {
 
       this.authService.login(email, password).subscribe({
         next: (user) => {
-          this.profileService.setSession(user.agent, user.token);
+          // Le backend retourne 'user' directement, pas 'user.agent'
+          this.profileService.setSession(user.agent || user, user.token);
           const finalTarget = returnUrl ? decodeURIComponent(returnUrl) : '/tableau-de-bord';
           
           this.router.navigateByUrl(finalTarget).then(() => {

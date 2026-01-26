@@ -28,18 +28,20 @@ export class AuthService {
       return throwError(() => new Error('Email et mot de passe requis'));
     }
 
-    return this.http.post<AuthResponse>(`${this.MANAGER_API}/auth/login`, { email, password }).pipe(
+    return this.http.post<any>(`${this.MANAGER_API}/auth/login`, { email, password }).pipe(
       map(response => {
         /**
-         * Le backend renvoie 'agent' pour les connexions staff
-         * On vérifie la présence du token et de l'objet agent
+         * Le backend renvoie 'user' pour les connexions staff
+         * On vérifie la présence du token et de l'objet user
          */
-        if (response.token && response.agent) {
+        if (response.token && response.user) {
           // Stockage via le ProfileService (SessionStorage/BehaviorSubject)
-          this.profileService.setSession(response.agent, response.token);
+          this.profileService.setSession(response.user, response.token);
+          
+          console.log('[AuthService] Login successful:', response.user);
           
           return {
-            agent: response.agent as Agent,
+            agent: response.user as Agent,
             token: response.token
           };
         }
