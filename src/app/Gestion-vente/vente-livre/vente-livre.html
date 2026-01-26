@@ -1,1 +1,18 @@
-<p>vente-livre works!</p>
+<div class="container">
+  <div class="title">
+    <h2><mat-icon>payments</mat-icon> Ventes encaissées (Livrées) </h2>
+  </div>
+
+  <div class="main-content">
+    @if (ventes$ | async; as list) {
+      <app-vente-table 
+        [ventes]="list || []">
+      </app-vente-table>
+    } @else {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Chargement des paiements reçus...</p>
+      </div>
+    }
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { 
   Firestore, 
   collection,
@@ -87,6 +87,16 @@ export class VenteServices {
     return this.http.put<ApiResponse<OrderAdmin>>(
       `${this.API_URL}/${orderId}/assign-agent`, 
       { agentId, internalNotes }
+    );
+  }
+
+  /**
+   * Retourne les ventes filtrées par statut en temps réel
+   */
+  getVentesByStatus(status: string): Observable<OrderAdmin[]> {
+    return this.getVentesRealtime().pipe(
+      map(ventes => ventes.filter(vente => vente.status === status)),
+      startWith([] as OrderAdmin[])
     );
   }
 

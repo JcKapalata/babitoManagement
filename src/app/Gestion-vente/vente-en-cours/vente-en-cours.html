@@ -6,7 +6,7 @@
   <div class="main-content">
     @if (ventes$ | async; as list) {
       <app-vente-table 
-        [ventes]="list" >
+        [ventes]="(list && list.length >= 0) ? list : []">
       </app-vente-table>
     } @else {
       <div class="loading-state">
