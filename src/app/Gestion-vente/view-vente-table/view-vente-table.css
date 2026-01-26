@@ -70,6 +70,7 @@ th {
 .status-badge[data-status="paid"] { background: #c6f6d5; color: #22543d; }
 .status-badge[data-status="pending"] { background: #feebc8; color: #744210; }
 .status-badge[data-status="cancelled"] { background: #fed7d7; color: #822727; }
+.status-badge[data-status="processing"] {  background: #bee3f8;  color: #2c5282; }
 
 /* Bouton Détails */
 .detail-btn {

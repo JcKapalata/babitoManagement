@@ -60,7 +60,7 @@
               <div class="info-row"><span>Méthode:</span> <span class="badge">{{ vente.paymentMethod }}</span></div>
               <div class="info-row">
                 <span>Status:</span> 
-                <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status }}</span>
+                <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status | orderStatus }}</span>
               </div>
               <div class="info-row"><span>Date:</span> {{ vente.createdAt | date:'dd MMM yyyy à HH:mm' }}</div>
             </section>

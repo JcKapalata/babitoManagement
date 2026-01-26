@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ControleVente } from "../controle-vente/controle-vente";
+import { OrderStatusPipe } from "../order-status-pipe";
 
 @Component({
   selector: 'app-detail-vente',
@@ -16,7 +17,8 @@ import { ControleVente } from "../controle-vente/controle-vente";
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    ControleVente
+    ControleVente,
+    OrderStatusPipe
 ],
   templateUrl: './detail-vente.html',
   styleUrl: './detail-vente.css',
