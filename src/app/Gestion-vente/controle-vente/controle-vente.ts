@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenteServices } from '../vente-services';
 import { OrderLogistics } from '../../Models/order';
@@ -17,6 +17,7 @@ export class ControleVente implements OnInit {
   private fb = inject(FormBuilder);
   private venteService = inject(VenteServices);
   private personnelService = inject(PersonnelService);
+  private cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) orderId!: string;
 
@@ -39,33 +40,43 @@ export class ControleVente implements OnInit {
   }
 
   private loadInitialData() {
-    // 1. Charger les agents disponibles (staff uniquement)
-    // Utilise la méthode getAllAgents() définie dans ton PersonnelService
+    this.loading = true;
+
+    // Charger les agents
     this.personnelService.getAllAgents().subscribe({
       next: (staff) => {
         this.agents = staff.filter(agent => this.ROLES_LOGISTIQUE.includes(agent.role));
-      
-        console.log(`${this.agents.length} agents qualifiés chargés.`);
+        this.loading = false;
+        
+        // 3. Force Angular à voir que la liste d'agents a changé
+        this.cdr.markForCheck(); 
       },
-      error: (err) => console.error('Erreur agents:', err)
+      error: (err) => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
     });
 
-    // 2. Écouter la logistique en temps réel
+    // Écouter la logistique
     this.venteService.getOrderLogisticsRealtime(this.orderId).subscribe(data => {
       this.logisticsData = data;
       if (data) {
-        // Mise à jour du formulaire si des notes existent déjà
         this.controlForm.patchValue({
           internalNotes: data.internalNotes
         }, { emitEvent: false });
       }
+      // 4. Force le rafraîchissement de l'UI avec les nouvelles données logistiques
+      this.cdr.markForCheck();
     });
   }
+  
 
   confirmAssignment() {
     if (this.controlForm.invalid || this.loading) return;
 
     this.loading = true;
+    this.cdr.markForCheck(); // Affiche le spinner immédiatement
+
     const { agentId, internalNotes } = this.controlForm.value;
 
     this.venteService.assignAgent(this.orderId, agentId, internalNotes)
@@ -73,10 +84,16 @@ export class ControleVente implements OnInit {
         next: () => {
           this.loading = false;
           this.submitSuccess = true;
-          setTimeout(() => this.submitSuccess = false, 3000);
+          this.cdr.markForCheck(); // Met à jour l'UI (success message)
+          
+          setTimeout(() => {
+            this.submitSuccess = false;
+            this.cdr.markForCheck(); // Cache le message après 3s
+          }, 3000);
         },
         error: (err) => {
           this.loading = false;
+          this.cdr.markForCheck();
           alert("Erreur lors de l'enregistrement : " + err.message);
         }
       });
