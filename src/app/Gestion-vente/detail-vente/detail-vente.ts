@@ -6,16 +6,18 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ControleVente } from "../controle-vente/controle-vente";
 
 @Component({
   selector: 'app-detail-vente',
   standalone: true, // N'oublie pas standalone si tu ne l'avais pas mis
   imports: [
-    CommonModule, 
-    MatIconModule, 
-    MatButtonModule, 
-    MatProgressSpinnerModule
-  ],
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    ControleVente
+],
   templateUrl: './detail-vente.html',
   styleUrl: './detail-vente.css',
 })
@@ -26,7 +28,8 @@ export class DetailVente implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   vente: OrderAdmin | null = null;
-  loading = true; // Pour gérer l'état d'affichage
+  loading = true; 
+  showConfig = false;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -69,6 +72,11 @@ export class DetailVente implements OnInit {
         this.cdr.detectChanges(); // ✅ Utile si tu affiches un message d'erreur à l'écran
       }
     });
+  }
+
+  toggleConfig() {
+    this.showConfig = !this.showConfig;
+    this.cdr.detectChanges();
   }
 
   retour() {

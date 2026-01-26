@@ -249,3 +249,44 @@ h3 {
   padding: 100px 0;
   color: #718096;
 }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Style pour l'overlay de configuration */
+.config-overlay {
+  margin: 20px 0;
+  animation: fadeInDown 0.3s ease-out;
+  border: 2px solid #3b82f6; /* Bordure bleue pour montrer que c'est une zone active */
+  border-radius: 12px;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive : Boutons empilés sur mobile */
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .actions button {
+    width: 100%;
+  }
+}

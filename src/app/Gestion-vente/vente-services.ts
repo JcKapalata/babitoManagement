@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { 
   Firestore, 
-  collection, 
+  collection,
+  doc,
+  DocumentSnapshot, 
   onSnapshot,
   DocumentData
 } from '@angular/fire/firestore'; 
 
 import { environment } from '../../environments/environment';
-import { ApiResponse, OrderAdmin } from '../Models/order';
+import { ApiResponse, OrderAdmin, OrderLogistics } from '../Models/order';
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +55,39 @@ export class VenteServices {
 
       return () => unsubscribe();
     });
+  }
+
+  /**
+   * 2. LECTURE : Logistique typée (orderManagers)
+   */
+  getOrderLogisticsRealtime(orderId: string): Observable<OrderLogistics | null> {
+    return new Observable((observer) => {
+      // 'doc' est maintenant correctement importé
+      const docRef = doc(this.firestore, 'orderManagers', orderId);
+
+      // Typage du snapshot : DocumentSnapshot<DocumentData>
+      const unsubscribe = onSnapshot(docRef, (snapshot: DocumentSnapshot<DocumentData>) => {
+        this.zone.run(() => {
+          if (snapshot.exists()) {
+            observer.next(snapshot.data() as OrderLogistics);
+          } else {
+            observer.next(null);
+          }
+        });
+      }, (error) => this.zone.run(() => observer.error(error)));
+
+      return () => unsubscribe();
+    });
+  }
+
+  /**
+   * 3. ACTION : Assigner un agent (Typage de la réponse API)
+   */
+  assignAgent(orderId: string, agentId: string, internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
+    return this.http.put<ApiResponse<OrderAdmin>>(
+      `${this.API_URL}/${orderId}/assign-agent`, 
+      { agentId, internalNotes }
+    );
   }
 
   // ✅ Récupération typée : on attend une ApiResponse contenant un OrderAdmin

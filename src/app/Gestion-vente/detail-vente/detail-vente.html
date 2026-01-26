@@ -9,13 +9,26 @@
           <mat-icon>arrow_back</mat-icon> Retour
         </button>
 
-        @if (vente && vente.status === 'pending') {
-          <div class="actions">
+        <div class="actions">
+          @if (vente) {
+            <button mat-flat-button color="accent" (click)="toggleConfig()">
+              <mat-icon>{{ showConfig ? 'expand_less' : 'settings' }}</mat-icon>
+              {{ showConfig ? 'Fermer Config' : 'Configurer Livraison' }}
+            </button>
+          }
+
+          @if (vente && vente.status === 'pending') {
             <button class="btn-paid" (click)="changerStatut('paid')">Confirmer Paiement</button>
             <button class="btn-cancel" (click)="changerStatut('cancelled')">Annuler</button>
-          </div>
-        }
+          }
+        </div>
       </div>
+
+      @if (showConfig && vente) {
+        <div class="config-overlay">
+          <app-controle-vente [orderId]="vente.id"></app-controle-vente>
+        </div>
+      }
 
       @if (loading) {
         <div class="loading-state">

@@ -1,0 +1,61 @@
+<div class="card-control">
+  <div class="card-header">
+    <div class="header-info">
+      <i class="fas fa-clipboard-check icon-main"></i>
+      <div>
+        <h3>Configuration de la Vente</h3>
+        <p class="subtitle">Assignation et logistique interne</p>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="controlForm" (ngSubmit)="confirmAssignment()" class="card-body">
+    
+    <div class="field">
+      <label for="agent">Responsable de la livraison / gestion</label>
+      <div class="select-wrapper">
+        <select id="agent" formControlName="agentId" [class.error]="controlForm.get('agentId')?.invalid && controlForm.get('agentId')?.touched">
+          <option value="" disabled selected>Sélectionner un agent...</option>
+          <option *ngFor="let agent of agents" [value]="agent.id">
+            {{ agent.firstName }} {{ agent.lastName }} — ({{ agent.role | uppercase }})
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="notes">Notes Internes (Instructions spéciales)</label>
+      <textarea 
+        id="notes" 
+        formControlName="internalNotes" 
+        rows="3" 
+        placeholder="Informations sur la livraison, contact client, etc.">
+      </textarea>
+    </div>
+
+    <div class="history-container" *ngIf="logisticsData?.history?.length">
+      <p class="history-title">Historique des modifications</p>
+      <div class="timeline">
+        <div class="timeline-event" *ngFor="let h of logisticsData?.history">
+          <div class="event-dot"></div>
+          <div class="event-content">
+            <span class="event-user">{{ h.agent }} ({{ h.role }})</span>
+            <span class="event-date">{{ h.date | date:'short' }}</span>
+            <p class="event-action">{{ h.action }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <button type="submit" 
+              class="btn-save" 
+              [disabled]="controlForm.invalid || loading">
+        <span *ngIf="!loading && !submitSuccess">Enregistrer la configuration</span>
+        <span *ngIf="loading">Traitement en cours...</span>
+        <span *ngIf="submitSuccess">✓ Enregistré !</span>
+      </button>
+    </div>
+
+  </form>
+</div>
