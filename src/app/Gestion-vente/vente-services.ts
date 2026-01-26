@@ -7,7 +7,10 @@ import {
   doc,
   DocumentSnapshot, 
   onSnapshot,
-  DocumentData
+  DocumentData,
+  orderBy,
+  limit,
+  query
 } from '@angular/fire/firestore'; 
 
 import { environment } from '../../environments/environment';
@@ -24,35 +27,30 @@ export class VenteServices {
   private readonly API_URL = `${environment.apiUrl}/admin/ventes`;
 
   // Récupération des ventes en temps réel avec tri côté client
-  getVentesRealtime(): Observable<OrderAdmin[]> {
+  getVentesRealtime(maxResults: number = 50): Observable<OrderAdmin[]> {
     return new Observable<OrderAdmin[]>((observer) => {
       const colRef = collection(this.firestore, 'orders');
+      const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
 
-      const unsubscribe = onSnapshot(colRef, (snapshot) => {
-        this.zone.run(() => {
-          const ventes = snapshot.docs.map(doc => {
-            const data = doc.data() as any;
-            return {
-              ...data,
+      const unsubscribe = onSnapshot(q, 
+        (snapshot) => {
+          this.zone.run(() => {
+            const ventes = snapshot.docs.map(doc => ({
               id: doc.id,
-              // Sécurité : Conversion des dates au cas où Firebase envoie un Timestamp
-              createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt
-            } as OrderAdmin;
+              ...doc.data(),
+              createdAt: doc.data()['createdAt']?.toDate?.() || doc.data()['createdAt']
+            } as OrderAdmin));
+            observer.next(ventes);
           });
-
-          // ✅ Tri manuel côté client pour avoir les plus récents en haut
-          ventes.sort((a, b) => {
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return dateB - dateA;
+        }, 
+        (error) => {
+          this.zone.run(() => {
+            console.error("❌ Erreur Firestore Permission/Index:", error.message);
+            // On envoie un tableau vide au lieu de crash
+            observer.next([]); 
           });
-
-          observer.next(ventes);
-        });
-      }, (error) => {
-        this.zone.run(() => observer.error(error));
-      });
-
+        }
+      );
       return () => unsubscribe();
     });
   }

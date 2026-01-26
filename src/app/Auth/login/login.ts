@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth-service';
 import { ProfileService } from '../../Profile/profile-service';
 import { firstValueFrom } from 'rxjs';
+import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -29,6 +30,7 @@ export class Login {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private cdr = inject(ChangeDetectorRef);
+  private firebaseAuth = inject(Auth);
 
   loginForm: FormGroup;
   hidePassword = true;
@@ -67,9 +69,13 @@ export class Login {
       const params = await firstValueFrom(this.route.queryParams);
       const returnUrl = params['returnUrl'];
 
+      // ✅ AJOUT : On se connecte d'abord à Firebase pour débloquer Firestore
+      // Cela permet à 'request.auth' de ne plus être 'null' dans tes Rules
+      await signInWithEmailAndPassword(this.firebaseAuth, email, password);
+
+      // --- TON CODE ACTUEL RESTE ICI (NE PAS ENLEVER) ---
       this.authService.login(email, password).subscribe({
         next: (user) => {
-          // Le backend retourne 'user' directement, pas 'user.agent'
           this.profileService.setSession(user.agent || user, user.token);
           const finalTarget = returnUrl ? decodeURIComponent(returnUrl) : '/tableau-de-bord';
           
@@ -81,11 +87,14 @@ export class Login {
           this.isLoading = false;
           this.errorMessage = err.message;
           this.cdr.detectChanges(); 
-          console.error('[Login Component]:', err.message);
         }
       });
-    } catch (e) {
+      // ---------------------------------------------------
+
+    } catch (e: any) {
       this.isLoading = false;
+      this.errorMessage = "Erreur d'authentification Firebase";
+      this.cdr.detectChanges();
     }
   }
 }
