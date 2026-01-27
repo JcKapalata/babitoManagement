@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, retry, shareReplay, switchMap, throwError, tap } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, catchError, map, Observable, retry, switchMap, throwError, tap } from 'rxjs';
 import { Produit } from '../Models/produit';
 import { environment } from '../../environments/environment';
 
@@ -13,117 +13,130 @@ export interface PaginatedProduits {
   providedIn: 'root',
 })
 export class ProduitsService {
-  private readonly API_URL = `${environment.apiUrl}/manager/produits`;
+  // Changement de l'URL pour correspondre à votre alias backend /produits
+  private readonly API_URL = `${environment.apiUrl}/produits`; 
   private readonly http = inject(HttpClient);
   
-  // Signal de rafraîchissement
   private refreshSignal$ = new BehaviorSubject<void>(undefined);
 
-  // Récupérer la liste des produits avec pagination
+  /**
+   * Récupère la liste des produits
+   * Adapté pour la structure { success: boolean, count: number, data: [] }
+   */
   getProduits(page: number = 0, size: number = 20): Observable<PaginatedProduits> {
-    // Pour le debug, on va d'abord tester sans paramètres pour prouver que les données arrivent
     return this.refreshSignal$.pipe(
+      tap(() => console.log(`[🚀 HTTP GET] Chargement des produits... URL: ${this.API_URL}`)),
       switchMap(() => {
-        // NOTE: Si vous utilisez In-Memory, les paramètres 'page' et 'size' 
-        // bloquent souvent la réponse. On les enlève pour le test.
         return this.http.get<any>(this.API_URL).pipe(
           retry(1),
           map(res => {
-            // Extraction des données (gestion tableau direct ou objet)
-            let items: Produit[] = Array.isArray(res) ? res : (res.data || res.items || []);
+            // Le backend Express renvoie { success: true, count: X, data: [...] }
+            const rawItems = res.data || [];
+            console.log(`[📦 Backend Response] ${rawItems.length} produits reçus.`);
 
-            // Puisque In-Memory ne gère pas nativement votre pagination 'page/size',
-            // on le fait manuellement ici pour le développement :
+            const formattedItems = this.parseDates(rawItems);
+
+            // Pagination manuelle côté front pour le manager
             const start = page * size;
             const end = start + size;
-            const paginatedItems = items.slice(start, end);
-
-            console.log(`[Debug] Total items: ${items.length}, Paginated: ${paginatedItems.length}`);
+            const paginatedItems = formattedItems.slice(start, end);
 
             return {
-              items: this.parseDates(paginatedItems),
-              total: items.length
+              items: paginatedItems,
+              total: formattedItems.length
             };
           }),
-          catchError(err => this.handleError(err))
+          catchError(err => this.handleError(err, 'getProduits'))
         );
       })
     );
   }
 
-  // Récupérer un produit par son ID
-  getProduitById(id: number): Observable<Produit> {
-    return this.http.get<Produit>(`${this.API_URL}/${id}`).pipe(
-      retry(1),
-      map(produit => {
-        // Conversion des dates
-        return this.parseDates([produit])[0];
+  getProduitById(id: string | number): Observable<Produit> {
+    console.log(`[🔍 HTTP GET] Recherche produit ID: ${id}`);
+    return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
+      map(res => {
+        // res est { success: true, data: { ... } }
+        const p = res.data;
+        return this.parseDates([p])[0];
       }),
-      catchError(err => this.handleError(err))
+      catchError(err => this.handleError(err, 'getProduitById'))
     );
   }
 
-  // Ajout du produit
   postProduit(produit: Partial<Produit>): Observable<Produit> {
-    return this.http.post<Produit>(this.API_URL, produit).pipe(
+    console.log('[📤 HTTP POST] Création nouveau produit:', produit);
+    return this.http.post<any>(this.API_URL, produit).pipe(
       tap((res) => {
-        // On déclenche le rafraîchissement des autres composants abonnés
-        console.log(res)
+        console.log('[✅ Success] Produit créé:', res);
         this.forceRefresh();
       }),
-      catchError(err => this.handleError(err))
+      map(res => res.data),
+      catchError(err => this.handleError(err, 'postProduit'))
     );
   }
 
-  // Update Produit
   updateProduit(id: string | number, produit: Partial<Produit>): Observable<Produit> {
     const url = `${this.API_URL}/${id}`;
-    console.log("Tentative de PUT sur :", url)
+    console.log(`[🔄 HTTP PUT] Mise à jour produit ${id}:`, produit);
 
-    return this.http.put<Produit>(url, produit).pipe(
-      tap( (res) => {
-        console.log(res);
+    return this.http.put<any>(url, produit).pipe(
+      tap((res) => {
+        console.log('[✅ Success] Produit mis à jour:', res);
         this.forceRefresh();
       }),
-      catchError( err => this.handleError(err))
+      map(res => res.data),
+      catchError(err => this.handleError(err, 'updateProduit'))
     );
   }
 
-  // DeleteProduitById
   deleteProduitById(id: string | number): Observable<void> {
     const url = `${this.API_URL}/${id}`;
-    return this.http.delete<void>(url).pipe(
+    console.log(`[🗑️ HTTP DELETE] Suppression produit ${id}`);
+    
+    return this.http.delete<any>(url).pipe(
       tap(() => {
-        console.log(`Produit ${id} supprimé`);
+        console.log(`[✅ Success] Produit ${id} supprimé`);
         this.forceRefresh(); 
       }),
-      catchError(err => this.handleError(err))
+      catchError(err => this.handleError(err, 'deleteProduitById'))
     );
   }
 
+  /**
+   * Normalise les données reçues du Backend
+   */
   private parseDates(produits: any[]): Produit[] {
-    return produits.map(p => ({
-      ...p,
-      dateAjout: p.dateAjout ? new Date(p.dateAjout) : new Date(),
-      dateModification: p.dateModification ? new Date(p.dateModification) : new Date()
-    }));
+    return produits.map(p => {
+      // Gestion de l'ID : Firestore ID (string) -> Produit Admin (number ou string)
+      // On s'assure que la clé 'taille' (singulier) existe pour le front admin
+      const pMapped = {
+        ...p,
+        id: p.id, // On garde l'ID tel quel (string Firestore)
+        taille: p.tailles || p.taille || {}, // Normalisation singulier/pluriel
+        dateAjout: p.createdAt ? new Date(p.createdAt) : new Date(),
+        dateModification: p.updatedAt ? new Date(p.updatedAt) : new Date()
+      };
+      return pMapped as Produit;
+    });
   }
 
   forceRefresh() {
-    console.log('[Debug] Forçage du rafraîchissement du stock...');
+    console.log('[🔔 Signal] Forçage du rafraîchissement des données...');
     this.refreshSignal$.next();
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse, methodName: string) {
     let message = 'Une erreur système est survenue';
     
     if (error.status === 0) {
-      message = 'Impossible de contacter le serveur (Erreur Réseau)';
-    } else if (error.status === 404) {
-      message = `La collection "produits" est introuvable à l'adresse: ${this.API_URL}`;
+      message = 'Impossible de contacter le serveur (Vérifiez votre connexion ou CORS)';
+    } else {
+      // On essaie de récupérer le message d'erreur envoyé par votre API Express
+      message = error.error?.message || `Erreur lors de l'exécution de ${methodName}`;
     }
 
-    console.error(`[Production Log] Code: ${error.status} | Message: ${error.message}`);
+    console.error(`[❌ ERROR ${methodName}] Code: ${error.status} | Msg: ${message}`);
     return throwError(() => new Error(message));
   }
 }
