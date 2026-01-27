@@ -7,6 +7,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { Router } from '@angular/router';
 import { AuthService } from '../Auth/auth-service';
 import { ProfileService } from '../Profile/profile-service';
+import { VenteServices } from '../Gestion-vente/vente-services';
 
 @Component({
   selector: 'app-navbar',
@@ -18,10 +19,10 @@ export class Navbar implements OnInit {
   private readonly router = inject(Router);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private venteService = inject(VenteServices);
 
-  // Cette variable contient ton nombre de ventes
-  // À l'avenir, tu pourras la récupérer via un Service
-  nbVentes: number = 8;
+  // Un seul flux qui contient les deux compteurs
+  counts$ = this.venteService.getAlerteStatusCounts();
 
   isShowedProduits: boolean = false;
   isShowedRH: boolean = false;

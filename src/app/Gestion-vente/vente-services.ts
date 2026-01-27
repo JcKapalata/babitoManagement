@@ -111,4 +111,20 @@ export class VenteServices {
       { status }
     );
   }
+
+  /**
+   * Retourne un objet contenant les compteurs séparés pour Pending et Processing.
+   * Optimisé pour la sécurité : les composants ne reçoivent que les chiffres.
+   */
+  getAlerteStatusCounts(): Observable<{ pending: number, processing: number }> {
+    return this.getVentesRealtime().pipe(
+      map(ventes => {
+        return {
+          pending: ventes.filter(v => v.status === 'pending').length,
+          processing: ventes.filter(v => v.status === 'processing').length
+        };
+      }),
+      startWith({ pending: 0, processing: 0 })
+    );
+  }
 }

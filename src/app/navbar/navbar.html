@@ -39,50 +39,65 @@
     </button>
 
     <!-- Gestion Ventes -->
-    <button mat-button class="nav-item" (click)="toogleVentes()">
+    <button mat-button class="nav-item parent-button" (click)="toogleVentes()">
       <mat-icon>shopping_cart</mat-icon>
       <span>Gestion Ventes</span>
 
-      @if (!isShowedVentes && nbVentes > 0) {
-        <span [matBadge]="nbVentes" 
-              matBadgeColor="warn" 
-              matBadgeOverlap="false"
-              class="badge-sub-menu">
-        </span>
+      @if (!isShowedVentes) {
+        @if (counts$ | async; as c) {
+          <div class="parent-badges">
+            @if (c.pending > 0) {
+              <span [matBadge]="c.pending" matBadgeOverlap="false" class="badge-pending mini-badge"></span>
+            }
+            @if (c.processing > 0) {
+              <span [matBadge]="c.processing" matBadgeOverlap="false" class="badge-processing mini-badge"></span>
+            }
+          </div>
+        }
       }
     </button>
 
     <!--  Sub nav item vente-->
     @if (isShowedVentes) {
-      <div class="sub-menu">
-        <button mat-button class="sub-nav-item" (click)="goToVenteEncours()">
-          <mat-icon>pending_actions</mat-icon>
-          <span>Ventes en cours</span>
+      @if (counts$ | async; as c) {
+        <div class="sub-menu">
           
-          @if (nbVentes > 0) {
-            <span [matBadge]="nbVentes" 
-                  matBadgeColor="warn" 
-                  matBadgeOverlap="false"
-                  class="badge-sub-menu">
-            </span>
-          }
-        </button>
+          <button mat-button class="sub-nav-item" (click)="goToVenteEncours()">
+            <mat-icon>pending_actions</mat-icon>
+            <span>Ventes en cours</span>
+            
+            @if (c.pending > 0) {
+              <span [matBadge]="c.pending" 
+                    matBadgeOverlap="false"
+                    class="badge-sub-menu badge-pending">
+              </span>
+            }
+          </button>
 
-        <button mat-button class="sub-nav-item" (click)="goToVenteNonLivrees()">
-          <mat-icon>local_shipping</mat-icon>
-          <span>Ventes non livrées</span>
-        </button>
+          <button mat-button class="sub-nav-item" (click)="goToVenteNonLivrees()">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Ventes non livrées</span>
 
-        <button mat-button class="sub-nav-item" (click)="goToVenteLivrees()">
-          <mat-icon>task_alt</mat-icon>
-          <span>Ventes livrées</span>
-        </button>
+            @if (c.processing > 0) {
+              <span [matBadge]="c.processing" 
+                    matBadgeOverlap="false"
+                    class="badge-sub-menu badge-processing">
+              </span>
+            }
+          </button>
 
-        <button mat-button class="sub-nav-item" (click)="goToVenteAnnulees()">
-          <mat-icon>cancel</mat-icon>
-          <span>Ventes annulées</span>
-        </button>
-      </div>
+          <button mat-button class="sub-nav-item" (click)="goToVenteLivrees()">
+            <mat-icon>task_alt</mat-icon>
+            <span>Ventes livrées</span>
+          </button>
+
+          <button mat-button class="sub-nav-item" (click)="goToVenteAnnulees()">
+            <mat-icon>cancel</mat-icon>
+            <span>Ventes annulées</span>
+          </button>
+          
+        </div>
+      }
     }
 
     <!-- Gestion Finances -->

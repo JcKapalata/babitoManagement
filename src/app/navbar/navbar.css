@@ -88,29 +88,53 @@
 
 /* --- Gestion du Badge --- */
 
-/* 2. Le conteneur span (ton point d'ancrage) */
-.badge-sub-menu {
-  /* display: inline-flex; */
+/* Conteneur des badges sur le bouton parent */
+.parent-badges {
+  display: flex !important;
+  gap: 25px; 
+  margin-left: 10px;
+  position: relative;
+}
+
+/* On cible le cercle interne du badge */
+::ng-deep .badge-sub-menu .mat-badge-content {
+  width: 22px !important;   
+  height: 22px !important;
+  line-height: 22px !important; 
+  font-size: 11px !important;   
+  display: flex;
   align-items: center;
-  position: absolute; 
-  top: 50%;  
-  right: -20px;
-  width: 40px;         
+  justify-content: center;
+  top: 0 !important; 
 }
 
-/* 3. Style du badge Angular Material (via ng-deep) */
-::ng-deep .mat-badge-content {
-  /* Centrage vertical absolu par rapport au span */
-  top: 50% !important;
-  
-  /* Style visuel */
-  font-size: 10px !important;
-  font-weight: 600;
-  height: 18px !important;
-  width: 18px !important;
-  line-height: 18px !important; /* Centre le chiffre dans le cercle */
+/* Positionnement du span parent */
+.badge-sub-menu {
+  position: absolute;
+  right: -10px; 
+  top: 50%;
+  transform: translateY(-50%);
 }
 
+/* Couleur pour Pending (Rouge Vif) */
+::ng-deep .badge-pending .mat-badge-content {
+  background: var(--warn-color) !important;
+  color: white !important;
+}
+
+/* Couleur pour Processing (Bleu Royal ou Ambre) */
+::ng-deep .badge-processing .mat-badge-content {
+  background: var(--warning-orange) !important;
+  color: white !important;
+}
+
+/* Positionnement pour éviter que le texte du bouton ne bouge */
+.parent-button {
+  display: flex !important;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+}
 
 
 /* pour le footer */
