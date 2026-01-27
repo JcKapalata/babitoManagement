@@ -14,7 +14,7 @@ export interface PaginatedProduits {
 })
 export class ProduitsService {
   // Changement de l'URL pour correspondre à votre alias backend /produits
-  private readonly API_URL = `${environment.apiUrl}/produits`; 
+  private readonly API_URL = `${environment.apiUrl}/manager/produits`; 
   private readonly http = inject(HttpClient);
   
   private refreshSignal$ = new BehaviorSubject<void>(undefined);
