@@ -39,8 +39,8 @@ export class ProduitFaibles implements OnInit, OnDestroy {
         const items = res.items || [];
 
         items.forEach((p: any) => {
-          if (p.taille) {
-            Object.entries(p.taille).forEach(([tailleNom, tailleData]: [string, any]) => {
+          if (p.tailles) {
+            Object.entries(p.tailles).forEach(([tailleNom, tailleData]: [string, any]) => {
               tailleData.couleurs?.forEach((c: any) => {
                 // FILTRE : Entre 1 et la limite (on exclut 0 car c'est pour la page "épuisés")
                 if (c.stock > 0 && c.stock <= this.seuilLimite) {

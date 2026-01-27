@@ -33,7 +33,7 @@
         <section class="variants-section">
           <h3>Tailles & Disponibilités</h3>
           
-          @for (t of produit.taille | keyvalue; track t.key) {
+          @for (t of produit.tailles | keyvalue; track t.key) {
             <div class="size-card">
               <div class="size-header">
                 <span class="size-name">Taille: {{ t.key }}</span>

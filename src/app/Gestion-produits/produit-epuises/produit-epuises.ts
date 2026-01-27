@@ -35,8 +35,8 @@ export class ProduitEpuises implements OnInit, OnDestroy {
         const items = res.items || [];
 
         items.forEach((p: any) => {
-          if (p.taille) {
-            Object.entries(p.taille).forEach(([tailleNom, tailleData]: [string, any]) => {
+          if (p.tailles) {
+            Object.entries(p.tailles).forEach(([tailleNom, tailleData]: [string, any]) => {
               if (tailleData.couleurs) {
                 tailleData.couleurs.forEach((c: any) => {
                   // On ne garde que ce qui est à stock 0 ou moins

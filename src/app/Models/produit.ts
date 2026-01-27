@@ -12,8 +12,8 @@ export interface Produit{
     dateAjout: Date;
     dateModification: Date;
     
-    // On intègre ici le détail par taille
-    taille: {
+    // On intègre ici le détail par taille (correspond au backend: tailles)
+    tailles: {
         [taille: string]: {
             prix: number;
             couleurs: {

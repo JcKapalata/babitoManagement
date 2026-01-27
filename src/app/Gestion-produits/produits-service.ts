@@ -16,7 +16,7 @@ export class ProduitsService {
   private readonly API_URL = `${environment.apiUrl}/manager/produits`;
   private readonly http = inject(HttpClient);
   
-  // Signal de rafraîchissement
+  // Signal de rafraîchissement - INITIALISER AVEC UNE VALEUR POUR DÉCLENCHER LA PREMIÈRE REQUÊTE
   private refreshSignal$ = new BehaviorSubject<void>(undefined);
 
   // Récupérer la liste des produits avec pagination
@@ -24,11 +24,13 @@ export class ProduitsService {
     // Pour le debug, on va d'abord tester sans paramètres pour prouver que les données arrivent
     return this.refreshSignal$.pipe(
       switchMap(() => {
+        console.log('[ProduitsService] Appel API à:', this.API_URL);
         // NOTE: Si vous utilisez In-Memory, les paramètres 'page' et 'size' 
         // bloquent souvent la réponse. On les enlève pour le test.
         return this.http.get<any>(this.API_URL).pipe(
           retry(1),
           map(res => {
+            console.log('[ProduitsService] Réponse reçue:', res);
             // Extraction des données (gestion tableau direct ou objet)
             let items: Produit[] = Array.isArray(res) ? res : (res.data || res.items || []);
 
@@ -38,7 +40,7 @@ export class ProduitsService {
             const end = start + size;
             const paginatedItems = items.slice(start, end);
 
-            console.log(`[Debug] Total items: ${items.length}, Paginated: ${paginatedItems.length}`);
+            console.log(`[ProduitsService] Total items: ${items.length}, Paginated: ${paginatedItems.length}`);
 
             return {
               items: this.parseDates(paginatedItems),

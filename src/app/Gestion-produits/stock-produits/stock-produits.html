@@ -4,49 +4,55 @@
     </div>
     
     <div class="main">
-        @if (dataSource) {
-            <div class="table-container">
-                <table class="custom-table header-fixed">
-                    <thead>
-                        <tr>
-                            <th class="col-id">ID</th>
-                            <th class="col-nom">Nom</th>
-                            <th class="col-code">Code</th>
-                            <th class="col-fourn">Fournisseur</th>
-                            <th class="col-region">Région</th>
-                            <th class="col-class">Classement</th>
-                            <th class="col-cat">Catégorie</th>
-                            <th class="col-type">Type</th>
-                            <th class="col-date">Ajout</th>
-                            <th class="col-date">Modif</th>
-                        </tr>
-                    </thead>
-                </table>
-
-                <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
-                    <table class="custom-table">
-                        <tbody>
-                            <tr *cdkVirtualFor="let p of (displayProducts$ | async); trackBy: trackByFn" 
-                                (click)="p ? onRowClick(p) : null" 
-                                class="table-row"
-                                >
-                                <td class="col-id">{{ p ? p.id : '...' }}</td>
-                                <td class="col-nom bold">{{ p ? p.nom : 'Chargement...' }}</td>
-                                <td class="col-code">{{ p ? p.codeProduit : '...' }}</td>
-                                <td class="col-fourn">{{ p ? p.codeFournisseur : '...' }}</td>
-                                <td class="col-region">{{ p ? p.region : '...' }}</td>
-                                <td class="col-class">{{ p ? p.classement : '...' }}</td>
-                                <td class="col-cat">{{ p ? p.categorie : '...' }}</td>
-                                <td class="col-type">{{ p ? p.type : '...' }}</td>
-                                <td class="col-date">{{ p ? (p.dateAjout | date:'dd/MM/yyyy') : '...' }}</td>
-                                <td class="col-date">{{ p ? (p.dateModification | date:'dd/MM/yyyy') : '...' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </cdk-virtual-scroll-viewport>
-            </div>
-        } @else {
+        @if (isLoading) {
             <app-loading></app-loading>
+        } @else {
+            @let products = (displayProducts$ | async);
+            @if (products && products.length > 0) {
+                <div class="table-container">
+                    <table class="custom-table header-fixed">
+                        <thead>
+                            <tr>
+                                <th class="col-id">ID</th>
+                                <th class="col-nom">Nom</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-fourn">Fournisseur</th>
+                                <th class="col-region">Région</th>
+                                <th class="col-class">Classement</th>
+                                <th class="col-cat">Catégorie</th>
+                                <th class="col-type">Type</th>
+                                <th class="col-date">Ajout</th>
+                                <th class="col-date">Modif</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+                        <table class="custom-table">
+                            <tbody>
+                                @for (p of products; track trackByFn($index, p)) {
+                                    <tr (click)="onRowClick(p)" class="table-row">
+                                        <td class="col-id">{{ p.id }}</td>
+                                        <td class="col-nom bold">{{ p.nom }}</td>
+                                        <td class="col-code">{{ p.codeProduit }}</td>
+                                        <td class="col-fourn">{{ p.codeFournisseur }}</td>
+                                        <td class="col-region">{{ p.region }}</td>
+                                        <td class="col-class">{{ p.classement }}</td>
+                                        <td class="col-cat">{{ p.categorie }}</td>
+                                        <td class="col-type">{{ p.type }}</td>
+                                        <td class="col-date">{{ p.dateAjout | date:'dd/MM/yyyy' }}</td>
+                                        <td class="col-date">{{ p.dateModification | date:'dd/MM/yyyy' }}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </cdk-virtual-scroll-viewport>
+                </div>
+            } @else {
+                <div class="empty-state">
+                    <p>Aucun produit avec stock disponible</p>
+                </div>
+            }
         }
     </div>
 </div>

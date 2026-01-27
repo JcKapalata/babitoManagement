@@ -2,6 +2,12 @@ import { Routes } from "@angular/router";
 import { authGuard } from "../Auth/guard/auth-guard";
 
 export const produits: Routes = [
+    // Route par défaut pour /produits
+    { 
+        path: 'produits', 
+        loadComponent: () => import('./stock-produits/stock-produits').then(m => m.StockProduits),
+        canActivate: [authGuard] 
+    },
     {
         path: 'produits/detail-produit/:id', 
         loadComponent: () => import('./detail-produit/detail-produit').then(m => m.DetailProduit),

@@ -14,7 +14,7 @@ export const PRODUITS: Produit[] = [
     description: 'Body confortable 100% coton pour bébé.', 
     dateAjout: new Date('2024-01-10T10:00:00'),
     dateModification: new Date('2024-02-15T14:30:00'),
-    taille: {
+    tailles: {
       '6-9 mois': {
         prix: 9.99,
         couleurs: [
@@ -37,7 +37,7 @@ export const PRODUITS: Produit[] = [
     description: 'Pyjama doux et chaud en velours.', 
     dateAjout: new Date('2024-01-12T09:15:00'),
     dateModification: new Date('2024-01-12T09:15:00'),
-    taille: {
+    tailles: {
       '12-18 mois': {
         prix: 12.99,
         couleurs: [
@@ -60,7 +60,7 @@ export const PRODUITS: Produit[] = [
     description: 'Lot de 5 paires de chaussettes en coton.', 
     dateAjout: new Date('2023-12-20T16:45:00'),
     dateModification: new Date('2024-03-01T11:20:00'),
-    taille: {
+    tailles: {
       'Taille unique': {
         prix: 2000,
         couleurs: [
@@ -85,7 +85,7 @@ export const PRODUITS: Produit[] = [
     description: 'Peluche douce en forme d\'ours pour câlins.', 
     dateAjout: new Date('2024-02-01T08:00:00'),
     dateModification: new Date('2024-02-05T09:00:00'),
-    taille: {
+    tailles: {
       '30 cm': {
         prix: 15.99,
         couleurs: [
@@ -114,7 +114,7 @@ export const PRODUITS: Produit[] = [
     description: 'Cube sensoriel avec couleurs, textures et sons.', 
     dateAjout: new Date('2024-02-10T14:00:00'),
     dateModification: new Date('2024-02-10T14:00:00'),
-    taille: {
+    tailles: {
       '15 cm': {
         prix: 18.99,
         couleurs: [
@@ -144,7 +144,7 @@ export const PRODUITS: Produit[] = [
     description: 'Hochet facile à tenir, sans BPA.', 
     dateAjout: new Date('2024-02-12T11:00:00'),
     dateModification: new Date('2024-02-12T11:00:00'),
-    taille: {
+    tailles: {
       '10 cm': {
         prix: 7.99,
         couleurs: [
@@ -169,7 +169,7 @@ export const PRODUITS: Produit[] = [
     description: 'T-shirt coton avec motif dinosaure fun.', 
     dateAjout: new Date('2024-03-01T09:00:00'),
     dateModification: new Date('2024-03-05T10:30:00'),
-    taille: {
+    tailles: {
       '2 ans': {
         prix: 8.99,
         couleurs: [
@@ -194,7 +194,7 @@ export const PRODUITS: Produit[] = [
     description: 'Short léger en coton idéal pour l\'été.', 
     dateAjout: new Date('2024-03-02T15:00:00'),
     dateModification: new Date('2024-03-02T15:00:00'),
-    taille: {
+    tailles: {
       '6 mois': {
         prix: 6.99,
         couleurs: [
@@ -218,7 +218,7 @@ export const PRODUITS: Produit[] = [
     description: 'Biberon en plastique sans BPA, anti-colique.', 
     dateAjout: new Date('2024-03-05T10:00:00'),
     dateModification: new Date('2024-03-10T16:00:00'),
-    taille: {
+    tailles: {
       '240 ml': {
         prix: 7.99,
         couleurs: [
@@ -247,7 +247,7 @@ export const PRODUITS: Produit[] = [
     description: 'Tasse avec poignées pour apprendre à boire.', 
     dateAjout: new Date('2024-03-06T11:00:00'),
     dateModification: new Date('2024-03-06T11:00:00'),
-    taille: {
+    tailles: {
       '150 ml': {
         prix: 4.99,
         couleurs: [
@@ -271,7 +271,7 @@ export const PRODUITS: Produit[] = [
     description: 'Anneaux colorés en plastique résistant à empiler.', 
     dateAjout: new Date('2024-03-15T09:00:00'),
     dateModification: new Date('2024-03-15T09:00:00'),
-    taille: {
+    tailles: {
       '20cm': {
         prix: 9.99,
         couleurs: [
@@ -294,7 +294,7 @@ export const PRODUITS: Produit[] = [
     description: 'Puzzle éducatif en bois 12 pièces pour enfant.', 
     dateAjout: new Date('2024-03-18T14:20:00'),
     dateModification: new Date('2024-03-20T10:00:00'),
-    taille: {
+    tailles: {
       '20x20cm': {
         prix: 14.99,
         couleurs: [
@@ -318,7 +318,7 @@ export const PRODUITS: Produit[] = [
     description: 'Casquette légère et colorée, protection UV.', 
     dateAjout: new Date('2024-04-01T10:00:00'),
     dateModification: new Date('2024-04-01T10:00:00'),
-    taille: {
+    tailles: {
       '48 cm': {
         prix: 15000,
         couleurs: [
@@ -343,7 +343,7 @@ export const PRODUITS: Produit[] = [
     description: 'Veste chaude en polaire, avec capuche.', 
     dateAjout: new Date('2024-04-05T08:30:00'),
     dateModification: new Date('2024-04-10T15:00:00'),
-    taille: {
+    tailles: {
       '9-12 mois': {
         prix: 19.99,
         couleurs: [
@@ -367,7 +367,7 @@ export const PRODUITS: Produit[] = [
     description: 'Petit xylophone en bois pour débuter la musique.', 
     dateAjout: new Date('2024-04-12T13:00:00'),
     dateModification: new Date('2024-04-12T13:00:00'),
-    taille: {
+    tailles: {
       'Taille unique': {
         prix: 16.99,
         couleurs: [
@@ -390,7 +390,7 @@ export const PRODUITS: Produit[] = [
     description: 'Doudou plat en forme de lapin, très doux.', 
     dateAjout: new Date('2024-04-15T10:00:00'),
     dateModification: new Date('2024-04-15T10:00:00'),
-    taille: {
+    tailles: {
       '25x25cm': {
         prix: 12.99,
         couleurs: [
@@ -414,7 +414,7 @@ export const PRODUITS: Produit[] = [
     description: 'Balle colorée avec différentes textures pour la préhension.', 
     dateAjout: new Date('2024-04-20T11:00:00'),
     dateModification: new Date('2024-04-22T09:30:00'),
-    taille: {
+    tailles: {
       '10 cm': {
         prix: 8.99,
         couleurs: [
@@ -443,7 +443,7 @@ export const PRODUITS: Produit[] = [
     description: 'Tapis d\'éveil rembourré avec arches et jouets amovibles.', 
     dateAjout: new Date('2024-05-01T10:00:00'),
     dateModification: new Date('2024-05-01T10:00:00'),
-    taille: {
+    tailles: {
       '80x80cm': {
         prix: 24.99,
         couleurs: [

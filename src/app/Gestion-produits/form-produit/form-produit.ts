@@ -40,7 +40,7 @@ export class FormProduit implements OnInit {
     categorie: ['', Validators.required],
     type: ['', Validators.required],
     description: ['', [Validators.required, Validators.maxLength(500)]],
-    taillesArray: this.fb.array([], [Validators.required, this.minLengthArray(1)])
+    taillesArray: this.fb.array([], [this.minLengthArray(1)])
   });
 
   ngOnInit(): void {
@@ -51,6 +51,28 @@ export class FormProduit implements OnInit {
       // Sinon on ajoute une taille vide par défaut pour la création
       this.ajouterTaille();
     }
+    
+    // Debug: Afficher l'état du formulaire
+    console.log('[FormProduit] Formulaire initialisé');
+    console.log('[FormProduit] Valide:', this.productForm.valid);
+    console.log('[FormProduit] Erreurs:', this.productForm.errors);
+    console.log('[FormProduit] TaillesArray:', this.taillesArray.length);
+    console.log('[FormProduit] TaillesArray valide:', this.taillesArray.valid);
+    console.log('[FormProduit] TaillesArray erreurs:', this.taillesArray.errors);
+    
+    // Écouter les changements du formulaire
+    this.productForm.statusChanges.subscribe(status => {
+      console.log('[FormProduit] Statut du formulaire changé:', status);
+      console.log('[FormProduit] Valide:', this.productForm.valid);
+      console.log('[FormProduit] Erreurs:', this.productForm.errors);
+    });
+    
+    // Écouter les changements du taillesArray
+    this.taillesArray.statusChanges.subscribe(status => {
+      console.log('[FormProduit] Statut du taillesArray changé:', status);
+      console.log('[FormProduit] TaillesArray valide:', this.taillesArray.valid);
+      console.log('[FormProduit] TaillesArray erreurs:', this.taillesArray.errors);
+    });
   }
 
   // Remplit les champs et les FormArray dynamiquement
@@ -67,9 +89,9 @@ export class FormProduit implements OnInit {
       description: produit.description
     });
 
-    if (produit.taille) {
-      Object.keys(produit.taille).forEach(key => {
-        const t = produit.taille![key];
+    if (produit.tailles) {
+      Object.keys(produit.tailles).forEach(key => {
+        const t = produit.tailles![key];
         const tailleGroup = this.fb.group({
           nomTaille: [key, Validators.required],
           prix: [t.prix, [Validators.required, Validators.min(0.01)]],
@@ -108,10 +130,11 @@ export class FormProduit implements OnInit {
   ajouterTaille(): void {
     const tailleGroup = this.fb.group({
       nomTaille: ['', Validators.required],
-      prix: [null, [Validators.required, Validators.min(0.01)]],
+      prix: ['', [Validators.required, Validators.min(0.01)]],
       couleurs: this.fb.array([this.creerCouleur()], [Validators.required, this.minLengthArray(1)])
     });
     this.taillesArray.push(tailleGroup);
+    console.log('[FormProduit] Taille ajoutée. Formulaire valide:', this.productForm.valid);
   }
 
   creerCouleur(): FormGroup {
@@ -146,6 +169,11 @@ export class FormProduit implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('[FormProduit] onSubmit appelé');
+    console.log('[FormProduit] Formulaire valide:', this.productForm.valid);
+    console.log('[FormProduit] Erreurs du formulaire:', this.productForm.errors);
+    console.log('[FormProduit] Valeur du formulaire:', this.productForm.value);
+    
     if (this.productForm.valid) {
       const val = this.productForm.value;
       const tailleMapping: any = {};
@@ -173,7 +201,7 @@ export class FormProduit implements OnInit {
         type: val.type,
         description: val.description,
         dateModification: new Date(),
-        taille: tailleMapping
+        tailles: tailleMapping
       };
 
       if (this.produitInitial && this.produitInitial.id) {
@@ -199,6 +227,7 @@ export class FormProduit implements OnInit {
         });
       }
     } else {
+      console.log('[FormProduit] Formulaire invalide, marquage de tous les champs comme touchés');
       this.productForm.markAllAsTouched();
     }
   }

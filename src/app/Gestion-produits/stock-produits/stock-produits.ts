@@ -11,7 +11,7 @@ import { Loading } from "../../loading/loading";
 
 @Component({
   selector: 'app-stock-produits',
-  standalone: true, // Confirmé par l'usage de 'imports'
+  standalone: true,
   imports: [CommonModule, ScrollingModule, Loading], 
   templateUrl: './stock-produits.html',
   styleUrl: './stock-produits.css',
@@ -30,8 +30,11 @@ export class StockProduits implements OnInit, OnDestroy {
   readonly displayProducts$: Observable<Produit[]> = this.filteredDataSubject.asObservable();
   
   dataSource!: ProductDataSource;
+  isLoading = true;
 
   ngOnInit(): void {
+    console.log('[StockProduits] ✅ Composant initialisé');
+    console.log('[StockProduits] displayProducts$ observable:', this.displayProducts$);
     // Initialisation de la source pour la structure
     this.dataSource = new ProductDataSource(this.produitsService, false);
     this.fetchAndFilterStock();
@@ -41,17 +44,32 @@ export class StockProduits implements OnInit, OnDestroy {
    * Récupère les produits et applique le filtre de stock
    */
   private fetchAndFilterStock(): void {
+    console.log('[StockProduits] Appel API...');
     const sub = this.produitsService.getProduits(0, 100).subscribe({
       next: (res) => {
+        console.log('[StockProduits] Réponse reçue:', res);
         const items = res.items || [];
+        console.log('[StockProduits] Items bruts:', items);
         
-        // Application du filtre de stock
-        const filtered = items.filter(p => this.checkStockAvailability(p));
+        // TEMPORAIRE: Afficher la structure du premier produit
+        if (items.length > 0) {
+          console.log('[StockProduits] Structure du premier produit:', JSON.stringify(items[0], null, 2));
+        }
+        
+        // TEMPORAIRE: Afficher TOUS les produits sans filtre
+        console.log('[StockProduits] Avant filtre:', items.length);
+        const filtered = items; // PAS DE FILTRE POUR LE DEBUG
+        console.log('[StockProduits] Après filtre:', filtered.length);
 
         this.filteredDataSubject.next(filtered);
-        this.cdr.detectChanges(); // Notification explicite du changement
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('[StockProduits] Erreur API:', err)
+      error: (err) => {
+        console.error('[StockProduits] Erreur API:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
 
     this.destroy$.add(sub);
@@ -61,11 +79,20 @@ export class StockProduits implements OnInit, OnDestroy {
    * Vérifie si un produit possède au moins une variante avec du stock > 0
    */
   private checkStockAvailability(p: Produit): boolean {
-    if (!p.taille) return false;
+    if (!p.tailles) {
+      console.warn('[StockProduits] Produit sans tailles:', p.nom);
+      return false;
+    }
     
-    return Object.values(p.taille).some((t: any) => 
+    const hasStock = Object.values(p.tailles).some((t: any) => 
       t.couleurs && t.couleurs.some((c: any) => c.stock > 0)
     );
+    
+    if (!hasStock) {
+      console.log('[StockProduits] Produit sans stock:', p.nom);
+    }
+    
+    return hasStock;
   }
 
   /**

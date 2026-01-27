@@ -83,8 +83,8 @@ export class ProductDataSource extends DataSource<any> {
     const listeRuptures: any[] = [];
     
     produits.forEach(p => {
-      if (p.taille) {
-        Object.entries(p.taille).forEach(([nomTaille, dataTaille]: [string, any]) => {
+      if (p.tailles) {
+        Object.entries(p.tailles).forEach(([nomTaille, dataTaille]: [string, any]) => {
           if (dataTaille.couleurs) {
             dataTaille.couleurs.forEach((c: any) => {
               if (c.stock === 0) {
