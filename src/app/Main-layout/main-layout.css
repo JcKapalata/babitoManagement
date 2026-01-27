@@ -2,20 +2,40 @@
     display: flex;
     width: 100%;
     height: 100vh;
-    overflow: hidden; /* Empêche toute la page de défiler */
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
+/* Sidebar Largeur dynamique */
 app-navbar {
-    width: 20%;
-    min-width: 200px; /* Sécurité pour les petits écrans */
+    width: 260px; /* Largeur fixe desktop */
     height: 100%;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* État quand le menu est caché (Tablette/Desktop) */
+.sidebar-collapsed app-navbar {
+    width: 70px;
+    min-width: 70px;
 }
 
 .content-area {
-    width: 80%;
+    flex: 1;
     height: 100%;
-    overflow-y: auto; /* Seul le tableau défile, pas la barre latérale */
+    overflow-y: auto;
     background-color: #ffffff;
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+    app-navbar {
+        position: absolute;
+        z-index: 1000;
+        left: -260px; /* Caché par défaut sur mobile */
+    }
+
+    .sidebar-collapsed app-navbar {
+        left: 0; /* Affiché en overlay sur mobile */
+        width: 260px;
+    }
 }

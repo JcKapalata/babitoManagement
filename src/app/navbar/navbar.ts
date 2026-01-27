@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -21,9 +21,13 @@ export class Navbar implements OnInit {
   private profileService = inject(ProfileService);
   private venteService = inject(VenteServices);
 
+  @Input() isCollapsed = false;
+  @Output() toggleSidebar = new EventEmitter<void>();
+
   // Un seul flux qui contient les deux compteurs
   counts$ = this.venteService.getAlerteStatusCounts();
 
+  isMobile: boolean = false;
   isShowedProduits: boolean = false;
   isShowedRH: boolean = false;
   isShowedVentes = false;
@@ -32,6 +36,18 @@ export class Navbar implements OnInit {
     this.isShowedProduits = false;
     this.isShowedRH = false;
     this.isShowedVentes = false;
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
+
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) this.isCollapsed = true; // Fermé par défaut sur mobile
+  }
+
+  // Toggle sidebar
+  toggleMenu() {
+    this.toggleSidebar.emit();
   }
 
   // ======= Toggle =======

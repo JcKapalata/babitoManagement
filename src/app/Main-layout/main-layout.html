@@ -1,9 +1,16 @@
-<div class="app-container">
-  <app-navbar></app-navbar>
+<div class="app-container" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <button mat-icon-button class="mobile-toggle-btn" (click)="onToggleSidebar()">
+    <mat-icon>{{ isSidebarCollapsed ? 'menu' : 'close' }}</mat-icon>
+  </button>
 
-  <main class="content-area">
+  <app-navbar 
+    [isCollapsed]="isSidebarCollapsed" 
+    (toggleSidebar)="onToggleSidebar()">
+  </app-navbar>
+
+  <main class="content-area" (click)="closeSidebarOnMobile()">
     <router-outlet></router-outlet>
   </main>
-  
+
   <app-toast></app-toast>
 </div>
