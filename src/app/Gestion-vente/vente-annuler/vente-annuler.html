@@ -5,9 +5,15 @@
 
   <div class="main-content">
     @if (ventes$ | async; as list) {
-      <app-vente-table 
-        [ventes]="list || []">
-      </app-vente-table>
+      @if (list.length > 0) {
+        <app-vente-table [ventes]="list"></app-vente-table>
+      } @else {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>Aucune vente annulées</h3>
+          <p>Il n'y a actuellement aucune commande dans cette catégorie.</p>
+        </div>
+      }
     } @else {
       <div class="loading-state">
         <mat-spinner diameter="40"></mat-spinner>

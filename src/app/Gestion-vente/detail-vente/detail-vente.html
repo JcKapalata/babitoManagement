@@ -18,11 +18,21 @@
           }
 
           @if (vente && vente.status === 'processing') {
-            <button class="btn-paid" (click)="changerStatut('paid')">Confirmer Paiement</button>
-            <button class="btn-cancel" (click)="changerStatut('cancelled')">Annuler</button>
+            <button class="btn-paid" (click)="ouvrirConfirmation('paid')">Confirmer Paiement</button>
+            <button class="btn-cancel" (click)="ouvrirConfirmation('cancelled')">Annuler</button>
           }
           @if (vente && vente.status === 'pending') {
-            <button class="btn-cancel" (click)="changerStatut('cancelled')">Annuler</button>
+            <button class="btn-cancel" (click)="ouvrirConfirmation('cancelled')">Annuler</button>
+          }
+
+          @if (showConfirm) {
+            <app-confirm-modal 
+              [message]="confirmMessage"
+              [btnText]="confirmBtnLabel"
+              [variant]="confirmBtnVariant"
+              (confirmed)="confirmerChangement()"
+              (cancelled)="annulerConfirmation()">
+            </app-confirm-modal>
           }
         </div>
       </div>

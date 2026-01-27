@@ -8,7 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './confirm-modal.css',
 })
 export class ConfirmModal {
-  @Input() message: string = "Êtes-vous sûr de vouloir continuer ?";
+  @Input() message: string = "";
+  @Input() btnText: string = "Confirmer";
+  @Input() variant: 'confirm' | 'danger' = 'confirm'; // Par défaut vert
+  
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
 

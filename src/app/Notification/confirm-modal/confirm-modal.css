@@ -34,12 +34,19 @@
 
 button { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
 .btn-secondary { background: #e0e0e0; }
+.btn-confirm { background: var(--primary-color); color: white; }
 .btn-danger { background: var(--warn-color); color: white; }
 
 .btn-secondary:hover{
   background: none;
   border: 1.5px solid black;
   color: black;
+}
+
+.btn-confirm:hover {
+  background: none;
+  border: 1.5px solid var(--primary-color);
+  color: var(--primary-color);
 }
 
 .btn-danger:hover{

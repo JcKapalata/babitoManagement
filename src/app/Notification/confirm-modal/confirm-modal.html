@@ -11,7 +11,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn-secondary" (click)="onCancel()">Annuler</button>
-            <button class="btn-danger" (click)="onConfirm()">Supprimer</button>
+        <button [class]="'btn-' + variant" (click)="onConfirm()">{{ btnText }}</button>
         </div>
     </div>
 </div>
