@@ -41,12 +41,11 @@
     "@angular/build": "^21.0.1",
     "@angular/cli": "^21.0.1",
     "@angular/compiler-cli": "^21.1.1",
-    "angular-in-memory-web-api": "^0.21.0",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   },
-    "overrides": {
+  "overrides": {
     "undici": "^7.18.2",
     "tar": "^7.5.4",
     "@modelcontextprotocol/sdk": "^1.25.2"

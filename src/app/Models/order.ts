@@ -24,13 +24,23 @@ export interface OrderAddress {
 }
 
 /**
- * Interface complète utilisée par l'Admin
- * Contient toutes les données sensibles et logistiques
+ * Types de rôles autorisés pour le personnel (Exclut 'client')
  */
+export type StaffRole = 'admin' | 'vendeur' | 'finance';
+
+export interface OrderAgentAssignment {
+    agentId: string;
+    agentName: string;
+    agentPhone: string;
+    role: StaffRole; 
+    assignedAt: string;
+    updatedAt: string;
+}
+
 export interface OrderAdmin {
-    id: string;                    // ID du document Firestore
-    orderNumber: string;           // Ex: ORD-2024-0042
-    userId?: string;               // Optionnel si achat invité
+    id: string;
+    orderNumber: string;
+    userId?: string;
     customerName: string;
     customerEmail: string;
     customerPhone: string;
@@ -41,8 +51,33 @@ export interface OrderAdmin {
     total: MultiCurrencyAmount;
     currency: 'USD' | 'CDF' | 'mixed';
     status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+    assignedAgent?: OrderAgentAssignment;
     paymentMethod: 'stripe' | 'paypal' | 'mobile_money' | 'cash';
-    paymentIntentId?: string;      // Référence de transaction
-    createdAt: string;             // ISO Date
-    updatedAt: string;             // ISO Date
+    paymentIntentId?: string;
+    createdAt: string; // ISO String ou Date
+    updatedAt: string;
+}
+
+export interface OrderLogisticsHistory {
+    agent: string;
+    role: StaffRole;
+    date: string;
+    action: string;
+}
+
+export interface OrderLogistics {
+    orderId: string;
+    internalNotes: string;
+    lastAgentId: string;
+    updatedAt: string;
+    history: OrderLogisticsHistory[];
+}
+
+/**
+ * Réponse standardisée pour l'API Express
+ */
+export interface ApiResponse<T> {
+    success: boolean;
+    data: T;
+    message?: string;
 }

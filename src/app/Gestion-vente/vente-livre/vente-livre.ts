@@ -1,25 +1,24 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { VenteServices } from '../vente-services';
 import { ViewVenteTable } from '../view-vente-table/view-vente-table';
 
 @Component({
-  selector: 'app-vente-en-cours',
+  selector: 'app-vente-livree',
   imports: [
     CommonModule, 
     MatIconModule, 
     MatProgressSpinnerModule, 
     ViewVenteTable
   ],
-  templateUrl: './vente-en-cours.html',
-  styleUrl: './vente-en-cours.css',
+  templateUrl: './vente-livre.html',
+  styleUrl: './vente-livre.css',
 })
-export class VenteEnCours {
+export class VenteLivre {
   private venteService = inject(VenteServices);
   
-  // On demande uniquement les ventes en attente (pending)
-  ventes$ = this.venteService.getVentesByStatus('pending');
-
+  // Dans votre flux (Paiement à la livraison), 'paid' est l'étape finale
+  ventes$ = this.venteService.getVentesByStatus('paid'); 
 }

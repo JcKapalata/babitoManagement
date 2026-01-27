@@ -1,38 +1,55 @@
-.ventes-table {
+.container {
   width: 100%;
-  border-collapse: collapse;
+  background-color: var(--bg-light);
+  min-height: 100vh;
+}
+
+.title {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 10vh;
+  margin-bottom: 10px;
+  background: var(--primary-color) !important;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 200;
+}
+
+/* Titre stylisé */
+.title h2 {
+  color: white;
+  margin: 0 30px;
+  border-left: 5px solid white; /* Bleu Angular Material */
+  padding-left: 15px;
+}
+
+.main-content {
   background: white;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow-x: auto;
+  margin: 20px;
 }
 
-.ventes-table th {
-  background: #f8f9fa;
-  padding: 15px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
-  color: #495057;
+.btn-paid {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.ventes-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
 }
-
-.client-info { display: flex; flex-direction: column; }
-.ref { font-size: 0.75rem; color: #888; font-family: monospace; }
-.client-name { font-weight: 600; }
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-}
-
-.status-badge[data-status="paid"] { background: #d4edda; color: #155724; }
-.status-badge[data-status="pending"] { background: #fff3cd; color: #856404; }
-
-.price-col { font-weight: bold; }

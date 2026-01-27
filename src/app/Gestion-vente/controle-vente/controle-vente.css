@@ -1,0 +1,83 @@
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+.card-control {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-main { font-size: 1.5rem; color: #3b82f6; }
+h3 { margin: 0; font-size: 1.1rem; color: #1e293b; }
+.subtitle { margin: 0; font-size: 0.85rem; color: #64748b; }
+
+.card-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.field { display: flex; flex-direction: column; gap: 0.5rem; }
+label { font-size: 0.9rem; font-weight: 600; color: #475569; }
+
+select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s;
+}
+
+select:focus, textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* Timeline */
+.history-container {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+.history-title { font-size: 0.8rem; font-weight: bold; margin-bottom: 1rem; color: #475569; }
+.timeline { border-left: 2px solid #3b82f6; padding-left: 1.25rem; }
+.timeline-event { position: relative; padding-bottom: 1rem; }
+.event-dot { position: absolute; left: -1.55rem; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; top: 5px; }
+.event-user { font-weight: bold; font-size: 0.85rem; display: block; }
+.event-date { font-size: 0.75rem; color: #94a3b8; }
+
+/* Buttons */
+.card-footer { margin-top: 1rem; }
+.btn-save {
+  width: 100%;
+  padding: 0.85rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
+.btn-save:hover:not(:disabled) { background: #1d4ed8; }
+
+/* Desktop Adjustment */
+@media (min-width: 768px) {
+  .card-body { display: grid; grid-template-columns: 1fr 1fr; }
+  .history-container, .card-footer { grid-column: span 2; }
+}

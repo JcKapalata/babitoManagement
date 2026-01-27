@@ -1,6 +1,6 @@
 <div class="container">
   <div class="title">
-    <h2><mat-icon>bolt</mat-icon> Ventes en cours </h2>
+    <h2><mat-icon>local_shipping</mat-icon> Ventes non livrées </h2>
   </div>
 
   <div class="main-content">
@@ -10,14 +10,14 @@
       } @else {
         <div class="empty-state">
           <mat-icon>inventory_2</mat-icon>
-          <h3>Aucune vente en cours</h3>
+          <h3>Aucune vente non livrée</h3>
           <p>Il n'y a actuellement aucune commande dans cette catégorie.</p>
         </div>
       }
     } @else {
       <div class="loading-state">
         <mat-spinner diameter="40"></mat-spinner>
-        <p>Synchronisation Firestore...</p>
+        <p>Chargement des colis en préparation...</p>
       </div>
     }
   </div>

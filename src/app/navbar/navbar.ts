@@ -92,6 +92,18 @@ export class Navbar implements OnInit {
     this.router.navigate(['ventes/vente-encours']);
   }
 
+  goToVenteNonLivrees(){
+    this.router.navigate(['ventes/ventes-non-livres']);
+  }
+  
+  goToVenteLivrees(){ 
+    this.router.navigate(['ventes/ventes-livres']);
+  }
+
+  goToVenteAnnulees(){
+    this.router.navigate(['ventes/ventes-annules']);
+  }
+
   // Déconnexion complète
   logout() {
     // 1. On vide le profil (BehaviorSubject + LocalStorage)

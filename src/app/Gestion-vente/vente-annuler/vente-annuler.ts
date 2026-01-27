@@ -1,25 +1,25 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { VenteServices } from '../vente-services';
 import { ViewVenteTable } from '../view-vente-table/view-vente-table';
 
 @Component({
-  selector: 'app-vente-en-cours',
+  selector: 'app-vente-annuler',
+  standalone: true,
   imports: [
     CommonModule, 
     MatIconModule, 
     MatProgressSpinnerModule, 
     ViewVenteTable
   ],
-  templateUrl: './vente-en-cours.html',
-  styleUrl: './vente-en-cours.css',
+  templateUrl: './vente-annuler.html',
+  styleUrl: './vente-annuler.css',
 })
-export class VenteEnCours {
+export class VenteAnnuler {
   private venteService = inject(VenteServices);
   
-  // On demande uniquement les ventes en attente (pending)
-  ventes$ = this.venteService.getVentesByStatus('pending');
-
+  // Filtrage sur le statut des commandes annulées
+  ventes$ = this.venteService.getVentesByStatus('cancelled'); 
 }

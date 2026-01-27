@@ -1,6 +1,7 @@
 .container {
   width: 100%;
-  color: #333;
+  background-color: var(--bg-light);
+  min-height: 100vh;
 }
 
 .title {
@@ -13,18 +14,23 @@
   width: 100%;
   display: flex;
   align-items: center;
+  z-index: 200;
 }
 
 /* Titre stylisé */
-h2 {
+.title h2 {
   color: white;
   margin: 0 30px;
   border-left: 5px solid white; /* Bleu Angular Material */
   padding-left: 15px;
 }
 
-.main{
-  margin: 10px 20px;
+.main-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow-x: auto;
+  margin: 20px;
 }
 
 /* Header */

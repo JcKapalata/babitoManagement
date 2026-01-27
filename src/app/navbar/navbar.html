@@ -67,6 +67,21 @@
             </span>
           }
         </button>
+
+        <button mat-button class="sub-nav-item" (click)="goToVenteNonLivrees()">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Ventes non livrées</span>
+        </button>
+
+        <button mat-button class="sub-nav-item" (click)="goToVenteLivrees()">
+          <mat-icon>task_alt</mat-icon>
+          <span>Ventes livrées</span>
+        </button>
+
+        <button mat-button class="sub-nav-item" (click)="goToVenteAnnulees()">
+          <mat-icon>cancel</mat-icon>
+          <span>Ventes annulées</span>
+        </button>
       </div>
     }
 

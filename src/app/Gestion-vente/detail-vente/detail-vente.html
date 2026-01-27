@@ -1,0 +1,146 @@
+<div class="container">
+  <div class="title">
+    <h2>Détails de la vente</h2>
+  </div>
+  <div class="main-content">
+    <div class="detail-container">
+      <div class="top-bar">
+        <button mat-stroked-button (click)="retour()">
+          <mat-icon>arrow_back</mat-icon> Retour
+        </button>
+
+        <div class="actions">
+          @if (vente) {
+            <button mat-flat-button color="accent" (click)="toggleConfig()">
+              <mat-icon>{{ showConfig ? 'expand_less' : 'settings' }}</mat-icon>
+              {{ showConfig ? 'Fermer Config' : 'Configurer Livraison' }}
+            </button>
+          }
+
+          @if (vente && vente.status === 'processing') {
+            <button class="btn-paid" (click)="ouvrirConfirmation('paid')">Confirmer Paiement</button>
+            <button class="btn-cancel" (click)="ouvrirConfirmation('cancelled')">Annuler</button>
+          }
+          @if (vente && vente.status === 'pending') {
+            <button class="btn-cancel" (click)="ouvrirConfirmation('cancelled')">Annuler</button>
+          }
+
+          @if (showConfirm) {
+            <app-confirm-modal 
+              [message]="confirmMessage"
+              [btnText]="confirmBtnLabel"
+              [variant]="confirmBtnVariant"
+              (confirmed)="confirmerChangement()"
+              (cancelled)="annulerConfirmation()">
+            </app-confirm-modal>
+          }
+        </div>
+      </div>
+
+      @if (showConfig && vente) {
+        <div class="config-overlay">
+          <app-controle-vente [orderId]="vente.id"></app-controle-vente>
+        </div>
+      }
+
+      @if (loading) {
+        <div class="loading-state">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Chargement des détails de la commande...</p>
+        </div>
+      } @else if (vente) {
+
+        <div class="order-grid">
+
+          <div class="info-column">
+            <section class="card shadow">
+              <h3><mat-icon>shopping_basket</mat-icon> Commande</h3>
+              <div class="info-row"> <span>Numéro:</span> <strong>{{ vente.orderNumber }}</strong></div>
+              <div class="info-row"><span>Date creation :</span> {{ vente.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+              <div class="info-row"><span>Modifiée le :</span> {{ vente.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+            </section>
+
+            <section class="card shadow">
+              <h3><mat-icon>person</mat-icon> Client</h3>
+              <div class="info-row"><span>Nom:</span> <strong>{{ vente.customerName }}</strong></div>
+              <div class="info-row"><span>Email:</span> {{ vente.customerEmail }}</div>
+              <div class="info-row"><span>Tel:</span> {{ vente.customerPhone }}</div>
+            </section>
+
+            <section class="card shadow">
+              <h3><mat-icon>local_shipping</mat-icon> Livraison</h3>
+              <p>
+                {{ vente.deliveryAddress.street }}<br>
+                {{ vente.deliveryAddress.postalCode }} {{ vente.deliveryAddress.city }}<br>
+                {{ vente.deliveryAddress.country }}
+              </p>
+            </section>
+
+            <section class="card shadow">
+              <h3><mat-icon>receipt</mat-icon> Résumé Paiement</h3>
+              <div class="info-row"><span>Méthode:</span> <span class="badge">{{ vente.paymentMethod }}</span></div>
+              <div class="info-row">
+                <span>Status:</span> 
+                <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status | orderStatus }}</span>
+              </div>
+              <div class="info-row"><span>Modifiée le :</span> {{ vente.updatedAt | date:'dd MMM yyyy à HH:mm' }}</div>
+            </section>
+          </div>
+
+          <div class="items-column">
+            <section class="card shadow">
+              <h3><mat-icon>shopping_cart</mat-icon> Articles ({{ vente.items.length }})</h3>
+              <div class="table-responsive">
+                <table class="items-table">
+                  <thead>
+                    <tr>
+                      <th>Produit</th>
+                      <th>Quantité</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of vente.items; track item.productId) {
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <img [src]="item.selectedImage" class="prod-img" alt="Produit">
+                            <div>
+                              <strong>{{ item.productName }}</strong><br>
+                              <small>{{ item.selectedColor }} | {{ item.selectedSize }}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>x{{ item.quantity }}</td>
+                        <td>{{ item.totalPrice | number:'1.2-2' }} {{ item.devise }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card total-card shadow">
+              <div class="total-row"><span>Sous-total USD:</span> {{ vente.subtotal.usd | number:'1.2-2' }}$</div>
+              <div class="total-row"><span>Sous-total CDF:</span> {{ vente.subtotal.cdf | number }} FC</div>
+              <div class="total-row highlight">
+                <span>TOTAL À PAYER USD:</span> 
+                <span class="price-big">{{ vente.total.usd | number:'1.2-2' }}$</span>
+              </div>
+              <div class="total-row highlight">
+                <span>TOTAL À PAYER CDF:</span> 
+                <span class="price-big">{{ vente.total.cdf | number }} FC</span>
+              </div>
+            </section>
+          </div>
+
+        </div>
+      } @else {
+        <div class="error-state">
+          <mat-icon>error_outline</mat-icon>
+          <p>Commande introuvable ou erreur de chargement.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

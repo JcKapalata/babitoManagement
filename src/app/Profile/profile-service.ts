@@ -2,11 +2,13 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize } from 'rxjs';
+import { Auth, getIdToken } from '@angular/fire/auth';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
+  private readonly firebaseAuth = inject(Auth);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly PROFILE_API = `${environment.apiUrl}/manager/profile`;
@@ -33,7 +35,8 @@ export class ProfileService {
   }
 
   /**
-   * Récupère les données fraîches depuis /manager/profile
+   * Cette méthode rafraîchit le profil sur ton serveur 
+   * ET synchronise les droits avec Firebase Firestore.
    */
   refreshProfileFromServer(): void {
     this.isLoading.set(true);
@@ -43,13 +46,26 @@ export class ProfileService {
         return of(null);
       }),
       finalize(() => this.isLoading.set(false))
-    ).subscribe(res => {
+    ).subscribe(async res => {
       if (res?.success && res.data) {
         this.currentUser.set(res.data);
         this.currentAgentSubject.next(res.data);
+
+        // ✅ SYNCHRONISATION DES DROITS (Custom Claims)
+        const user = this.firebaseAuth.currentUser;
+        if (user) {
+          try {
+            // Correction de l'appel : getIdToken prend l'utilisateur en 1er argument
+            // le 'true' force Firebase à régénérer le token avec les nouveaux rôles
+            await getIdToken(user, true); 
+            console.log("[Profile] 🔐 Droits Firestore synchronisés (Token rafraîchi)");
+          } catch (e) {
+            console.error("❌ Échec de la synchronisation Firestore :", e);
+          }
+        }
       }
     });
-  }
+}
 
   /**
    * Met à jour ses propres informations
