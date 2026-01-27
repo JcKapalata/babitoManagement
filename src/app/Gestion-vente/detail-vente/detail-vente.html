@@ -39,9 +39,17 @@
           <p>Chargement des détails de la commande...</p>
         </div>
       } @else if (vente) {
+
         <div class="order-grid">
-          
+
           <div class="info-column">
+            <section class="card shadow">
+              <h3><mat-icon>shopping_basket</mat-icon> Commande</h3>
+              <div class="info-row"> <span>Numéro:</span> <strong>{{ vente.orderNumber }}</strong></div>
+              <div class="info-row"><span>Date creation :</span> {{ vente.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+              <div class="info-row"><span>Modifiée le :</span> {{ vente.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+            </section>
+
             <section class="card shadow">
               <h3><mat-icon>person</mat-icon> Client</h3>
               <div class="info-row"><span>Nom:</span> <strong>{{ vente.customerName }}</strong></div>
@@ -65,7 +73,7 @@
                 <span>Status:</span> 
                 <span class="status-badge" [attr.data-status]="vente.status">{{ vente.status | orderStatus }}</span>
               </div>
-              <div class="info-row"><span>Date:</span> {{ vente.createdAt | date:'dd MMM yyyy à HH:mm' }}</div>
+              <div class="info-row"><span>Modifiée le :</span> {{ vente.updatedAt | date:'dd MMM yyyy à HH:mm' }}</div>
             </section>
           </div>
 
