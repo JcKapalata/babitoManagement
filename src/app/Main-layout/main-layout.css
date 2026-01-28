@@ -44,7 +44,6 @@ app-navbar {
     /* Quand isCollapsed est FALSE (Menu Ouvert) */
     .app-container:not(.sidebar-collapsed) app-navbar {
         left: 0;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
     }
 
     /* On force la zone de contenu à prendre 100% sans se décaler */
