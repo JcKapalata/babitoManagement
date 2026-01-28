@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, startWith } from 'rxjs';
+import { catchError, map, Observable, startWith, tap, throwError } from 'rxjs';
 import { 
   Firestore, 
   collection,
@@ -79,23 +79,44 @@ export class VenteServices {
   }
 
   /**
-   * 3. ACTION : Assigner un agent (Typage de la réponse API)
+   * ACTION : Assigner plusieurs agents
    */
-  assignAgent(orderId: string, agentId: string, internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
+  assignMultipleAgents(orderId: string, agentIds: string[], internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
+    console.log(`📡 [HTTP START] Assignation multiple pour OrderID: ${orderId}`, { agentIds, internalNotes });
+
     return this.http.put<ApiResponse<OrderAdmin>>(
-      `${this.API_URL}/${orderId}/assign-agent`, 
-      { agentId, internalNotes }
+      `${this.API_URL}/${orderId}/assign-multiple-agents`, 
+      { agentIds, internalNotes }
+    ).pipe(
+      tap((response) => {
+        // Log en cas de succès
+        console.log(`✅ [HTTP SUCCESS] Assignation réussie pour ${orderId}`, response);
+      }),
+      catchError((error) => {
+        // Log détaillé en cas d'erreur
+        console.error(`🔥 [HTTP ERROR] Échec de l'assignation pour ${orderId}`);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('Détails API:', error.error); // Contient souvent le message du backend
+
+        // On renvoie l'erreur pour que le composant puisse l'afficher à l'utilisateur
+        return throwError(() => error);
+      })
     );
   }
 
   /**
-   * ACTION : Assigner plusieurs agents
+   * LECTURE : Récupération des données logistiques via HTTP
    */
-  assignMultipleAgents(orderId: string, agentIds: string[], internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
-    return this.http.put<ApiResponse<OrderAdmin>>(
-      `${this.API_URL}/${orderId}/assign-multiple-agents`, 
-      { agentIds, internalNotes }
-    );
+  getOrderLogistique(orderId: string): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.API_URL}/${orderId}/logistique`)
+      .pipe(
+        tap(res => console.log('📦 Données logistiques récupérées', res)),
+        catchError(err => {
+          console.error('❌ Erreur logistique', err);
+          return throwError(() => err);
+        })
+      );
   }
 
   /**

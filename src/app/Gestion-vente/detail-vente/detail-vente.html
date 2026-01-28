@@ -135,6 +135,56 @@
           </div>
 
         </div>
+
+        @if (vente.status === 'processing' || agentsAssignes.length > 0) {
+          <div class="logistics-wrapper">
+            <div class="logistics-info-card shadow">
+              
+              <div class="card-header-flex">
+                <div class="header-title">
+                  <mat-icon>engineering</mat-icon>
+                  <h3>Suivi Logistique</h3>
+                </div>
+                <div class="status-badge-mini" [attr.data-status]="vente.status">
+                  {{ vente.status | orderStatus }}
+                </div>
+              </div>
+
+              <div class="assigned-section">
+                <label class="section-title">Équipe d'exécution :</label>
+                
+                <div class="agents-row">
+                  @for (agent of agentsAssignes; track agent.agentId) {
+                    <div class="agent-mini-card" [title]="agent.role">
+                      <div class="avatar-wrapper">
+                        <img [src]="agent.avatar || '/profileAvatar/default-avatar.jpeg'" alt="avatar">
+                      </div>
+                      <div class="info">
+                        <span class="name">{{ agent.name }}</span>
+                        <span class="role">{{ agent.role }}</span>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="empty-logistics">
+                      <mat-icon>hourglass_empty</mat-icon>
+                      <p>Assignation en cours de finalisation...</p>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (internalNotes) {
+                <div class="internal-notes">
+                  <label class="section-title">Instructions logistiques :</label>
+                  <div class="notes-content">
+                    <mat-icon>sticky_note_2</mat-icon>
+                    <p>{{ internalNotes }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
       } @else {
         <div class="error-state">
           <mat-icon>error_outline</mat-icon>

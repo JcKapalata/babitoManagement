@@ -43,10 +43,15 @@ export class DetailVente implements OnInit {
   confirmBtnLabel = "";
   confirmBtnVariant: 'confirm' | 'danger' = 'confirm';
 
+  // Données des agents assignés
+  agentsAssignes: any[] = [];
+  internalNotes: string = '';
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.fetchVente(id);
+      this.loadLogistics(id);
     } else {
       this.retour();
     }
@@ -86,6 +91,25 @@ export class DetailVente implements OnInit {
       }
     });
   }
+
+  loadLogistics(id: string) {
+    this.loading = true
+  this.venteService.getOrderLogistique(id).subscribe({
+    next: (res) => {
+      if (res.success) {
+        this.agentsAssignes = res.data.assignedAgents;
+        this.internalNotes = res.data.internalNotes;
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    },
+    error: (err) => {
+      console.error("Impossible de charger les agents", err);
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   
   //Gère la redirection optimisée selon le nouveau statut
