@@ -8,7 +8,6 @@ import { Agent } from '../../Models/agent';
 
 @Component({
   selector: 'app-controle-vente',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './controle-vente.html',
   styleUrl: './controle-vente.css',
@@ -21,9 +20,8 @@ export class ControleVente implements OnInit {
 
   @Input({ required: true }) orderId!: string;
 
-  // Formulaire réactif
   controlForm: FormGroup = this.fb.group({
-    agentId: ['', Validators.required],
+    selectedAgentIds: [[] as string[], [Validators.required, Validators.minLength(1)]],
     internalNotes: ['', [Validators.maxLength(500)]]
   });
 
@@ -32,8 +30,7 @@ export class ControleVente implements OnInit {
   loading: boolean = false;
   submitSuccess: boolean = false;
 
-  // 1. Définir les rôles qui ont le droit de gérer une vente
-  private readonly ROLES_LOGISTIQUE: string[] = ['admin', 'vendeur', 'finance'];
+  private readonly ROLES_LOGISTIQUE = ['admin', 'vendeur', 'finance'];
 
   ngOnInit() {
     this.loadInitialData();
@@ -41,61 +38,65 @@ export class ControleVente implements OnInit {
 
   private loadInitialData() {
     this.loading = true;
-
-    // Charger les agents
     this.personnelService.getAllAgents().subscribe({
       next: (staff) => {
-        this.agents = staff.filter(agent => this.ROLES_LOGISTIQUE.includes(agent.role));
-        this.loading = false;
-        
-        // 3. Force Angular à voir que la liste d'agents a changé
-        this.cdr.markForCheck(); 
-      },
-      error: (err) => {
+        this.agents = staff.filter(a => this.ROLES_LOGISTIQUE.includes(a.role));
         this.loading = false;
         this.cdr.markForCheck();
       }
     });
 
-    // Écouter la logistique
     this.venteService.getOrderLogisticsRealtime(this.orderId).subscribe(data => {
       this.logisticsData = data;
-      if (data) {
-        this.controlForm.patchValue({
-          internalNotes: data.internalNotes
-        }, { emitEvent: false });
+      if (data && data.agentIds) {
+        this.controlForm.patchValue({ 
+          selectedAgentIds: data.agentIds,
+          internalNotes: data.internalNotes 
+        });
       }
-      // 4. Force le rafraîchissement de l'UI avec les nouvelles données logistiques
       this.cdr.markForCheck();
     });
   }
-  
+
+  // Gestion des Checkboxes
+  onAgentToggle(agentId: string) {
+    const currentIds: string[] = [...this.controlForm.value.selectedAgentIds];
+    const index = currentIds.indexOf(agentId);
+
+    if (index > -1) {
+      currentIds.splice(index, 1); // Retirer si déjà présent
+    } else {
+      currentIds.push(agentId); // Ajouter si absent
+    }
+
+    this.controlForm.patchValue({ selectedAgentIds: currentIds });
+    this.controlForm.get('selectedAgentIds')?.markAsTouched();
+  }
+
+  isAgentSelected(agentId: string): boolean {
+    return this.controlForm.value.selectedAgentIds.includes(agentId);
+  }
+
+  getSelectedAgentsCount(): number {
+    return this.controlForm.value.selectedAgentIds.length;
+  }
 
   confirmAssignment() {
     if (this.controlForm.invalid || this.loading) return;
-
     this.loading = true;
-    this.cdr.markForCheck(); // Affiche le spinner immédiatement
 
-    const { agentId, internalNotes } = this.controlForm.value;
+    const { selectedAgentIds, internalNotes } = this.controlForm.value;
 
-    this.venteService.assignAgent(this.orderId, agentId, internalNotes)
+    // On envoie le tableau d'IDs au service
+    this.venteService.assignMultipleAgents(this.orderId, selectedAgentIds, internalNotes)
       .subscribe({
         next: () => {
           this.loading = false;
           this.submitSuccess = true;
-          this.cdr.markForCheck(); // Met à jour l'UI (success message)
-          
-          setTimeout(() => {
-            this.submitSuccess = false;
-            this.cdr.markForCheck(); // Cache le message après 3s
-          }, 3000);
-        },
-        error: (err) => {
-          this.loading = false;
           this.cdr.markForCheck();
-          alert("Erreur lors de l'enregistrement : " + err.message);
-        }
+          setTimeout(() => { this.submitSuccess = false; this.cdr.markForCheck(); }, 2000);
+        },
+        error: () => { this.loading = false; this.cdr.markForCheck(); }
       });
   }
 }

@@ -68,6 +68,7 @@ export interface OrderLogisticsHistory {
 export interface OrderLogistics {
     orderId: string;
     internalNotes: string;
+    agentIds: string[];
     lastAgentId: string;
     updatedAt: string;
     history: OrderLogisticsHistory[];

@@ -1,61 +1,56 @@
 <div class="card-control">
   <div class="card-header">
-    <div class="header-info">
-      <i class="fas fa-clipboard-check icon-main"></i>
-      <div>
-        <h3>Configuration de la Vente</h3>
-        <p class="subtitle">Assignation et logistique interne</p>
-      </div>
-    </div>
+    <i class="fas fa-users-cog"></i>
+    <h3>Assignation Logistique</h3>
   </div>
 
   <form [formGroup]="controlForm" (ngSubmit)="confirmAssignment()" class="card-body">
     
     <div class="field">
-      <label for="agent">Responsable de la livraison / gestion</label>
-      <div class="select-wrapper">
-        <select id="agent" formControlName="agentId" [class.error]="controlForm.get('agentId')?.invalid && controlForm.get('agentId')?.touched">
-          <option value="" disabled selected>Sélectionner un agent...</option>
-          <option *ngFor="let agent of agents" [value]="agent.id">
-            {{ agent.firstName }} {{ agent.lastName }} — ({{ agent.role | uppercase }})
-          </option>
-        </select>
+      <label class="field-label">Agents responsables ({{ getSelectedAgentsCount() }})</label>
+      
+      <div class="agents-grid">
+        @for (agent of agents; track agent.id) {
+          <div class="agent-chip" 
+               [class.active]="isAgentSelected(agent.id)"
+               (click)="onAgentToggle(agent.id)">
+            
+            <div class="avatar-container">
+              <img [src]="agent.avatar || '/profileAvatar/default-avatar.jpeg'" 
+                   [alt]="agent.firstName" 
+                   class="agent-img">
+            </div>
+
+            <div class="chip-content">
+              <span class="name">{{ agent.firstName }} {{ agent.lastName[0] }}.</span>
+              <span class="role">{{ agent.role }}</span>
+            </div>
+
+            @if (isAgentSelected(agent.id)) {
+              <div class="selection-badge">
+                <i class="fas fa-check"></i>
+              </div>
+            }
+          </div>
+        } @empty {
+          <div class="empty-state">Aucun agent disponible</div>
+        }
       </div>
     </div>
 
     <div class="field">
-      <label for="notes">Notes Internes (Instructions spéciales)</label>
-      <textarea 
-        id="notes" 
-        formControlName="internalNotes" 
-        rows="3" 
-        placeholder="Informations sur la livraison, contact client, etc.">
-      </textarea>
-    </div>
-
-    <div class="history-container" *ngIf="logisticsData?.history?.length">
-      <p class="history-title">Historique des modifications</p>
-      <div class="timeline">
-        <div class="timeline-event" *ngFor="let h of logisticsData?.history">
-          <div class="event-dot"></div>
-          <div class="event-content">
-            <span class="event-user">{{ h.agent }} ({{ h.role }})</span>
-            <span class="event-date">{{ h.date | date:'short' }}</span>
-            <p class="event-action">{{ h.action }}</p>
-          </div>
-        </div>
-      </div>
+      <label class="field-label">Notes internes</label>
+      <textarea formControlName="internalNotes" placeholder="Instructions pour les agents..."></textarea>
     </div>
 
     <div class="card-footer">
-      <button type="submit" 
-              class="btn-save" 
-              [disabled]="controlForm.invalid || loading">
-        <span *ngIf="!loading && !submitSuccess">Enregistrer la configuration</span>
-        <span *ngIf="loading">Traitement en cours...</span>
-        <span *ngIf="submitSuccess">✓ Enregistré !</span>
+      <button type="submit" class="btn-primary" [disabled]="getSelectedAgentsCount() === 0 || loading">
+        @if (loading) {
+          <i class="fas fa-spinner fa-spin"></i>
+        } @else {
+          Assigner {{ getSelectedAgentsCount() }} agent(s)
+        }
       </button>
     </div>
-
   </form>
 </div>

@@ -89,6 +89,16 @@ export class VenteServices {
   }
 
   /**
+   * ACTION : Assigner plusieurs agents
+   */
+  assignMultipleAgents(orderId: string, agentIds: string[], internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
+    return this.http.put<ApiResponse<OrderAdmin>>(
+      `${this.API_URL}/${orderId}/assign-multiple-agents`, 
+      { agentIds, internalNotes }
+    );
+  }
+
+  /**
    * Retourne les ventes filtrées par statut en temps réel
    */
   getVentesByStatus(status: string): Observable<OrderAdmin[]> {
