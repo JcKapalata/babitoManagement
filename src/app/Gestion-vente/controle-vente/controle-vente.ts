@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenteServices } from '../vente-services';
 import { OrderLogistics } from '../../Models/order';
 import { PersonnelService } from '../../Gestion-personnel/personnel-service';
 import { Agent } from '../../Models/agent';
+import { NotificationService } from '../../Notification/notification-service';
 
 @Component({
   selector: 'app-controle-vente',
@@ -17,7 +18,12 @@ export class ControleVente implements OnInit {
   private venteService = inject(VenteServices);
   private personnelService = inject(PersonnelService);
   private cdr = inject(ChangeDetectorRef);
+  private notify = inject(NotificationService);
 
+  // Événement pour fermer le composant
+  @Output() close = new EventEmitter<void>();
+
+  // ID de la commande à contrôler
   @Input({ required: true }) orderId!: string;
 
   controlForm: FormGroup = this.fb.group({
@@ -90,13 +96,27 @@ export class ControleVente implements OnInit {
     // On envoie le tableau d'IDs au service
     this.venteService.assignMultipleAgents(this.orderId, selectedAgentIds, internalNotes)
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.loading = false;
-          this.submitSuccess = true;
+          
+          // On utilise le Toast pour le succès
+          const count = selectedAgentIds.length;
+          this.notify.showSuccess(`Équipe logistique (${count}) assignée avec succès !`);
+
+          setTimeout(() => {
+            this.close.emit(); 
+          }, 500);
+          
           this.cdr.markForCheck();
-          setTimeout(() => { this.submitSuccess = false; this.cdr.markForCheck(); }, 2000);
         },
-        error: () => { this.loading = false; this.cdr.markForCheck(); }
+        error: (err) => {
+          this.loading = false;
+          
+          // On utilise le Toast pour l'erreur
+          this.notify.showError("Erreur lors de l'assignation de l'équipe.");
+          
+          this.cdr.markForCheck();
+        }
       });
   }
 }

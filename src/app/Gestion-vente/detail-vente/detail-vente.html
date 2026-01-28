@@ -39,7 +39,10 @@
 
       @if (showConfig && vente) {
         <div class="config-overlay">
-          <app-controle-vente [orderId]="vente.id"></app-controle-vente>
+          <app-controle-vente 
+            [orderId]="vente.id"
+            (close)="toggleConfig()">
+          </app-controle-vente>
         </div>
       }
 
