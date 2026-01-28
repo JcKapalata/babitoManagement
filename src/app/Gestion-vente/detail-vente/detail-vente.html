@@ -136,7 +136,7 @@
 
         </div>
 
-        @if (vente.status === 'processing' || agentsAssignes.length > 0) {
+        @if (vente.status != 'pending' || agentsAssignes.length > 0) {
           <div class="logistics-wrapper">
             <div class="logistics-info-card shadow">
               
@@ -145,7 +145,7 @@
                   <mat-icon>engineering</mat-icon>
                   <h3>Suivi Logistique</h3>
                 </div>
-                <div class="status-badge-mini" [attr.data-status]="vente.status">
+                <div class="status-badge-mini" class="status-badge" [attr.data-status]="vente.status">
                   {{ vente.status | orderStatus }}
                 </div>
               </div>
