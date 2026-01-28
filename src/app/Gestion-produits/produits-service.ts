@@ -28,37 +28,23 @@ export class ProduitsService {
     return this.refreshSignal$.pipe(
       tap(() => console.log(`[🚀 HTTP GET] Chargement des produits... URL: ${this.API_URL}`)),
       switchMap(() => {
-<<<<<<< HEAD
         console.log('[ProduitsService] Appel API à:', this.API_URL);
-        // NOTE: Si vous utilisez In-Memory, les paramètres 'page' et 'size' 
-        // bloquent souvent la réponse. On les enlève pour le test.
         return this.http.get<any>(this.API_URL).pipe(
           retry(1),
           map(res => {
             console.log('[ProduitsService] Réponse reçue:', res);
-            // Extraction des données (gestion tableau direct ou objet)
-            let items: Produit[] = Array.isArray(res) ? res : (res.data || res.items || []);
-=======
-        return this.http.get<any>(this.API_URL).pipe(
-          retry(1),
-          map(res => {
             // Le backend Express renvoie { success: true, count: X, data: [...] }
             const rawItems = res.data || [];
             console.log(`[📦 Backend Response] ${rawItems.length} produits reçus.`);
->>>>>>> 41b281062c96e865bb5991f52c57712ee5d1a8be
 
             const formattedItems = this.parseDates(rawItems);
 
             // Pagination manuelle côté front pour le manager
             const start = page * size;
             const end = start + size;
-<<<<<<< HEAD
-            const paginatedItems = items.slice(start, end);
-
-            console.log(`[ProduitsService] Total items: ${items.length}, Paginated: ${paginatedItems.length}`);
-=======
             const paginatedItems = formattedItems.slice(start, end);
->>>>>>> 41b281062c96e865bb5991f52c57712ee5d1a8be
+
+            console.log(`[ProduitsService] Total items: ${formattedItems.length}, Paginated: ${paginatedItems.length}`);
 
             return {
               items: paginatedItems,
