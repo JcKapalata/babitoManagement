@@ -1,134 +1,144 @@
-<div class="sidebar">
+@if (!isCollapsed && isMobile) {
+  <div class="sidebar-overlay" (click)="toggleMenu()"></div>
+}
+
+<div class="sidebar" [class.collapsed]="isCollapsed">
   <div class="brand">
-    <h2>Babito Management</h2>
+    <button mat-icon-button (click)="toggleMenu()" class="toggle-btn">
+      <mat-icon>{{ isCollapsed ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+    @if (!isCollapsed) {
+      <h2>Babito Management</h2>
+    }
   </div>
 
   <nav class="menu-list">
     <button mat-button class="nav-item" (click)="goToTableauBord()">
-      <mat-icon>dashboard</mat-icon> Dashboard
+      <mat-icon>dashboard</mat-icon>
+      <span class="nav-label">Dashboard</span>
     </button>
     
-    <!-- Gestion Produits -->
-    <button mat-button class="nav-item" (click)="toggleProduits()">
-      <mat-icon>inventory_2</mat-icon> Gestions Produits
-    </button>
-    <!--  Sub nav item produit-->
-    @if (isShowedProduits) {
-      <div class="sub-menu">
-        <button mat-button class="sub-nav-item" (click)="goToProduitsDesponibles()">
-          <mat-icon>check_circle</mat-icon> Produits Disponibles
-        </button>
+    <div class="nav-group">
+      <button mat-button class="nav-item" (click)="toggleProduits()">
+        <mat-icon>inventory_2</mat-icon>
+        <span class="nav-label">Gestions Produits</span>
+      </button>
 
-        <button mat-button class="sub-nav-item" (click)="goToProduitsEpuises()">
-          <mat-icon>block</mat-icon> Produits épuisés
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToProduitsFaibles()">
-          <mat-icon>report_problem</mat-icon> Produits faibles
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToAjoutProduit()">
-          <mat-icon>add_circle_outline</mat-icon> Ajouter Produit
-        </button>
-      </div>
-    }
-
-    <!-- Gestion Livraisons -->
-    <button mat-button class="nav-item desactive" >
-      <mat-icon>local_shipping</mat-icon> Gestion Livraisons
-    </button>
-
-    <!-- Gestion Ventes -->
-    <button mat-button class="nav-item" (click)="toogleVentes()">
-      <mat-icon>shopping_cart</mat-icon>
-      <span>Gestion Ventes</span>
-
-      @if (!isShowedVentes && nbVentes > 0) {
-        <span [matBadge]="nbVentes" 
-              matBadgeColor="warn" 
-              matBadgeOverlap="false"
-              class="badge-sub-menu">
-        </span>
+      @if (isShowedProduits && !isCollapsed) {
+        <div class="sub-menu">
+          <button mat-button class="sub-nav-item" (click)="goToProduitsDesponibles()">
+            <mat-icon>check_circle</mat-icon> <span>Produits Disponibles</span>
+          </button>
+          <button mat-button class="sub-nav-item" (click)="goToProduitsEpuises()">
+            <mat-icon>block</mat-icon> <span>Produits épuisés</span>
+          </button>
+          <button mat-button class="sub-nav-item" (click)="goToProduitsFaibles()">
+            <mat-icon>report_problem</mat-icon> <span>Produits faibles</span>
+          </button>
+          <button mat-button class="sub-nav-item" (click)="goToAjoutProduit()">
+            <mat-icon>add_circle_outline</mat-icon> <span>Ajouter Produit</span>
+          </button>
+        </div>
       }
-    </button>
+    </div>
 
-    <!--  Sub nav item vente-->
-    @if (isShowedVentes) {
-      <div class="sub-menu">
-        <button mat-button class="sub-nav-item" (click)="goToVenteEncours()">
-          <mat-icon>pending_actions</mat-icon>
-          <span>Ventes en cours</span>
-          
-          @if (nbVentes > 0) {
-            <span [matBadge]="nbVentes" 
-                  matBadgeColor="warn" 
-                  matBadgeOverlap="false"
-                  class="badge-sub-menu">
-            </span>
-          }
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToVenteNonLivrees()">
-          <mat-icon>local_shipping</mat-icon>
-          <span>Ventes non livrées</span>
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToVenteLivrees()">
-          <mat-icon>task_alt</mat-icon>
-          <span>Ventes livrées</span>
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToVenteAnnulees()">
-          <mat-icon>cancel</mat-icon>
-          <span>Ventes annulées</span>
-        </button>
-      </div>
-    }
-
-    <!-- Gestion Finances -->
     <button mat-button class="nav-item desactive">
-      <mat-icon>payments</mat-icon> Gestion Finances
+      <mat-icon>local_shipping</mat-icon>
+      <span class="nav-label">Gestion Livraisons</span>
     </button>
 
-    <!-- Gestion RH -->
-    <button mat-button class="nav-item" (click)="toggleRH()">
-      <mat-icon>people</mat-icon> Gestion RH
+    <div class="nav-group">
+      <button mat-button class="nav-item parent-button" (click)="toogleVentes()">
+        <mat-icon>shopping_cart</mat-icon>
+        <span class="nav-label">Gestion Ventes</span>
+
+        @if (!isShowedVentes || isCollapsed) {
+          @if (counts$ | async; as c) {
+            <div class="parent-badges" [class.stacked]="isCollapsed">
+              @if (c.pending > 0) {
+                <span [matBadge]="c.pending" matBadgeOverlap="false" class="badge-pending mini-badge"></span>
+              }
+              @if (c.processing > 0) {
+                <span [matBadge]="c.processing" matBadgeOverlap="false" class="badge-processing mini-badge"></span>
+              }
+            </div>
+          }
+        }
+      </button>
+
+      @if (isShowedVentes && !isCollapsed) {
+        @if (counts$ | async; as c) {
+          <div class="sub-menu">
+            <button mat-button class="sub-nav-item" (click)="goToVenteEncours()">
+              <mat-icon>pending_actions</mat-icon>
+              <span>Ventes en cours</span>
+              @if (c.pending > 0) {
+                <span [matBadge]="c.pending" matBadgeOverlap="false" class="badge-sub-menu badge-pending"></span>
+              }
+            </button>
+            <button mat-button class="sub-nav-item" (click)="goToVenteNonLivrees()">
+              <mat-icon>local_shipping</mat-icon>
+              <span>Ventes non livrées</span>
+              @if (c.processing > 0) {
+                <span [matBadge]="c.processing" matBadgeOverlap="false" class="badge-sub-menu badge-processing"></span>
+              }
+            </button>
+            <button mat-button class="sub-nav-item" (click)="goToVenteLivrees()">
+              <mat-icon>task_alt</mat-icon> <span>Ventes livrées</span>
+            </button>
+            <button mat-button class="sub-nav-item" (click)="goToVenteAnnulees()">
+              <mat-icon>cancel</mat-icon> <span>Ventes annulées</span>
+            </button>
+          </div>
+        }
+      }
+    </div>
+
+    <button mat-button class="nav-item desactive">
+      <mat-icon>payments</mat-icon>
+      <span class="nav-label">Gestion Finances</span>
     </button>
 
-    <!--  Sub nav item RH-->
-    @if (isShowedRH) {
-      <div class="sub-menu">
-        <button mat-button class="sub-nav-item" (click)="goToListsAgents()">
-          <mat-icon>people</mat-icon> Liste des Agents
-        </button>
+    <div class="nav-group">
+      <button mat-button class="nav-item" (click)="toggleRH()">
+        <mat-icon>people</mat-icon>
+        <span class="nav-label">Gestion RH</span>
+      </button>
 
-        <button mat-button class="sub-nav-item" (click)="goToListsClients()">
-          <mat-icon>group</mat-icon> Liste des Clients
-        </button>
-
-        <button mat-button class="sub-nav-item" (click)="goToAjout()">
-          <mat-icon>person_add</mat-icon> Ajouter Agent
-        </button>
-      </div>
-    }
-
+      @if (isShowedRH && !isCollapsed) {
+        <div class="sub-menu">
+          <button mat-button class="sub-nav-item" (click)="goToListsAgents()">
+            <mat-icon>people</mat-icon> <span>Liste des Agents</span>
+          </button>
+          <button mat-button class="sub-nav-item" (click)="goToListsClients()">
+            <mat-icon>group</mat-icon> <span>Liste des Clients</span>
+          </button>
+          <button mat-button class="sub-nav-item" (click)="goToAjout()">
+            <mat-icon>person_add</mat-icon> <span>Ajouter Agent</span>
+          </button>
+        </div>
+      }
+    </div>
   </nav>
 
   <div class="footer">
-    <button mat-flat-button 
-          color="primary" 
-          (click)="goToProfile()" 
-          class="full-width margin-bottom">
-    <mat-icon>account_circle</mat-icon> 
-    PROFIL
-  </button>
-
-  <button mat-flat-button 
-          color="warn" 
-          (click)="logout()" 
-          class="full-width">
-    <mat-icon>logout</mat-icon> 
-    DÉCONNEXION
-  </button>
+    <button mat-button (click)="goToProfile()" class="full-width margin-bottom">
+      <mat-icon>account_circle</mat-icon> 
+      <span class="nav-label">PROFIL</span>
+    </button>
+    <button mat-button (click)="openLogoutModal()" class="full-width">
+      <mat-icon>logout</mat-icon> 
+      <span class="nav-label">DÉCONNEXION</span>
+    </button>
   </div>
 </div>
+
+@if (isLogoutModalOpen) {
+  <app-confirm-modal 
+    [message]="logoutMessage"
+    [btnText]="logoutBtnLabel"
+    [variant]="'danger'" 
+    (confirmed)="handleLogout()"
+    (cancelled)="isLogoutModalOpen = false">
+  </app-confirm-modal>
+}

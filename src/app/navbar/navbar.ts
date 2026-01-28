@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -7,10 +7,12 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { Router } from '@angular/router';
 import { AuthService } from '../Auth/auth-service';
 import { ProfileService } from '../Profile/profile-service';
+import { VenteServices } from '../Gestion-vente/vente-services';
+import { ConfirmModal } from "../Notification/confirm-modal/confirm-modal";
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatBadgeModule],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatBadgeModule, ConfirmModal],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -18,19 +20,41 @@ export class Navbar implements OnInit {
   private readonly router = inject(Router);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private venteService = inject(VenteServices);
+  private cdr = inject(ChangeDetectorRef);
 
-  // Cette variable contient ton nombre de ventes
-  // À l'avenir, tu pourras la récupérer via un Service
-  nbVentes: number = 8;
+  @Input() isCollapsed = false;
+  @Output() toggleSidebar = new EventEmitter<void>();
 
+  // Un seul flux qui contient les deux compteurs
+  counts$ = this.venteService.getAlerteStatusCounts();
+
+  isMobile: boolean = false;
   isShowedProduits: boolean = false;
   isShowedRH: boolean = false;
   isShowedVentes = false;
+
+  // Modal de confirmation de déconnexion
+  isLogoutModalOpen = false;
+  logoutMessage = "";
+  logoutBtnLabel = "";
 
   ngOnInit(): void {
     this.isShowedProduits = false;
     this.isShowedRH = false;
     this.isShowedVentes = false;
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
+
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) this.isCollapsed = true; // Fermé par défaut sur mobile
+  }
+
+  // Toggle sidebar
+  toggleMenu() {
+    this.toggleSidebar.emit();
   }
 
   // ======= Toggle =======
@@ -113,5 +137,19 @@ export class Navbar implements OnInit {
     this.authService.logout(); 
     
     console.log('Utilisateur déconnecté');
+  }
+
+  openLogoutModal() {
+    // On définit les textes juste avant d'ouvrir
+    this.logoutMessage = "Êtes-vous sûr de vouloir vous déconnecter de votre session ?";
+    this.logoutBtnLabel = "Se déconnecter";
+    this.isLogoutModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  // Action exécutée si l'utilisateur confirme
+  handleLogout() {
+    this.isLogoutModalOpen = false;
+    this.authService.logout();
   }
 }

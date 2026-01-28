@@ -1,136 +1,280 @@
+/* ==========================================================================
+   BASE SIDEBAR (DESKTOP & GENERAL)
+   ========================================================================== */
 .sidebar {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Toute la hauteur de l'écran */
-    padding: 20px;
-    box-sizing: border-box;
+    height: 100vh;
+    padding: 15px;
     background: var(--primary-color);
+    width: 260px;
+    box-sizing: border-box;
+    overflow: hidden;
+    color: white;
+    position: relative;
+    z-index: 1000;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
 }
 
+/* État réduit (Collapsed) Desktop */
+.sidebar.collapsed { 
+    width: 80px; 
+}
+
+/* ==========================================================================
+   ENTÊTE (BRAND)
+   ========================================================================== */
 .brand {
-    padding-bottom: 10px;
-    text-align: center;
-    border-bottom: 1px solid #eee;
-
-    h2{
-      color: white;
-    }
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 50px;
 }
 
+.brand h2 { 
+    font-size: 1rem; 
+    white-space: nowrap; 
+    margin: 0; 
+    color: white; 
+    overflow: hidden; 
+}
+
+.toggle-btn { 
+    color: white !important; 
+}
+
+/* Masquage des labels quand réduit */
+.sidebar.collapsed .nav-label, 
+.sidebar.collapsed .brand h2,
+.sidebar.collapsed .footer span { 
+    display: none; 
+}
+
+/* ==========================================================================
+   LISTE DE NAVIGATION & ITEMS
+   ========================================================================== */
 .menu-list {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-top: 10px;
+    margin-top: 15px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
+/* Scrollbar stylisée */
+.menu-list::-webkit-scrollbar { width: 4px; }
+.menu-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 
-/* pour le nav-item */
 .nav-item {
     width: 100%;
     display: flex !important;
     align-items: center;
     justify-content: flex-start !important;
-    height: 40px !important;
+    min-height: 45px !important;
     background: var(--accent-color) !important;
     color: white !important;
     transition: 0.3s;
-    border-radius: 0 !important;
-    position:  relative !important;
-}
-.nav-item mat-icon {
-    margin-right: 15px;
-}
-.nav-item:hover {
-    background: var(--primary-color) !important;
-    color: white !important;
-    border: 1.5px solid white;
-}
-.nav-item mat-icon:first-child {
-    margin-right: 12px;
-}
-.nav-label {
-    flex: 1; 
-    text-align: left;
+    border-radius: 8px !important;
+    padding: 0 15px !important;
+    position: relative;
 }
 
-/* pour le sub-nav-item */
+.nav-item mat-icon { 
+    flex-shrink: 0; 
+}
+
+.nav-label { 
+    white-space: nowrap; 
+    margin-left: 10px; 
+    transition: opacity 0.2s;
+}
+
+/* Centrage icônes quand réduit */
+.sidebar.collapsed .nav-item { 
+    justify-content: center !important; 
+    padding: 0 !important; 
+}
+
+.nav-item:hover { 
+    background: var(--primary-color) !important; 
+    border: 1.5px solid white; 
+}
+
+/* ==========================================================================
+   SOUS-MENUS (SUB-MENU)
+   ========================================================================== */
+.sub-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 5px 0 10px 20px;
+    animation: fadeIn 0.3s ease;
+}
+
 .sub-nav-item {
-    width: calc(100% - 40px);
+    width: 100% !important;
     display: flex !important;
     align-items: center;
-    justify-content: flex-start !important;
-    height: 35px !important;
+    height: 40px !important;
+    background: var(--accent-color) !important; /* BG DIRECT SUR BOUTON */
+    color: white !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem;
+    padding-left: 12px !important;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.sub-nav-item:hover { 
+    background: var(--primary-color) !important; 
+    border: 1.5px solid white;  
+}
+
+.sub-nav-item:active { 
+    transform: scale(0.95); /* Effet tactile */
+}
+
+.sub-nav-item mat-icon { 
+    font-size: 18px; 
+    width: 18px; 
+    height: 18px; 
+    margin-right: 10px; 
+}
+
+/* ==========================================================================
+   BADGES & ÉTATS SPÉCIAUX
+   ========================================================================== */
+.parent-badges { display: flex; gap: 25px; margin-left: auto; }
+
+/* Badges empilés en mode réduit */
+.sidebar.collapsed .parent-badges { 
+    position: absolute; 
+    right: 5px; 
+    top: 5px; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+::ng-deep .badge-pending .mat-badge-content { background: var(--warn-color) !important; }
+::ng-deep .badge-processing .mat-badge-content { background: var(--warning-orange) !important; }
+
+.desactive { 
+    background: gray !important; 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer { 
+    margin-top: auto; 
+    padding-top: 20px; 
+}
+
+.full-width { 
+    width: 100%; 
+    height: 45px !important; 
+    margin-bottom: 8px; 
     background: var(--accent-color) !important;
     color: white !important;
-    transition: 0.3s;
-    border-radius: 0 !important;
-    border-bottom: 1.5px solid var(--primary-color);
-    margin-left: 40px;
 }
-.sub-nav-item mat-icon {
-    margin-right: 15px;
+.full-width:hover { 
+    background: var(--primary-color) !important;
+    border: 1.5px solid white !important;  
 }
-.sub-nav-item:hover {
+
+/* ==========================================================================
+   MOBILE CONFIGURATION (SMARTPHONE)
+   ========================================================================== */
+/* Note : .mobile-toggle-btn doit être dans le HTML du Parent */
+::ng-deep .mobile-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1100;
     background: var(--primary-color) !important;
     color: white !important;
-    border: 1.5px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* desactivation */
-.desactive{
-    background: gray !important;
-    cursor: not-allowed;
+@media (max-width: 768px) {
+    /* Réduction de la taille du bouton hamburger */
+    ::ng-deep .mobile-toggle-btn { 
+        display: block !important;
+        width: 35px !important;  /* Plus petit */
+        height: 35px !important;
+        min-width: 35px !important;
+        line-height: 35px !important;
+        top: 8px;
+        left: 8px;
+    }
+
+    ::ng-deep .mobile-toggle-btn mat-icon {
+        font-size: 20px; /* Icône plus discrète */
+        width: 20px;
+        height: 20px;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 170px !important; /* Sidebar plus étroite sur mobile */
+        padding: 8px !important; /* Moins de vide interne */
+        z-index: 1050;
+    }
+
+    /* Réduction de la taille des items de menu pour mobile */
+    .nav-item, .full-width {
+        height: 30px !important;      
+        min-height: 30px !important;
+        padding: 0 8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .nav-label {
+        font-size: 0.7rem !important; /* Texte plus petit */
+    }
+
+    .nav-item mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    /* Réduction des sous-menus pour gagner de la place */
+    .sub-menu {
+        margin: 2px 0 4px 12px !important;
+        gap: 2px !important;
+    }
+
+    .sub-nav-item {
+        height: 28px !important;      
+        min-height: 28px !important;
+        font-size: 0.55rem !important;
+    }
+
+    /* Affichage quand ouvert */
+    .sidebar:not(.collapsed) {
+        left: 0;
+    }
+
+    .sidebar:not(.collapsed) .nav-label, 
+    .sidebar:not(.collapsed) .brand h2,
+    .sidebar:not(.collapsed) .sub-menu { 
+        display: flex !important; 
+    }
 }
-.desactive:hover{
-    cursor: not-allowed;
-}
 
-/* --- Gestion du Badge --- */
-
-/* 2. Le conteneur span (ton point d'ancrage) */
-.badge-sub-menu {
-  /* display: inline-flex; */
-  align-items: center;
-  position: absolute; 
-  top: 50%;  
-  right: -20px;
-  width: 40px;         
-}
-
-/* 3. Style du badge Angular Material (via ng-deep) */
-::ng-deep .mat-badge-content {
-  /* Centrage vertical absolu par rapport au span */
-  top: 50% !important;
-  
-  /* Style visuel */
-  font-size: 10px !important;
-  font-weight: 600;
-  height: 18px !important;
-  width: 18px !important;
-  line-height: 18px !important; /* Centre le chiffre dans le cercle */
-}
-
-
-
-/* pour le footer */
-.footer {
-    margin-top: auto; /* Pousse le footer tout en bas */
-    padding-top: 20px;
-}
-
-.full-width {
-    width: 100%;
-    height: 45px !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    transition: 0.3s;
-    background: var(--accent-color) !important;
-    color: white !important;
-}
-.full-width:hover{
-  background: var(--primary-color) !important;
-  color: white !important;
-  border: 1.5px solid white;
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(-5px); } 
+    to { opacity: 1; transform: translateY(0); } 
 }

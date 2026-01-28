@@ -1,21 +1,54 @@
+/* --- CONTENEUR RACINE --- */
 .app-container {
     display: flex;
     width: 100%;
     height: 100vh;
-    overflow: hidden; /* Empêche toute la page de défiler */
+    overflow: hidden; /* Fixe la hauteur pour éviter le double scroll */
 }
 
+/* --- COMPOSANT NAVBAR --- */
 app-navbar {
-    width: 20%;
-    min-width: 200px; /* Sécurité pour les petits écrans */
+    /* On définit la largeur de base */
+    width: 260px; 
     height: 100%;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    flex-shrink: 0; /* Empêche le contenu de l'écraser */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
 }
 
+/* État réduit (Desktop) */
+.sidebar-collapsed app-navbar {
+    width: 80px;
+    min-width: 80px;
+}
+
+/* --- ZONE DE CONTENU PRINCIPAL --- */
 .content-area {
-    width: 80%;
+    /* flex: 1 permet de prendre TOUT l'espace restant automatiquement */
+    flex: 1; 
     height: 100%;
-    overflow-y: auto; /* Seul le tableau défile, pas la barre latérale */
-    background-color: #ffffff;
+    overflow-y: auto; /* Permet le scroll interne (ton tableau) */
+    background-color: #f8f9fa; /* Un gris très léger pour le contraste */
+    position: relative;
+}
+
+/* --- CONFIGURATION MOBILE --- */
+@media (max-width: 768px) {
+    app-navbar {
+        position: fixed; /* Sur mobile, elle flotte au-dessus */
+        left: -100%;    /* Complètement cachée */
+        width: 240px !important; /* Largeur compacte */
+        height: 100vh;
+    }
+
+    /* Quand isCollapsed est FALSE (Menu Ouvert) */
+    .app-container:not(.sidebar-collapsed) app-navbar {
+        left: 0;
+    }
+
+    /* On force la zone de contenu à prendre 100% sans se décaler */
+    .content-area {
+        width: 100%;
+        flex: none;
+    }
 }
