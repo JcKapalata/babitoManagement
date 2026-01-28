@@ -8,34 +8,38 @@
 
 /* Sidebar Largeur dynamique */
 app-navbar {
-    width: 260px; /* Largeur fixe desktop */
+    width: 260px;
     height: 100%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001; /* Doit être au-dessus du content-area */
 }
 
-/* État quand le menu est caché (Tablette/Desktop) */
+/* État réduit (Desktop) */
 .sidebar-collapsed app-navbar {
-    width: 70px;
-    min-width: 70px;
+    width: 80px; /* On aligne avec ton CSS interne de 80px */
+    min-width: 80px;
 }
 
-.content-area {
-    flex: 1;
-    height: 100%;
-    overflow-y: auto;
-    background-color: #ffffff;
+/* LE FIX CRITIQUE : Autoriser l'expansion au survol du composant */
+@media (min-width: 769px) {
+    .sidebar-collapsed app-navbar:hover {
+        width: 260px; /* Le parent s'élargit aussi pour libérer l'enfant */
+    }
 }
 
-/* RESPONSIVE MOBILE */
+/* RESPONSIVE MOBILE (Corrigé) */
 @media (max-width: 768px) {
     app-navbar {
         position: absolute;
-        z-index: 1000;
-        left: -260px; /* Caché par défaut sur mobile */
+        z-index: 1050;
+        left: -260px; 
+        width: 260px; /* Force la largeur pleine sur mobile */
     }
 
-    .sidebar-collapsed app-navbar {
-        left: 0; /* Affiché en overlay sur mobile */
-        width: 260px;
+    /* Inversion de ta logique pour correspondre à [isCollapsed] */
+    /* Si isCollapsed est false (le menu doit être VU) */
+    .app-container:not(.sidebar-collapsed) app-navbar {
+        left: 0;
+        width: 280px;
     }
 }
