@@ -21,19 +21,6 @@
     width: 80px; 
 }
 
-/* Hover Expansion : On agrandit au survol si c'est réduit pour accéder aux sous-menus */
-@media (min-width: 769px) {
-    .sidebar.collapsed:hover {
-        width: 260px !important;
-        box-shadow: 10px 0 20px rgba(0,0,0,0.3);
-    }
-    .sidebar.collapsed:hover .nav-label, 
-    .sidebar.collapsed:hover .brand h2,
-    .sidebar.collapsed:hover .sub-menu { 
-        display: flex !important; 
-    }
-}
-
 /* ==========================================================================
    ENTÊTE (BRAND)
    ========================================================================== */

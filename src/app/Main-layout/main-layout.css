@@ -1,45 +1,55 @@
+/* --- CONTENEUR RACINE --- */
 .app-container {
     display: flex;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    overflow: hidden; /* Fixe la hauteur pour éviter le double scroll */
 }
 
-/* Sidebar Largeur dynamique */
+/* --- COMPOSANT NAVBAR --- */
 app-navbar {
-    width: 260px;
+    /* On définit la largeur de base */
+    width: 260px; 
     height: 100%;
+    flex-shrink: 0; /* Empêche le contenu de l'écraser */
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1001; /* Doit être au-dessus du content-area */
+    z-index: 1001;
 }
 
 /* État réduit (Desktop) */
 .sidebar-collapsed app-navbar {
-    width: 80px; /* On aligne avec ton CSS interne de 80px */
+    width: 80px;
     min-width: 80px;
 }
 
-/* LE FIX CRITIQUE : Autoriser l'expansion au survol du composant */
-@media (min-width: 769px) {
-    .sidebar-collapsed app-navbar:hover {
-        width: 260px; /* Le parent s'élargit aussi pour libérer l'enfant */
-    }
+/* --- ZONE DE CONTENU PRINCIPAL --- */
+.content-area {
+    /* flex: 1 permet de prendre TOUT l'espace restant automatiquement */
+    flex: 1; 
+    height: 100%;
+    overflow-y: auto; /* Permet le scroll interne (ton tableau) */
+    background-color: #f8f9fa; /* Un gris très léger pour le contraste */
+    position: relative;
 }
 
-/* RESPONSIVE MOBILE (Corrigé) */
+/* --- CONFIGURATION MOBILE --- */
 @media (max-width: 768px) {
     app-navbar {
-        position: absolute;
-        z-index: 1050;
-        left: -260px; 
-        width: 260px; /* Force la largeur pleine sur mobile */
+        position: fixed; /* Sur mobile, elle flotte au-dessus */
+        left: -100%;    /* Complètement cachée */
+        width: 240px !important; /* Largeur compacte */
+        height: 100vh;
     }
 
-    /* Inversion de ta logique pour correspondre à [isCollapsed] */
-    /* Si isCollapsed est false (le menu doit être VU) */
+    /* Quand isCollapsed est FALSE (Menu Ouvert) */
     .app-container:not(.sidebar-collapsed) app-navbar {
         left: 0;
-        width: 280px;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+    }
+
+    /* On force la zone de contenu à prendre 100% sans se décaler */
+    .content-area {
+        width: 100%;
+        flex: none;
     }
 }
