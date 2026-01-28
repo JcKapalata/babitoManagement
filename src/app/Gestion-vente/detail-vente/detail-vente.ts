@@ -57,6 +57,7 @@ export class DetailVente implements OnInit {
     }
   }
 
+  // Récupère les détails de la vente
   fetchVente(id: string) {
     this.loading = true;
     this.venteService.getVenteById(id).subscribe({
@@ -75,6 +76,7 @@ export class DetailVente implements OnInit {
     });
   }
 
+  // Change le statut de la vente
   changerStatut(statut: string) {
     if (!this.vente) return;
     
@@ -92,25 +94,38 @@ export class DetailVente implements OnInit {
     });
   }
 
+  // Charge les agents logistiques assignés et les notes internes
   loadLogistics(id: string) {
     this.loading = true
-  this.venteService.getOrderLogistique(id).subscribe({
-    next: (res) => {
-      if (res.success) {
-        this.agentsAssignes = res.data.assignedAgents;
-        this.internalNotes = res.data.internalNotes;
+    this.venteService.getOrderLogistique(id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.agentsAssignes = res.data.assignedAgents;
+          this.internalNotes = res.data.internalNotes;
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error("Impossible de charger les agents", err);
         this.loading = false;
         this.cdr.detectChanges();
       }
-    },
-    error: (err) => {
-      console.error("Impossible de charger les agents", err);
-      this.loading = false;
-      this.cdr.detectChanges();
-    }
-  });
-}
+    });
+  }
 
+  // Appelé lorsque l'assignation est terminée dans le composant enfant
+  onAssignmentDone() {
+    this.showConfig = false; // Ferme le composant
+    
+    const id = this.vente?.id;
+    if (id) {
+      // On recharge tout pour mettre à jour l'interface sans rafraîchir la page
+      this.fetchVente(id);
+      this.loadLogistics(id);
+    }
+    this.cdr.detectChanges();
+  }
   
   //Gère la redirection optimisée selon le nouveau statut
   private redirigerSelonStatut(statut: string) {
