@@ -126,9 +126,19 @@
       <mat-icon>account_circle</mat-icon> 
       <span class="nav-label">PROFIL</span>
     </button>
-    <button mat-button (click)="logout()" class="full-width">
+    <button mat-button (click)="openLogoutModal()" class="full-width">
       <mat-icon>logout</mat-icon> 
       <span class="nav-label">DÉCONNEXION</span>
     </button>
   </div>
 </div>
+
+@if (isLogoutModalOpen) {
+  <app-confirm-modal 
+    [message]="logoutMessage"
+    [btnText]="logoutBtnLabel"
+    [variant]="'danger'" 
+    (confirmed)="handleLogout()"
+    (cancelled)="isLogoutModalOpen = false">
+  </app-confirm-modal>
+}
