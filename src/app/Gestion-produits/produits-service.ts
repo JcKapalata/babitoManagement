@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, retry, switchMap, throwError, tap } from 'rxjs';
 import { Produit } from '../Models/produit';
 import { environment } from '../../environments/environment';
+import { ApiResponse } from '../Models/order';
 
 export interface PaginatedProduits {
   items: Produit[];
@@ -29,9 +30,9 @@ export class ProduitsService {
       tap(() => console.log(`[🚀 HTTP GET] Chargement des produits... URL: ${this.API_URL}`)),
       switchMap(() => {
         console.log('[ProduitsService] Appel API à:', this.API_URL);
-        return this.http.get<any>(this.API_URL).pipe(
+        return this.http.get<ApiResponse<Produit[]>>(this.API_URL).pipe(
           retry(1),
-          map(res => {
+          map((res: ApiResponse<Produit[]>) => {
             console.log('[ProduitsService] Réponse reçue:', res);
             // Le backend Express renvoie { success: true, count: X, data: [...] }
             const rawItems = res.data || [];
@@ -59,8 +60,8 @@ export class ProduitsService {
 
   getProduitById(id: string ): Observable<Produit> {
     console.log(`[🔍 HTTP GET] Recherche produit ID: ${id}`);
-    return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
-      map(res => {
+    return this.http.get<ApiResponse<Produit>>(`${this.API_URL}/${id}`).pipe(
+      map((res: ApiResponse<Produit>) => {
         // res est { success: true, data: { ... } }
         const p = res.data;
         return this.parseDates([p])[0];
@@ -76,7 +77,7 @@ export class ProduitsService {
         console.log('[✅ Success] Produit créé:', res);
         this.forceRefresh();
       }),
-      map(res => res.data),
+      map((res: ApiResponse<Produit>) => res.data),
       catchError(err => this.handleError(err, 'postProduit'))
     );
   }
@@ -85,12 +86,12 @@ export class ProduitsService {
     const url = `${this.API_URL}/${id}`;
     console.log(`[🔄 HTTP PUT] Mise à jour produit ${id}:`, produit);
 
-    return this.http.put<any>(url, produit).pipe(
+    return this.http.put<ApiResponse<Produit>>(url, produit).pipe(
       tap((res) => {
         console.log('[✅ Success] Produit mis à jour:', res);
         this.forceRefresh();
       }),
-      map(res => res.data),
+      map((res: ApiResponse<Produit>) => res.data),
       catchError(err => this.handleError(err, 'updateProduit'))
     );
   }
@@ -104,25 +105,24 @@ export class ProduitsService {
         console.log(`[✅ Success] Produit ${id} supprimé`);
         this.forceRefresh(); 
       }),
+      map(() => void 0),
       catchError(err => this.handleError(err, 'deleteProduitById'))
     );
   }
 
   /**
-   * Normalise les données reçues du Backend
+   * Normalise les données avec un typage d'entrée flexible (Record)
    */
-  private parseDates(produits: any[]): Produit[] {
+  private parseDates(produits: Record<string, any>[]): Produit[] {
     return produits.map(p => {
-      // Gestion de l'ID : Firestore ID (string) -> Produit Admin (number ou string)
-      // On s'assure que la clé 'tailles' (pluriel) existe pour le front admin
-      const pMapped = {
-        ...p,
-        id: p.id, // On garde l'ID tel quel (string Firestore)
-        tailles: p.tailles || p.taille || {}, // Normalisation singulier/pluriel
-        dateAjout: p.createdAt ? new Date(p.createdAt) : new Date(),
-        dateModification: p.updatedAt ? new Date(p.updatedAt) : new Date()
+      const pMapped: Produit = {
+        ...p as Produit, // On cast l'objet de base
+        id: String(p['id']), // On s'assure que l'ID est une string
+        tailles: p['tailles'] || p['taille'] || {},
+        dateAjout: p['createdAt'] ? new Date(p['createdAt']) : new Date(),
+        dateModification: p['updatedAt'] ? new Date(p['updatedAt']) : new Date()
       };
-      return pMapped as Produit;
+      return pMapped;
     });
   }
 

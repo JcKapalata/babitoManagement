@@ -30,3 +30,10 @@ export interface ProduitRow extends Produit {
   quantiteSpecifique: number;
   isFirstRow: boolean; // Pour savoir si on affiche les colonnes fusionnées
 }
+
+export interface ApiProductResponse<T> {
+  success: boolean;
+  data: T;
+  count?: number;
+  message?: string;
+}
