@@ -11,7 +11,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
 
   // Vérifier si c'est une requête vers l'API
-  const isApiUrl = req.url.includes('/api/') || req.url.includes('127.0.0.1:5001') || req.url.includes('localhost:5001');
+  const isApiUrl = req.url.includes('/api/') || 
+                   req.url.includes('/manager/') ||
+                   req.url.includes('127.0.0.1:5001') || 
+                   req.url.includes('localhost:5001');
   const isLoginRequest = req.url.includes('/auth/login');
 
   console.log('[AuthInterceptor] URL:', req.url);

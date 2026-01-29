@@ -10,7 +10,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth-service';
 import { ProfileService } from '../../Profile/profile-service';
 import { firstValueFrom } from 'rxjs';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +29,6 @@ export class Login {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private cdr = inject(ChangeDetectorRef);
-  private firebaseAuth = inject(Auth);
 
   loginForm: FormGroup;
   hidePassword = true;
@@ -48,7 +46,7 @@ export class Login {
         [
           Validators.required, 
           Validators.minLength(8),
-          Validators.pattern(this.passwordPattern) // Ajout de la validation de complexité
+          Validators.pattern(this.passwordPattern)
         ]
       ]
     });
@@ -69,14 +67,18 @@ export class Login {
       const params = await firstValueFrom(this.route.queryParams);
       const returnUrl = params['returnUrl'];
 
-      // ✅ AJOUT : On se connecte d'abord à Firebase pour débloquer Firestore
-      // Cela permet à 'request.auth' de ne plus être 'null' dans tes Rules
-      await signInWithEmailAndPassword(this.firebaseAuth, email, password);
-
-      // --- TON CODE ACTUEL RESTE ICI (NE PAS ENLEVER) ---
+      // Authentification HTTP (principal)
       this.authService.login(email, password).subscribe({
-        next: (user) => {
+        next: async (user) => {
+          // Sauvegarder la session
           this.profileService.setSession(user.agent || user, user.token);
+          
+          // Petit délai pour s'assurer que le token est sauvegardé
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Attendre que le profil complet soit chargé
+          await this.profileService.refreshProfileFromServer();
+          
           const finalTarget = returnUrl ? decodeURIComponent(returnUrl) : '/tableau-de-bord';
           
           this.router.navigateByUrl(finalTarget).then(() => {
@@ -89,11 +91,10 @@ export class Login {
           this.cdr.detectChanges(); 
         }
       });
-      // ---------------------------------------------------
 
     } catch (e: any) {
       this.isLoading = false;
-      this.errorMessage = "Erreur d'authentification Firebase";
+      this.errorMessage = "Erreur d'authentification";
       this.cdr.detectChanges();
     }
   }

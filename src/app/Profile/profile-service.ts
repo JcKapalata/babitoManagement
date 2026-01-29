@@ -2,13 +2,11 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize } from 'rxjs';
-import { Auth, getIdToken } from '@angular/fire/auth';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  private readonly firebaseAuth = inject(Auth);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly PROFILE_API = `${environment.apiUrl}/manager/profile`;
@@ -19,53 +17,62 @@ export class ProfileService {
   public currentAgent$ = this.currentAgentSubject.asObservable();
   
   isLoading = signal<boolean>(false);
+  private initialized = false;
 
   constructor() {
-    this.initAuth();
+    console.log('[ProfileService] Constructor called');
   }
 
   /**
    * Initialisation au démarrage : charge le profil si un token existe
+   * Retourne une Promise pour attendre la fin du chargement
    */
-  private initAuth(): void {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      this.refreshProfileFromServer();
-    }
+  initAuth(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.initialized) {
+        console.log('[ProfileService] Already initialized, skipping...');
+        resolve();
+        return;
+      }
+      
+      this.initialized = true;
+      console.log('[ProfileService] Initializing auth...');
+      
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        console.log('[ProfileService] Token found, refreshing profile...');
+        this.refreshProfileFromServer().then(() => resolve());
+      } else {
+        console.log('[ProfileService] No token found');
+        resolve();
+      }
+    });
   }
 
   /**
-   * Cette méthode rafraîchit le profil sur ton serveur 
-   * ET synchronise les droits avec Firebase Firestore.
+   * Rafraîchit le profil depuis le serveur
+   * Retourne une Promise pour attendre la fin du chargement
    */
-  refreshProfileFromServer(): void {
-    this.isLoading.set(true);
-    this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API).pipe(
-      catchError(() => {
-        this.clearProfile();
-        return of(null);
-      }),
-      finalize(() => this.isLoading.set(false))
-    ).subscribe(async res => {
-      if (res?.success && res.data) {
-        this.currentUser.set(res.data);
-        this.currentAgentSubject.next(res.data);
-
-        // ✅ SYNCHRONISATION DES DROITS (Custom Claims)
-        const user = this.firebaseAuth.currentUser;
-        if (user) {
-          try {
-            // Correction de l'appel : getIdToken prend l'utilisateur en 1er argument
-            // le 'true' force Firebase à régénérer le token avec les nouveaux rôles
-            await getIdToken(user, true); 
-            console.log("[Profile] 🔐 Droits Firestore synchronisés (Token rafraîchi)");
-          } catch (e) {
-            console.error("❌ Échec de la synchronisation Firestore :", e);
-          }
+  refreshProfileFromServer(): Promise<void> {
+    return new Promise((resolve) => {
+      this.isLoading.set(true);
+      
+      this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API).pipe(
+        catchError((error) => {
+          console.error('[ProfileService] Error refreshing profile:', error);
+          this.clearProfile();
+          return of(null);
+        }),
+        finalize(() => this.isLoading.set(false))
+      ).subscribe(res => {
+        if (res?.success && res.data) {
+          this.currentUser.set(res.data);
+          this.currentAgentSubject.next(res.data);
         }
-      }
+        resolve();
+      });
     });
-}
+  }
 
   /**
    * Met à jour ses propres informations
@@ -84,21 +91,20 @@ export class ProfileService {
     );
   }
 
-  // A ADAPTER PLUTATARD DANS personnel-service.ts
- 
   /**
-   * Crée un nouvel agent (Admin, Vendeur ou Finance)
+   * Crée un nouvel agent
    */
-    createAgent(payload: Partial<Agent>): Observable<any> {
-      return this.http.post(`${environment.apiUrl}/manager/agents`, payload).pipe(
-        catchError(this.handleError)
-      );
-    }
+  createAgent(payload: Partial<Agent>): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/manager/agents`, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   /**
    * Enregistre la session après login
    */
   setSession(agent: Agent, token: string): void {
+    console.log('[ProfileService] Setting session...');
     localStorage.setItem('auth_token', token);
     this.currentUser.set(agent);
     this.currentAgentSubject.next(agent);
@@ -108,6 +114,7 @@ export class ProfileService {
    * Déconnexion
    */
   clearProfile(): void {
+    console.log('[ProfileService] Clearing profile...');
     localStorage.removeItem('auth_token');
     this.currentUser.set(null);
     this.currentAgentSubject.next(null);

@@ -21,37 +21,57 @@ import { ApiResponse, OrderAdmin, OrderLogistics } from '../Models/order';
 })
 export class VenteServices {
   private http = inject(HttpClient);
-  private firestore = inject(Firestore);
   private zone = inject(NgZone);
   
   private readonly API_URL = `${environment.apiUrl}/admin/ventes`;
+  private firestore: Firestore | null = null;
+
+  // Lazy initialization de Firestore
+  private getFirestore(): Firestore {
+    if (!this.firestore) {
+      try {
+        this.firestore = inject(Firestore);
+      } catch (error) {
+        console.warn('⚠️ Firestore not available, using HTTP only');
+        throw error;
+      }
+    }
+    return this.firestore;
+  }
 
   // Récupération des ventes en temps réel avec tri côté client
   getVentesRealtime(maxResults: number = 50): Observable<OrderAdmin[]> {
     return new Observable<OrderAdmin[]>((observer) => {
-      const colRef = collection(this.firestore, 'orders');
-      const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
+      try {
+        const firestore = this.getFirestore();
+        const colRef = collection(firestore, 'orders');
+        const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
 
-      const unsubscribe = onSnapshot(q, 
-        (snapshot) => {
-          this.zone.run(() => {
-            const ventes = snapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data(),
-              createdAt: doc.data()['createdAt']?.toDate?.() || doc.data()['createdAt']
-            } as OrderAdmin));
-            observer.next(ventes);
-          });
-        }, 
-        (error) => {
-          this.zone.run(() => {
-            console.error("❌ Erreur Firestore Permission/Index:", error.message);
-            // On envoie un tableau vide au lieu de crash
-            observer.next([]); 
-          });
-        }
-      );
-      return () => unsubscribe();
+        const unsubscribe = onSnapshot(q, 
+          (snapshot) => {
+            this.zone.run(() => {
+              const ventes = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data()['createdAt']?.toDate?.() || doc.data()['createdAt']
+              } as OrderAdmin));
+              observer.next(ventes);
+            });
+          }, 
+          (error) => {
+            this.zone.run(() => {
+              console.error("❌ Erreur Firestore Permission/Index:", error.message);
+              // On envoie un tableau vide au lieu de crash
+              observer.next([]); 
+            });
+          }
+        );
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('❌ Error in getVentesRealtime:', error);
+        observer.next([]);
+        return () => {};
+      }
     });
   }
 
@@ -60,21 +80,26 @@ export class VenteServices {
    */
   getOrderLogisticsRealtime(orderId: string): Observable<OrderLogistics | null> {
     return new Observable((observer) => {
-      // 'doc' est maintenant correctement importé
-      const docRef = doc(this.firestore, 'orderManagers', orderId);
+      try {
+        const firestore = this.getFirestore();
+        const docRef = doc(firestore, 'orderManagers', orderId);
 
-      // Typage du snapshot : DocumentSnapshot<DocumentData>
-      const unsubscribe = onSnapshot(docRef, (snapshot: DocumentSnapshot<DocumentData>) => {
-        this.zone.run(() => {
-          if (snapshot.exists()) {
-            observer.next(snapshot.data() as OrderLogistics);
-          } else {
-            observer.next(null);
-          }
-        });
-      }, (error) => this.zone.run(() => observer.error(error)));
+        const unsubscribe = onSnapshot(docRef, (snapshot: DocumentSnapshot<DocumentData>) => {
+          this.zone.run(() => {
+            if (snapshot.exists()) {
+              observer.next(snapshot.data() as OrderLogistics);
+            } else {
+              observer.next(null);
+            }
+          });
+        }, (error) => this.zone.run(() => observer.error(error)));
 
-      return () => unsubscribe();
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('❌ Error in getOrderLogisticsRealtime:', error);
+        observer.next(null);
+        return () => {};
+      }
     });
   }
 
