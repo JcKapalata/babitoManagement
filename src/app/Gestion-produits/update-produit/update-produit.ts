@@ -28,7 +28,7 @@ export class UpdateProduit {
         this.cdr.detectChanges(); 
 
         // 2. Appel au service
-        this.produitsService.getProduitById(+id).subscribe({
+        this.produitsService.getProduitById(id).subscribe({
           next: (produit) => {
             if (produit) {
               this.produitUpdater = produit;

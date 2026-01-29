@@ -26,25 +26,24 @@ export class DetailProduit implements OnInit {
   // --- Propriétés ---
   produit: Produit | undefined;
   showDeleteModal: boolean = false;
-  produitIdToDelete?: number;
+  produitIdToDelete?: string;
 
   ngOnInit(): void {
     // On utilise paramMap pour être plus réactif aux changements d'URL
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        this.loadProduit(+id);
+        this.loadProduit(id);
       }
     });
   }
 
-  private loadProduit(id: number): void {
+  private loadProduit(id: string): void {
     this.produit = undefined; // Déclenche l'affichage du loader
     
     this.produitsServices.getProduitById(id).subscribe({
       next: (produit) => {
-        // Le setTimeout(0) résout l'erreur NG0100 (ExpressionChangedAfterItHasBeenChecked)
-        // en décalant la mise à jour à la prochaine micro-tâche.
+        console.log('Produit reçu dans le détail:', produit);
         setTimeout(() => {
           this.produit = produit;
           this.cdr.detectChanges();
@@ -63,13 +62,13 @@ export class DetailProduit implements OnInit {
     this.location.back();
   }
 
-  goToUpdateProduit(produitId: number): void {
+  goToUpdateProduit(produitId: string): void {
     this.router.navigate(['produits/updater-produit/', produitId]);
   }
 
   // --- Gestion de la suppression ---
 
-  confirmDelete(id: number): void {
+  confirmDelete(id: string): void {
     this.produitIdToDelete = id;
     // Un léger délai garantit que la modale s'ouvre sans conflit de détection
     setTimeout(() => {

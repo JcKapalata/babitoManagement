@@ -13,9 +13,8 @@
                     <table class="custom-table header-fixed">
                         <thead>
                             <tr>
-                                <th class="col-id">ID</th>
+                                <th class="col-code">Code Prod</th>
                                 <th class="col-nom">Nom</th>
-                                <th class="col-code">Code</th>
                                 <th class="col-fourn">Fournisseur</th>
                                 <th class="col-region">Région</th>
                                 <th class="col-class">Classement</th>
@@ -32,9 +31,8 @@
                             <tbody>
                                 @for (p of products; track trackByFn($index, p)) {
                                     <tr (click)="onRowClick(p)" class="table-row">
-                                        <td class="col-id">{{ p.id }}</td>
-                                        <td class="col-nom bold">{{ p.nom }}</td>
                                         <td class="col-code">{{ p.codeProduit }}</td>
+                                        <td class="col-nom bold">{{ p.nom }}</td>
                                         <td class="col-fourn">{{ p.codeFournisseur }}</td>
                                         <td class="col-region">{{ p.region }}</td>
                                         <td class="col-class">{{ p.classement }}</td>

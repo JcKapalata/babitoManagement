@@ -57,7 +57,7 @@ export class ProduitsService {
     );
   }
 
-  getProduitById(id: string | number): Observable<Produit> {
+  getProduitById(id: string ): Observable<Produit> {
     console.log(`[🔍 HTTP GET] Recherche produit ID: ${id}`);
     return this.http.get<any>(`${this.API_URL}/${id}`).pipe(
       map(res => {
@@ -81,7 +81,7 @@ export class ProduitsService {
     );
   }
 
-  updateProduit(id: string | number, produit: Partial<Produit>): Observable<Produit> {
+  updateProduit(id: string, produit: Partial<Produit>): Observable<Produit> {
     const url = `${this.API_URL}/${id}`;
     console.log(`[🔄 HTTP PUT] Mise à jour produit ${id}:`, produit);
 
@@ -95,7 +95,7 @@ export class ProduitsService {
     );
   }
 
-  deleteProduitById(id: string | number): Observable<void> {
+  deleteProduitById(id: string): Observable<void> {
     const url = `${this.API_URL}/${id}`;
     console.log(`[🗑️ HTTP DELETE] Suppression produit ${id}`);
     
