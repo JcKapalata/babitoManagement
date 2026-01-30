@@ -1,3 +1,4 @@
+/* --- VARIABLES & CONTAINER --- */
 .container {
   width: 100%;
   background-color: var(--bg-light);
@@ -14,6 +15,7 @@
   display: flex;
   align-items: center;
   z-index: 200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .title h2 {
@@ -27,15 +29,13 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  overflow-x: auto;
   margin: 20px;
+  overflow: hidden;
 }
 
+/* --- STRUCTURE TABLEAU --- */
 .table-wrapper {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -43,76 +43,68 @@
 .rupture-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: fixed; /* GARANTIT L'ALIGNEMENT DES COLONNES */
 }
 
-/* LARGEURS */
+/* LARGEURS DE COLONNES (Identiques Partout) */
 .col-data    { width: 140px; }
-.col-id      { width: 100px; }
+.col-id      { width: 110px; }
 .col-taille  { width: 100px; }
 .col-couleur { width: 150px; }
 .col-action  { width: 120px; }
 .col-produit { width: auto; }
 
+/* EN-TÊTE FIXE */
 .header-only {
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
-  z-index: 20;
 }
 
 th {
   text-align: left;
-  padding: 12px 16px;
+  padding: 15px;
   color: #495057;
   font-size: 13px;
   text-transform: uppercase;
-  font-weight: 600;
-  white-space: nowrap;
+  font-weight: 700;
 }
 
+/* --- VIRTUAL SCROLLPORT --- */
 .viewport {
   height: 65vh;
   width: 100%;
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none; /* Firefox */
 }
 
 .viewport::-webkit-scrollbar {
-  display: none;
+  display: none; /* Chrome/Safari */
 }
 
+/* --- LIGNES & EFFET HOVER CORRIGÉ --- */
 .table-row {
-  height: 60px; 
+  height: 70px; /* Plus d'espace pour le confort */
   border-bottom: 1px solid #f0f0f0;
-  transition: 0.3s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: white;
 }
 
-/* TON HOVER BLEU */
+.table-row:hover {
+  background-color: var(--primary-color) !important;
+  transform: translateY(-2px); /* Effet de levée */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  z-index: 10;
+  position: relative;
+}
+
 .table-row:hover td {
-  background-color: var(--primary-color);
   color: white !important;
 }
 
-.table-row:hover .badge-taille, 
-.table-row:hover .badge-date {
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border-color: white;
-}
-
-.table-row:hover .btn-manage {
-  background: white;
-  color: var(--primary-color);
-}
-
-.table-row:hover .time-text,
-.table-row:hover .text-muted {
-  color: rgba(255,255,255,0.8) !important;
-}
-
-/* CELLULES */
+/* --- ÉLÉMENTS INTERNES --- */
 td {
   padding: 10px 15px;
+  vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,62 +113,87 @@ td {
 .product-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .thumb {
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #eee;
+  transition: transform 0.3s ease;
+  border: 1px solid #eee;
 }
 
-/* STYLE DATE & BADGES */
-.col-data {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
+.table-row:hover .thumb {
+  transform: scale(1.1);
+  border-color: white;
 }
 
+/* BADGES & TEXTES */
 .badge-date {
   background: #e3f2fd;
   color: #1976d2;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 4px;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
   border: 1px solid #bbdefb;
-  width: fit-content;
 }
 
 .time-text {
-  font-size: 10px;
+  font-size: 11px;
   color: #999;
+  margin-top: 2px;
+  display: block;
 }
 
 .badge-taille {
   background: #fff3e0;
   color: var(--warn-color);
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 11px;
 }
 
+/* BOUTON GÉRER */
 .btn-manage {
   background: var(--primary-color);
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  padding: 8px 18px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
+.table-row:hover .btn-manage {
+  background: white !important;
+  color: var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ÉTAT VIDE */
 .empty-state {
   text-align: center;
-  padding: 50px;
-  color: #666;
+  padding: 60px;
+  color: #a0aec0;
+  font-style: italic;
+  font-size: 15px;
+}
+
+/* CORRECTION POUR LE HOVER SUR LES BADGES */
+.table-row:hover .badge-date,
+.table-row:hover .badge-taille {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.table-row:hover .time-text,
+.table-row:hover .text-muted {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
