@@ -1,4 +1,4 @@
-export interface Produit{
+export interface Produit {
     id: string;
     codeFournisseur: string;
     codeProduit: string;
@@ -9,10 +9,12 @@ export interface Produit{
     categorie: string;
     type: string;
     description: string;
-    dateAjout: Date;
-    dateModification: Date;
-    
-    // On intègre ici le détail par taille (correspond au backend: tailles)
+
+    // Utilisation de string pour la compatibilité JSON/Firebase (ISO String)
+    // ou number si tu utilises Date.now()
+    createdAt: string | any; 
+    updatedAt: string | any;
+
     tailles: {
         [taille: string]: {
             prix: number;
@@ -24,7 +26,6 @@ export interface Produit{
         };
     };
 }
-
 export interface ProduitRow extends Produit {
   couleurSpecifique: string;
   quantiteSpecifique: number;

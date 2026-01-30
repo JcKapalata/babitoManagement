@@ -200,9 +200,14 @@ export class FormProduit implements OnInit {
         categorie: val.categorie,
         type: val.type,
         description: val.description,
-        dateModification: new Date(),
+        
+        // ✅ Utilise ISOString pour la compatibilité avec ton interface string | Date
+        // Et assure-toi de garder la date d'ajout originale si c'est une modification
+        createdAt: this.produitInitial?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        
         tailles: tailleMapping
-      };
+    };
 
       if (this.produitInitial && this.produitInitial.id) {
         // MODE UPDATE

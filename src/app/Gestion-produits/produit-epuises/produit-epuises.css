@@ -5,7 +5,6 @@
 }
 
 .title {
-  overflow: hidden;
   position: sticky;
   top: 0;
   height: 10vh;
@@ -17,11 +16,10 @@
   z-index: 200;
 }
 
-/* Titre stylisé */
 .title h2 {
   color: white;
   margin: 0 30px;
-  border-left: 5px solid white; /* Bleu Angular Material */
+  border-left: 5px solid white;
   padding-left: 15px;
 }
 
@@ -33,7 +31,6 @@
   margin: 20px;
 }
 
-/* --- CONFIGURATION DES TABLEAUX --- */
 .table-wrapper {
   background: white;
   border-radius: 8px;
@@ -46,17 +43,17 @@
 .rupture-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* Essentiel pour l'alignement entre les deux tables */
+  table-layout: fixed;
 }
 
-/* --- DEFINITION DES LARGEURS DE COLONNES (Identiques pour th et td) --- */
+/* LARGEURS */
+.col-data    { width: 140px; }
 .col-id      { width: 100px; }
 .col-taille  { width: 100px; }
 .col-couleur { width: 150px; }
 .col-action  { width: 120px; }
-.col-produit { width: auto; } /* La colonne produit prend l'espace restant */
+.col-produit { width: auto; }
 
-/* --- STYLE DE L'ENTÊTE --- */
 .header-only {
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
@@ -73,38 +70,34 @@ th {
   white-space: nowrap;
 }
 
-/* --- VIRTUAL SCROLL CONFIG --- */
 .viewport {
-  height: 65vh; /* Ajustez selon vos besoins */
+  height: 65vh;
   width: 100%;
   overflow-y: auto;
-  /* Masquer la barre sur Firefox */
   scrollbar-width: none; 
-  
-  /* Masquer la barre sur Internet Explorer et Edge */
-  -ms-overflow-style: none;
 }
-/* Masquer la barre sur Chrome, Safari et Opera (Webkit) */
+
 .viewport::-webkit-scrollbar {
   display: none;
 }
 
-/* Ligne avec hauteur fixe pour le Virtual Scroll */
 .table-row {
   height: 60px; 
   border-bottom: 1px solid #f0f0f0;
   transition: 0.3s;
 }
 
-/* EFFET HOVER */
+/* TON HOVER BLEU */
 .table-row:hover td {
   background-color: var(--primary-color);
   color: white !important;
 }
 
-.table-row:hover .badge-taille {
+.table-row:hover .badge-taille, 
+.table-row:hover .badge-date {
   background: rgba(255,255,255,0.2);
   color: white;
+  border-color: white;
 }
 
 .table-row:hover .btn-manage {
@@ -112,7 +105,12 @@ th {
   color: var(--primary-color);
 }
 
-/* --- STYLES INTERNES --- */
+.table-row:hover .time-text,
+.table-row:hover .text-muted {
+  color: rgba(255,255,255,0.8) !important;
+}
+
+/* CELLULES */
 td {
   padding: 10px 15px;
   white-space: nowrap;
@@ -132,6 +130,30 @@ td {
   object-fit: cover;
   border-radius: 4px;
   background: #eee;
+}
+
+/* STYLE DATE & BADGES */
+.col-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.badge-date {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  border: 1px solid #bbdefb;
+  width: fit-content;
+}
+
+.time-text {
+  font-size: 10px;
+  color: #999;
 }
 
 .badge-taille {
@@ -157,11 +179,4 @@ td {
   text-align: center;
   padding: 50px;
   color: #666;
-  background: #fdfdfd;
-  border-radius: 8px;
-}
-
-.skeleton-text {
-  color: #ccc;
-  font-style: italic;
 }

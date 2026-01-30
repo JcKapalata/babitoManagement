@@ -39,16 +39,17 @@ export class ProduitEpuises implements OnInit, OnDestroy {
             Object.entries(p.tailles).forEach(([tailleNom, tailleData]: [string, any]) => {
               if (tailleData.couleurs) {
                 tailleData.couleurs.forEach((c: any) => {
-                  // On ne garde que ce qui est à stock 0 ou moins
                   if (c.stock <= 0) {
                     allVariants.push({
-                      idUnique: `${p.id}-${tailleNom}-${c.nom}`, // Pour le trackBy
+                      idUnique: `${p.id}-${tailleNom}-${c.nom}`,
                       produitId: p.id,
                       codeProduit: p.codeProduit,
                       nom: p.nom,
                       image: c.image, 
                       taille: tailleNom,
                       couleur: c.nom,
+                      // On utilise updatedAt pour savoir quand le stock a été touché
+                      updateAt: p.updatedAt 
                     });
                   }
                 });
@@ -56,6 +57,11 @@ export class ProduitEpuises implements OnInit, OnDestroy {
             });
           }
         });
+
+        // Tri : Les plus récents d'abord
+        allVariants.sort((a, b) => 
+            new Date(b.updateAt).getTime() - new Date(a.updateAt).getTime()
+        );
 
         this.epuisesSubject.next(allVariants);
         this.cdr.detectChanges();

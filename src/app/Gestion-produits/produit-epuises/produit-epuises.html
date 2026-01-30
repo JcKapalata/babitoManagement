@@ -10,7 +10,7 @@
         <table class="rupture-table header-only">
           <thead>
             <tr>
-              <th class="col-id">Id du Produit</th>
+              <th class="col-data">Date épuisement</th>
               <th class="col-id">Code Produit</th>
               <th class="col-produit">Produit</th>
               <th class="col-taille">Taille</th>
@@ -23,10 +23,11 @@
         <cdk-virtual-scroll-viewport itemSize="60" class="viewport">
           <table class="rupture-table">
             <tbody>
-              @for (item of produits; track trackByFn($index, item)) {
+              @for (item of produits; track item.idUnique) {
                 <tr class="table-row">
-                  <td class="col-id">
-                    <span>{{ item.produitId }}</span>
+                  <td class="col-data">
+                    <span class="badge-date">{{ item.updateAt | date:'dd/MM/yyyy' }}</span>
+                    <span class="time-text">{{ item.updateAt | date:'HH:mm' }}</span>
                   </td>
 
                   <td class="col-id">
@@ -41,11 +42,11 @@
                   </td>
 
                   <td class="col-taille">
-                    <span class="badge-taille">{{item.taille}}</span>
+                    <span class="badge-taille">{{ item.taille }}</span>
                   </td>
 
                   <td class="col-couleur">
-                    <span class="text-muted">{{ item.couleur}}</span>
+                    <span class="text-muted">{{ item.couleur }}</span>
                   </td>
 
                   <td class="col-action">
@@ -56,7 +57,7 @@
                 </tr>
               } @empty {
                 <tr class="empty-row">
-                  <td colspan="5">Aucun produit en rupture de stock.</td>
+                  <td colspan="6" class="empty-state">Aucun produit en rupture de stock.</td>
                 </tr>
               }
             </tbody>

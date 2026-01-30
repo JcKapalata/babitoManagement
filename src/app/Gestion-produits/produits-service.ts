@@ -119,8 +119,8 @@ export class ProduitsService {
         ...p as Produit, // On cast l'objet de base
         id: String(p['id']), // On s'assure que l'ID est une string
         tailles: p['tailles'] || p['taille'] || {},
-        dateAjout: p['createdAt'] ? new Date(p['createdAt']) : new Date(),
-        dateModification: p['updatedAt'] ? new Date(p['updatedAt']) : new Date()
+        createdAt: p['createdAt'] ? new Date(p['createdAt']) : new Date(),
+        updatedAt: p['updatedAt'] ? new Date(p['updatedAt']) : new Date()
       };
       return pMapped;
     });
