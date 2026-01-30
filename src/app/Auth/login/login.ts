@@ -67,7 +67,7 @@ export class Login {
       next: async () => {
         // ✅ Ici, Firebase est déjà connecté et la session backend est enregistrée
         // On rafraîchit le profil pour s'assurer que les Signals sont à jour
-        await this.profileService.refreshProfileFromServer();
+        await this.profileService.refreshProfile();
         
         const params = await firstValueFrom(this.route.queryParams);
         const finalTarget = params['returnUrl'] ? decodeURIComponent(params['returnUrl']) : '/tableau-de-bord';

@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, startWith, tap, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map, Observable, of, startWith, switchMap, tap, throwError } from 'rxjs';
 import { 
   Firestore, 
   collection,
@@ -15,6 +15,7 @@ import {
 
 import { environment } from '../../environments/environment';
 import { ApiResponse, OrderAdmin, OrderLogistics } from '../Models/order';
+import { Auth, authState } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -25,55 +26,65 @@ export class VenteServices {
   
   private readonly API_URL = `${environment.apiUrl}/admin/ventes`;
   private firestore = inject(Firestore);
+  private auth = inject(Auth);
 
-  // Lazy initialization de Firestore
-  private getFirestore(): Firestore {
-    if (!this.firestore) {
-      try {
-        this.firestore = inject(Firestore);
-      } catch (error) {
-        console.warn('⚠️ Firestore not available, using HTTP only');
-        throw error;
-      }
-    }
-    return this.firestore;
-  }
 
-  // Récupération des ventes en temps réel
+  /**
+   * RÉCUPÉRATION RÉACTIVE ET SÉCURISÉE
+   * On attend que l'utilisateur soit authentifié avant de lancer le listener.
+   */
   getVentesRealtime(maxResults: number = 50): Observable<OrderAdmin[]> {
-    return new Observable<OrderAdmin[]>((observer) => {
-      try {
-        // ✅ Utilise directement this.firestore
-        const colRef = collection(this.firestore, 'orders'); 
-        const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
+    console.log('📡 [Firestore] Tentative de connexion au flux "orders"...');
 
-        const unsubscribe = onSnapshot(q, 
-          (snapshot) => {
-            this.zone.run(() => {
-              const ventes = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                createdAt: doc.data()['createdAt']?.toDate?.() || doc.data()['createdAt']
-              } as OrderAdmin));
-              observer.next(ventes);
-            });
-          }, 
-          (error) => {
-            this.zone.run(() => {
-              console.error("❌ Erreur Firestore Permission/Index:", error.message);
-              observer.next([]); 
-            });
-          }
-        );
-        return () => unsubscribe();
-      } catch (error) {
-        console.error('❌ Error in getVentesRealtime:', error);
-        observer.next([]);
-        return () => {};
-      }
-    });
+    return authState(this.auth).pipe(
+      switchMap(user => {
+        if (!user) {
+          console.warn('⚠️ [Firestore] Accès refusé : Aucun utilisateur Firebase détecté.');
+          return of([]); // On renvoie un tableau vide plutôt que de crash
+        }
+
+        console.log(`✅ [Firestore] Utilisateur authentifié (UID: ${user.uid}), lancement du listener.`);
+
+        return new Observable<OrderAdmin[]>((observer) => {
+          const colRef = collection(this.firestore, 'orders'); 
+          const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
+
+          const unsubscribe = onSnapshot(q, 
+            (snapshot) => {
+              this.zone.run(() => {
+                const ventes = snapshot.docs.map(doc => ({
+                  id: doc.id,
+                  ...doc.data(),
+                  createdAt: doc.data()['createdAt']?.toDate?.() || doc.data()['createdAt']
+                } as OrderAdmin));
+                
+                console.log(`📊 [Firestore] ${ventes.length} ventes reçues en temps réel.`);
+                observer.next(ventes);
+              });
+            }, 
+            (error) => {
+              this.zone.run(() => {
+                // 🕵️ LE LOG DE DÉBOGAGE ULTIME
+                console.error("❌ [Firestore ERROR] Problème de droits ou d'index !");
+                console.error("Message:", error.message);
+                console.error("Code:", error.code);
+                observer.next([]); 
+              });
+            }
+          );
+          return () => {
+            console.log('🔌 [Firestore] Fermeture du listener "orders".');
+            unsubscribe();
+          };
+        });
+      })
+    );
   }
-
+  
+  
+  /**   
+   * RÉCUPÉRATION RÉACTIVE DES DONNÉES LOGISTIQUES D'UNE COMMANDE
+   */
   getOrderLogisticsRealtime(orderId: string): Observable<OrderLogistics | null> {
     return new Observable((observer) => {
       try {
@@ -101,27 +112,30 @@ export class VenteServices {
 
   /**
    * ACTION : Assigner plusieurs agents
+   * Utilise le typage strict <ApiResponse<OrderAdmin>>
    */
   assignMultipleAgents(orderId: string, agentIds: string[], internalNotes?: string): Observable<ApiResponse<OrderAdmin>> {
-    console.log(`📡 [HTTP START] Assignation multiple pour OrderID: ${orderId}`, { agentIds, internalNotes });
+    const payload = { agentIds, internalNotes };
+    
+    // Log de début avec timestamp pour le traçage
+    console.log(`%c📡 [HTTP CALL] ${new Date().toLocaleTimeString()} - Assignation Order: ${orderId}`, 'color: #3498db; font-weight: bold;');
 
     return this.http.put<ApiResponse<OrderAdmin>>(
       `${this.API_URL}/${orderId}/assign-multiple-agents`, 
-      { agentIds, internalNotes }
+      payload
     ).pipe(
+      // 1. Succès : On logge la réponse propre
       tap((response) => {
-        // Log en cas de succès
-        console.log(`✅ [HTTP SUCCESS] Assignation réussie pour ${orderId}`, response);
+        console.log(`%c✅ [SUCCESS] Commande ${orderId} mise à jour`, 'color: #27ae60; font-weight: bold;', response);
       }),
-      catchError((error) => {
-        // Log détaillé en cas d'erreur
-        console.error(`🔥 [HTTP ERROR] Échec de l'assignation pour ${orderId}`);
-        console.error('Status:', error.status);
-        console.error('Message:', error.message);
-        console.error('Détails API:', error.error); // Contient souvent le message du backend
-
-        // On renvoie l'erreur pour que le composant puisse l'afficher à l'utilisateur
-        return throwError(() => error);
+      
+      // 2. Erreur : On utilise une méthode centralisée pour ne rien rater
+      catchError((error: HttpErrorResponse) => {
+        this.logErrorDetails(error, 'AssignMultipleAgents', orderId);
+        
+        // On renvoie un message propre au composant
+        const userFriendlyMessage = error.error?.message || "Impossible d'assigner les agents.";
+        return throwError(() => new Error(userFriendlyMessage));
       })
     );
   }
@@ -178,5 +192,53 @@ export class VenteServices {
       }),
       startWith({ pending: 0, processing: 0 })
     );
+  }
+
+  /**
+   * Helper privé pour logger les détails sans utiliser de propriétés obsolètes
+   */
+  private logErrorDetails(error: HttpErrorResponse, context: string, id?: string): void {
+    // Utilisation de console.group pour un affichage propre dans la console
+    console.group(`🔥 [ERROR] ${context} - ID: ${id || 'N/A'}`);
+    
+    console.error('Code Numérique:', error.status); // Ex: 404, 500, 401
+    console.error('URL appelée:', error.url);
+    
+    // Au lieu de statusText, on peut afficher le message d'erreur brut du navigateur
+    // ou le message personnalisé envoyé par ton backend Node.js
+    if (error.error instanceof ErrorEvent) {
+      // Erreur côté client (réseau)
+      console.error('Type: Erreur Client/Réseau');
+      console.error('Détails:', error.error.message);
+    } else {
+      // Erreur côté serveur
+      console.error('Type: Erreur Serveur');
+      console.error('Réponse du Backend:', error.error);
+    }
+    
+    // Conseils de débuggage selon le code reçu
+    this.printDebugTip(error.status);
+
+    console.groupEnd();
+  }
+
+  /**
+   * Affiche des conseils selon le code HTTP
+   */
+  private printDebugTip(status: number): void {
+    switch (status) {
+      case 0:
+        console.warn('💡 Conseil: Le serveur est éteint ou l\'URL est bloquée par CORS.');
+        break;
+      case 401:
+        console.warn('💡 Conseil: Token absent ou expiré. Vérifie localStorage.');
+        break;
+      case 403:
+        console.warn('💡 Conseil: Token valide mais droits insuffisants (Rôle Agent vs Admin).');
+        break;
+      case 404:
+        console.warn('💡 Conseil: La route n\'existe pas sur le serveur. Vérifie l\'URL.');
+        break;
+    }
   }
 }

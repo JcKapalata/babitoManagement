@@ -1,19 +1,16 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, catchError, firstValueFrom, from, map, of, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, concatMap, finalize,from, map, of, switchMap, throwError } from 'rxjs';
 import { User, Agent } from '../Models/agent'; 
 import { AuthResponse } from '../Models/authResponse'; 
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { ProfileService } from '../Profile/profile-service';
-import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, signOut, UserCredential } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /**
-   * On utilise le préfixe /manager configuré dans votre backend 
-   * pour séparer les accès staff des accès clients.
-   */
+  // URL de l'API Manager
   private readonly MANAGER_API = `${environment.apiUrl}/manager`; 
   
   private readonly http = inject(HttpClient);
@@ -23,59 +20,47 @@ export class AuthService {
   private firebaseAuth = inject(Auth);
 
   /**
-   * Authentification côté Manager (Staff/Admin)
-   * Route Backend: POST /manager/auth/login
+   * Login : Flux réactif chaîné
    */
-  login(email: string, password: string): Observable<User> {
-    // 1. On lance d'abord la connexion Firebase (comme dans ton ancien code)
-    // On transforme la promesse Firebase en Observable pour chaîner proprement
-    const firebaseLogin$ = from(signInWithEmailAndPassword(this.firebaseAuth, email, password));
-
-    return firebaseLogin$.pipe(
-      switchMap(() => {
-        // 2. Une fois Firebase connecté, on appelle ton Backend
-        return this.http.post<any>(`${this.MANAGER_API}/auth/login`, { email, password });
-      }),
-      map(response => {
-        if (response.token && response.user) {
-          this.profileService.setSession(response.user, response.token);
-          return { agent: response.user as Agent, token: response.token };
+  login(email: string, password: string): Observable<Agent> {
+    // 1. Authentification Firebase
+    return from(signInWithEmailAndPassword(this.firebaseAuth, email, password)).pipe(
+      // 2. Appel Backend typé avec AuthResponse
+      switchMap((cred: UserCredential) => 
+        this.http.post<AuthResponse>(`${this.MANAGER_API}/auth/login`, { email, password })
+      ),
+      map((response: AuthResponse) => {
+        // On vérifie la présence du token et de l'utilisateur (user ou agent selon ton interface)
+        const userData = response.user || response.agent;
+        
+        if (response.token && userData) {
+          this.profileService.setSession(userData, response.token);
+          return userData;
         }
-        throw new Error('Erreur de session backend');
+        throw new Error('Données de session incomplètes en provenance du serveur');
       }),
-      catchError(this.handleError)
+      catchError((err: HttpErrorResponse) => this.handleError(err))
     );
   }
 
   /**
-   * Déconnexion côté Manager
-   * Route Backend: POST /manager/auth/logout
+   * Logout : Flux réactif ordonné sans async/await
    */
-  async logout(): Promise<void> {
-    try {
-      // 1. Déconnexion Firebase (Arrête les listeners temps réel de Firestore)
-      await signOut(this.firebaseAuth);
-      console.log('[Auth] Firebase Signed Out');
-
-      // 2. Appel au Backend (pour invalider le JWT sur le serveur)
-      // On utilise firstValueFrom pour attendre la réponse avant de vider le localstorage
-      await firstValueFrom(
-        this.http.post(`${this.MANAGER_API}/auth/logout`, {}).pipe(
-          catchError(() => of(null)) // On continue même si le serveur met du temps à répondre
-        )
-      );
-
-    } catch (error) {
-      console.error('Erreur pendant la déconnexion:', error);
-    } finally {
-      // 3. Nettoyage local complet
-      this.profileService.clearProfile();
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // 4. Redirection forcée
-      this.router.navigate(['/login'], { replaceUrl: true });
-    }
+  logout(): void {
+    from(signOut(this.firebaseAuth)).pipe(
+      concatMap(() => this.http.post<void>(`${this.MANAGER_API}/auth/logout`, {}).pipe(
+        catchError(() => of(null)) // On continue même si l'invalidation JWT échoue
+      )),
+      finalize(() => {
+        this.profileService.clearProfile();
+        localStorage.clear();
+        sessionStorage.clear();
+        this.router.navigate(['/login'], { replaceUrl: true });
+      })
+    ).subscribe({
+      next: () => console.log('[Auth] Déconnexion réussie'),
+      error: (err) => console.error('[Auth] Erreur lors de la déconnexion', err)
+    });
   }
   
   /**

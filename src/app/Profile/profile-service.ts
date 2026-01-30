@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize, switchMap, take, tap, filter } from 'rxjs';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
 import { Auth, authState } from '@angular/fire/auth';
@@ -13,114 +13,128 @@ export class ProfileService {
   private readonly firebaseAuth = inject(Auth);
   private readonly PROFILE_API = `${environment.apiUrl}/manager/profile`;
 
-  // États réactifs pour le profil de l'utilisateur connecté
+  // --- États Réactifs ---
+  // Signal pour l'usage dans les templates (performant)
   currentUser = signal<Agent | null>(null);
+  
+  // Subject pour les flux asynchrones
   private currentAgentSubject = new BehaviorSubject<Agent | null>(null);
   public currentAgent$ = this.currentAgentSubject.asObservable();
   
   isLoading = signal<boolean>(false);
-  private initialized = false;
-
-  constructor() {
-    console.log('[ProfileService] Constructor called');
-  }
 
   /**
-   * Modifié pour inclure la vérification Firebase
+   * INITIALISATION RÉACTIVE
+   * Attend que Firebase soit prêt, puis charge le profil Backend.
+   * C'est cette méthode que ton Guard doit appeler.
    */
-  async initAuth(): Promise<void> {
-    if (this.initialized) return;
-    this.initialized = true;
-
+  initAuth(): Observable<Agent | null> {
     const token = localStorage.getItem('auth_token');
-    
-    // On attend deux choses : le profil API et l'état Firebase
-    if (token) {
-      try {
-        await Promise.all([
-          this.refreshProfileFromServer(),
-          firstValueFrom(authState(this.firebaseAuth)) // ✅ On s'assure que Firebase est prêt
-        ]);
-      } catch (e) {
-        console.error("Erreur d'initialisation", e);
-      }
+
+    if (!token) {
+      this.clearLocalData();
+      return of(null);
     }
-  }
 
-  /**
-   * Rafraîchit le profil depuis le serveur
-   * Retourne une Promise pour attendre la fin du chargement
-   */
-  refreshProfileFromServer(): Promise<void> {
-    return new Promise((resolve) => {
-      this.isLoading.set(true);
-      
-      this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API).pipe(
-        catchError((error) => {
-          console.error('[ProfileService] Error refreshing profile:', error);
-          this.clearProfile();
-          return of(null);
-        }),
-        finalize(() => this.isLoading.set(false))
-      ).subscribe(res => {
-        if (res?.success && res.data) {
-          this.currentUser.set(res.data);
-          this.currentAgentSubject.next(res.data);
+    this.isLoading.set(true);
+
+    return authState(this.firebaseAuth).pipe(
+      take(1), // On attend la première émission stable de Firebase
+      switchMap(fbUser => {
+        if (!fbUser) {
+          return throwError(() => new Error('Session Firebase non trouvée'));
         }
-        resolve();
-      });
-    });
+        // Appel au backend
+        return this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API);
+      }),
+      map(res => {
+        if (res?.success && res.data) {
+          this.updateLocalState(res.data);
+          return res.data;
+        }
+        throw new Error('Réponse backend invalide');
+      }),
+      catchError((err) => {
+        console.error('[ProfileService] Erreur Init:', err.message);
+        this.clearLocalData();
+        return of(null);
+      }),
+      finalize(() => this.isLoading.set(false))
+    );
   }
 
   /**
-   * Met à jour ses propres informations
+   * REFRESH : Rafraîchit les données depuis le serveur
+   */
+  refreshProfile(): Observable<Agent | null> {
+    this.isLoading.set(true);
+    return this.http.get<{ success: boolean, data: Agent }>(this.PROFILE_API).pipe(
+      map(res => {
+        if (res?.success && res.data) {
+          this.updateLocalState(res.data);
+          return res.data;
+        }
+        return null;
+      }),
+      catchError((err) => {
+        console.error('[ProfileService] Refresh failed:', err);
+        return of(null);
+      }),
+      finalize(() => this.isLoading.set(false))
+    );
+  }
+
+  /**
+   * UPDATE : Met à jour les infos de l'agent
    */
   updateProfile(updatedData: Partial<Agent>): Observable<Agent | null> {
     return this.http.put<{ success: boolean, data: Agent }>(this.PROFILE_API, updatedData).pipe(
       map(res => {
         if (res.success && res.data) {
-          this.currentUser.set(res.data);
-          this.currentAgentSubject.next(res.data);
+          this.updateLocalState(res.data);
           return res.data;
         }
         return null;
       }),
-      catchError(this.handleError)
+      catchError(err => this.handleError(err))
     );
   }
 
   /**
-   * Crée un nouvel agent
+   * CREATE : Ajoute un nouvel agent (via l'admin)
    */
   createAgent(payload: Partial<Agent>): Observable<any> {
     return this.http.post(`${environment.apiUrl}/manager/agents`, payload).pipe(
-      catchError(this.handleError)
+      catchError(err => this.handleError(err))
     );
   }
 
   /**
-   * Enregistre la session après login
+   * SESSION MANAGEMENT
    */
   setSession(agent: Agent, token: string): void {
-    console.log('[ProfileService] Setting session...');
     localStorage.setItem('auth_token', token);
+    this.updateLocalState(agent);
+  }
+
+  clearProfile(): void {
+    this.clearLocalData();
+    this.router.navigate(['/login']);
+  }
+
+  private clearLocalData(): void {
+    localStorage.removeItem('auth_token');
+    this.currentUser.set(null);
+    this.currentAgentSubject.next(null);
+  }
+
+  private updateLocalState(agent: Agent): void {
     this.currentUser.set(agent);
     this.currentAgentSubject.next(agent);
   }
 
-  /**
-   * Déconnexion
-   */
-  clearProfile(): void {
-    console.log('[ProfileService] Clearing profile...');
-    localStorage.removeItem('auth_token');
-    this.currentUser.set(null);
-    this.currentAgentSubject.next(null);
-    this.router.navigate(['/login']);
-  }
-
-  private handleError(error: HttpErrorResponse) {
-    const message = error.error?.message || `Erreur profil (${error.status})`;
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    const message = error.error?.message || `Erreur serveur (${error.status})`;
     return throwError(() => new Error(message));
   }
 }
