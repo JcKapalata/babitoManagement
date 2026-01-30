@@ -1,56 +1,50 @@
 <div class="container">
-    <div class="title">
-        <h2>Stocks Disponibles</h2>
-    </div>
-    
-    <div class="main">
-        @if (isLoading) {
-            <app-loading></app-loading>
-        } @else {
-            @let products = (displayProducts$ | async);
-            @if (products && products.length > 0) {
-                <div class="table-container">
-                    <table class="custom-table header-fixed">
-                        <thead>
-                            <tr>
-                                <th class="col-code">Code Prod</th>
-                                <th class="col-nom">Nom</th>
-                                <th class="col-fourn">Fournisseur</th>
-                                <th class="col-region">Région</th>
-                                <th class="col-class">Classement</th>
-                                <th class="col-cat">Catégorie</th>
-                                <th class="col-type">Type</th>
-                                <th class="col-date">Ajout</th>
-                                <th class="col-date">Modif</th>
-                            </tr>
-                        </thead>
-                    </table>
+  <div class="title">
+    <h2>Stocks Disponibles</h2>
+  </div>
 
-                    <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
-                        <table class="custom-table">
-                            <tbody>
-                                @for (p of products; track trackByFn($index, p)) {
-                                    <tr (click)="onRowClick(p)" class="table-row">
-                                        <td class="col-code">{{ p.codeProduit }}</td>
-                                        <td class="col-nom bold">{{ p.nom }}</td>
-                                        <td class="col-fourn">{{ p.codeFournisseur }}</td>
-                                        <td class="col-region">{{ p.region }}</td>
-                                        <td class="col-class">{{ p.classement }}</td>
-                                        <td class="col-cat">{{ p.categorie }}</td>
-                                        <td class="col-type">{{ p.type }}</td>
-                                        <td class="col-date">{{ p.dateAjout | date:'dd/MM/yyyy' }}</td>
-                                        <td class="col-date">{{ p.dateModification | date:'dd/MM/yyyy' }}</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </cdk-virtual-scroll-viewport>
-                </div>
-            } @else {
-                <div class="empty-state">
-                    <p>Aucun produit avec stock disponible</p>
-                </div>
-            }
-        }
-    </div>
+  <div class="main">
+    @if (isLoading) {
+      <app-loading></app-loading>
+    } @else {
+      @let products = (displayProducts$ | async);
+      @if (products && products.length > 0) {
+        
+        <div class="table-container">
+          <div class="table-inner-wrapper">
+            
+            <div class="table-header">
+              <div class="col-code">Code Prod</div>
+              <div class="col-nom">Nom</div>
+              <div class="col-fourn">Fournisseur</div>
+              <div class="col-region">Région</div>
+              <div class="col-class">Classement</div>
+              <div class="col-cat">Catégorie</div>
+              <div class="col-type">Type</div>
+              <div class="col-date">Ajout</div>
+            </div>
+
+            <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+              <div *cdkVirtualFor="let p of products" 
+                   class="table-row" 
+                   (click)="onRowClick(p)">
+                <div class="col-code">{{ p.codeProduit }}</div>
+                <div class="col-nom bold">{{ p.nom }}</div>
+                <div class="col-fourn">{{ p.codeFournisseur }}</div>
+                <div class="col-region">{{ p.region }}</div>
+                <div class="col-class">{{ p.classement }}</div>
+                <div class="col-cat">{{ p.categorie }}</div>
+                <div class="col-type">{{ p.type }}</div>
+                <div class="col-date">{{ p.dateAjout | date:'dd/MM/yyyy' }}</div>
+              </div>
+            </cdk-virtual-scroll-viewport>
+
+          </div>
+        </div>
+
+      } @else {
+        <div class="empty-state"><p>Aucun produit trouvé</p></div>
+      }
+    }
+  </div>
 </div>

@@ -1,3 +1,4 @@
+/* --- LAYOUT & TITRE --- */
 .container {
   width: 100%;
   background-color: var(--bg-light);
@@ -5,117 +6,124 @@
 }
 
 .title {
-  overflow: hidden;
   position: sticky;
   top: 0;
   height: 10vh;
-  margin-bottom: 10px;
   background: var(--primary-color) !important;
-  width: 100%;
   display: flex;
   align-items: center;
   z-index: 200;
+  width: 100%;
 }
 
-/* Titre stylisé */
 .title h2 {
   color: white;
   margin: 0 30px;
-  border-left: 5px solid white; /* Bleu Angular Material */
+  border-left: 5px solid white;
   padding-left: 15px;
 }
 
-.main-content {
+/* --- CONTENEUR DE LA TABLE --- */
+.table-container {
+  margin: 20px;
   background: white;
   border-radius: 8px;
+  border: 1px solid #ddd;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  overflow-x: auto;
-  margin: 20px;
+  overflow-x: auto; /* Scroll horizontal global */
 }
 
-/* Conteneur de la table */
-.table-container {
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+.table-inner-wrapper {
   display: flex;
   flex-direction: column;
+  min-width: 1500px; /* Largeur totale des colonnes */
 }
 
-/* Tableaux (Header et Body) */
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* CRITIQUE pour l'alignement */
-}
-
-/* Style spécifique pour le header fixe */
-.header-fixed {
+/* --- EN-TÊTE --- */
+.table-header {
+  display: flex;
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
-  z-index: 10;
-}
-
-th {
-  text-align: left;
-  padding: 12px 16px;
-  color: #495057;
-  font-size: 13px;
-  text-transform: uppercase;
+  height: 50px;
+  align-items: center;
   font-weight: 600;
-  white-space: nowrap;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 13px;
 }
 
-/* Viewport du Scroll */
-.viewport {
-  height: 75vh !important; /* Ajusté pour laisser de la place au titre et au header */
-  width: 100%;
-  scrollbar-width: none; 
-  -ms-overflow-style: none;
-}
-
-.viewport::-webkit-scrollbar {
-  display: none;
-}
-
-/* Style des lignes */
+/* --- LIGNES --- */
 .table-row {
-  height: 50px; /* Doit être strictement égal au itemSize du HTML */
+  display: flex;
+  height: 50px;
+  align-items: center;
   border-bottom: 1px solid #eee;
-  transition: background 0.2s;
   cursor: pointer;
+  transition: background 0.2s;
+  color: #333;
 }
 
-.table-row:hover td {
-  background-color: var(--primary-color);
+.table-row:hover {
+  background-color: var(--primary-color) !important;
   color: white !important;
 }
 
-td {
+.table-row div, .table-header div {
   padding: 8px 16px;
-  font-size: 14px;
-  color: #333;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.bold {
-  font-weight: 500;
-  color: inherit; /* Utilise la couleur du parent (blanc au hover) */
+.bold { font-weight: 500; }
+
+/* --- COLONNES --- */
+.col-code    { width: 140px; flex: 0 0 140px; }
+.col-nom     { width: 250px; flex: 0 0 250px; }
+.col-fourn   { width: 180px; flex: 0 0 180px; }
+.col-region  { width: 120px; flex: 0 0 120px; }
+.col-class   { width: 180px; flex: 0 0 180px; }
+.col-cat     { width: 150px; flex: 0 0 150px; }
+.col-type    { width: 120px; flex: 0 0 120px; }
+.col-date    { width: 120px; flex: 0 0 120px; }
+
+/* --- VIEWPORT (Avec Scrollbar Y stylisée) --- */
+.viewport {
+  height: 80vh;
+  width: 100%;
+  overflow-y: auto; /* On garde le scroll vertical */
+  overflow-x: hidden;
 }
 
-/* --- DÉFINITION DES LARGEURS DES COLONNES --- */
-/* Tu peux ajuster ces valeurs selon tes besoins réels */
-.col-id      { width: 80px; }
-.col-nom     { width: 250px; }
-.col-code    { width: 150px; }
-.col-fourn   { width: 180px; }
-.col-region  { width: 130px; }
-.col-class   { width: 180px; }
-.col-cat     { width: 150px; }
-.col-type    { width: 120px; }
-.col-date    { width: 110px; }
+/* --- STYLE DES BARRES DE DÉFILEMENT (X et Y) --- */
+
+/* Pour Chrome, Safari et Edge */
+.table-container::-webkit-scrollbar,
+.viewport::-webkit-scrollbar {
+  width: 6px;  /* Largeur barre verticale */
+  height: 8px; /* Hauteur barre horizontale */
+}
+
+.table-container::-webkit-scrollbar-track,
+.viewport::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.viewport::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+  border: 1px solid transparent; /* Petit padding visuel */
+}
+
+.table-container::-webkit-scrollbar-thumb:hover,
+.viewport::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Pour Firefox */
+.table-container, .viewport {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f1f1f1;
+}
