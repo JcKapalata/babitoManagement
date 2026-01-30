@@ -24,7 +24,7 @@ export class VenteServices {
   private zone = inject(NgZone);
   
   private readonly API_URL = `${environment.apiUrl}/admin/ventes`;
-  private firestore: Firestore | null = null;
+  private firestore = inject(Firestore);
 
   // Lazy initialization de Firestore
   private getFirestore(): Firestore {
@@ -39,12 +39,12 @@ export class VenteServices {
     return this.firestore;
   }
 
-  // Récupération des ventes en temps réel avec tri côté client
+  // Récupération des ventes en temps réel
   getVentesRealtime(maxResults: number = 50): Observable<OrderAdmin[]> {
     return new Observable<OrderAdmin[]>((observer) => {
       try {
-        const firestore = this.getFirestore();
-        const colRef = collection(firestore, 'orders');
+        // ✅ Utilise directement this.firestore
+        const colRef = collection(this.firestore, 'orders'); 
         const q = query(colRef, orderBy('createdAt', 'desc'), limit(maxResults));
 
         const unsubscribe = onSnapshot(q, 
@@ -61,7 +61,6 @@ export class VenteServices {
           (error) => {
             this.zone.run(() => {
               console.error("❌ Erreur Firestore Permission/Index:", error.message);
-              // On envoie un tableau vide au lieu de crash
               observer.next([]); 
             });
           }
@@ -75,16 +74,13 @@ export class VenteServices {
     });
   }
 
-  /**
-   * 2. LECTURE : Logistique typée (orderManagers)
-   */
   getOrderLogisticsRealtime(orderId: string): Observable<OrderLogistics | null> {
     return new Observable((observer) => {
       try {
-        const firestore = this.getFirestore();
-        const docRef = doc(firestore, 'orderManagers', orderId);
+        // ✅ Utilise this.firestore
+        const docRef = doc(this.firestore, 'orderManagers', orderId);
 
-        const unsubscribe = onSnapshot(docRef, (snapshot: DocumentSnapshot<DocumentData>) => {
+        const unsubscribe = onSnapshot(docRef, (snapshot) => {
           this.zone.run(() => {
             if (snapshot.exists()) {
               observer.next(snapshot.data() as OrderLogistics);

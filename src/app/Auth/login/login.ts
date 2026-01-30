@@ -60,42 +60,27 @@ export class Login {
 
     this.isLoading = true;
     this.errorMessage = null; 
-    
     const { email, password } = this.loginForm.value;
 
-    try {
-      const params = await firstValueFrom(this.route.queryParams);
-      const returnUrl = params['returnUrl'];
-
-      // Authentification HTTP (principal)
-      this.authService.login(email, password).subscribe({
-        next: async (user) => {
-          // Sauvegarder la session
-          this.profileService.setSession(user.agent || user, user.token);
-          
-          // Petit délai pour s'assurer que le token est sauvegardé
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Attendre que le profil complet soit chargé
-          await this.profileService.refreshProfileFromServer();
-          
-          const finalTarget = returnUrl ? decodeURIComponent(returnUrl) : '/tableau-de-bord';
-          
-          this.router.navigateByUrl(finalTarget).then(() => {
-            this.isLoading = false;
-          });
-        },
-        error: (err: Error) => {
+    // On appelle le service qui gère Firebase ET le Backend
+    this.authService.login(email, password).subscribe({
+      next: async () => {
+        // ✅ Ici, Firebase est déjà connecté et la session backend est enregistrée
+        // On rafraîchit le profil pour s'assurer que les Signals sont à jour
+        await this.profileService.refreshProfileFromServer();
+        
+        const params = await firstValueFrom(this.route.queryParams);
+        const finalTarget = params['returnUrl'] ? decodeURIComponent(params['returnUrl']) : '/tableau-de-bord';
+        
+        this.router.navigateByUrl(finalTarget).then(() => {
           this.isLoading = false;
-          this.errorMessage = err.message;
-          this.cdr.detectChanges(); 
-        }
-      });
-
-    } catch (e: any) {
-      this.isLoading = false;
-      this.errorMessage = "Erreur d'authentification";
-      this.cdr.detectChanges();
-    }
+        });
+      },
+      error: (err: Error) => {
+        this.isLoading = false;
+        this.errorMessage = err.message;
+        this.cdr.detectChanges(); 
+      }
+    });
   }
 }

@@ -71,7 +71,7 @@ th {
 
 /* --- VIRTUAL SCROLLPORT --- */
 .viewport {
-  height: 65vh;
+  height: 80vh;
   width: 100%;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */

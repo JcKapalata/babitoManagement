@@ -1,14 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize } from 'rxjs';
+import { BehaviorSubject, map, of, catchError, Observable, throwError, finalize, firstValueFrom } from 'rxjs';
 import { Agent } from '../Models/agent';
 import { environment } from '../../environments/environment';
+import { Auth, authState } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly firebaseAuth = inject(Auth);
   private readonly PROFILE_API = `${environment.apiUrl}/manager/profile`;
 
   // États réactifs pour le profil de l'utilisateur connecté
@@ -24,29 +26,25 @@ export class ProfileService {
   }
 
   /**
-   * Initialisation au démarrage : charge le profil si un token existe
-   * Retourne une Promise pour attendre la fin du chargement
+   * Modifié pour inclure la vérification Firebase
    */
-  initAuth(): Promise<void> {
-    return new Promise((resolve) => {
-      if (this.initialized) {
-        console.log('[ProfileService] Already initialized, skipping...');
-        resolve();
-        return;
+  async initAuth(): Promise<void> {
+    if (this.initialized) return;
+    this.initialized = true;
+
+    const token = localStorage.getItem('auth_token');
+    
+    // On attend deux choses : le profil API et l'état Firebase
+    if (token) {
+      try {
+        await Promise.all([
+          this.refreshProfileFromServer(),
+          firstValueFrom(authState(this.firebaseAuth)) // ✅ On s'assure que Firebase est prêt
+        ]);
+      } catch (e) {
+        console.error("Erreur d'initialisation", e);
       }
-      
-      this.initialized = true;
-      console.log('[ProfileService] Initializing auth...');
-      
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        console.log('[ProfileService] Token found, refreshing profile...');
-        this.refreshProfileFromServer().then(() => resolve());
-      } else {
-        console.log('[ProfileService] No token found');
-        resolve();
-      }
-    });
+    }
   }
 
   /**

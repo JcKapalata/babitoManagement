@@ -10,34 +10,39 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const injector = inject(Injector);
 
-  // Vérifier si c'est une requête vers l'API
-  const isApiUrl = req.url.includes('/api/') || 
+  // ✅ ADAPTATION : On vérifie si la requête commence par ton URL API définie dans environment.ts
+  // Cela couvre localhost en dev ET ton domaine réel en prod automatiquement.
+  const isApiUrl = req.url.startsWith(environment.apiUrl) || 
                    req.url.includes('/manager/') ||
                    req.url.includes('127.0.0.1:5001') || 
                    req.url.includes('localhost:5001');
+                   
   const isLoginRequest = req.url.includes('/auth/login');
 
-  console.log('[AuthInterceptor] URL:', req.url);
-  console.log('[AuthInterceptor] Token:', token ? 'Présent' : 'Absent');
-  console.log('[AuthInterceptor] isApiUrl:', isApiUrl);
-  console.log('[AuthInterceptor] isLoginRequest:', isLoginRequest);
-
   let cloned = req;
+  // ✅ ADAPTATION : On s'assure que le token est envoyé uniquement si on cible l'API
   if (token && isApiUrl && !isLoginRequest) {
-    console.log('[AuthInterceptor] Ajout du token au header');
     cloned = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
+      setHeaders: { 
+        Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache', // Optionnel : évite des bugs de cache sur les données privées
+        'Pragma': 'no-cache'
+      }
     });
   }
 
   return next(cloned).pipe(
     catchError((error: HttpErrorResponse) => {
-      console.error('[AuthInterceptor] Erreur:', error.status, error.message);
-      // Si 401 ou 403 (Token expiré), on nettoie et on redirige
-      if ([401, 403].includes(error.status) && !isLoginRequest) {
+      // ✅ ADAPTATION : Si 401, cela signifie que le token est invalide/expiré
+      if (error.status === 401 && !isLoginRequest) {
+        console.warn('[AuthInterceptor] Session expirée, redirection...');
         const profileService = injector.get(ProfileService);
         profileService.clearProfile();
-        router.navigate(['/login']);
+        
+        // On évite de rediriger si on est déjà sur la page login
+        if (!router.url.includes('/login')) {
+          router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
+        }
       }
       return throwError(() => error);
     })
